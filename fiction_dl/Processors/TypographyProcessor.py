@@ -261,6 +261,7 @@ class TypographyProcessor(Processor):
             re.compile("^\\s*\.+\\s*$"),
             re.compile("^\\s*\++\\s*$"),
             re.compile("^\\s*\_+\\s*$"),
+            re.compile("^\\s*\~+\\s*$"),
 
         ]
 
@@ -283,6 +284,11 @@ class TypographyProcessor(Processor):
 
                 starCount = tagText.count("*")
                 if starCount and (starCount / len(tagText) > 0.4):
+                    tag.replace_with(soup.new_tag("hr"))
+                    continue
+
+                tildeCount = tagText.count("~")
+                if tildeCount and (tildeCount / len(tagText) > 0.4):
                     tag.replace_with(soup.new_tag("hr"))
                     continue
 
