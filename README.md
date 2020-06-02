@@ -1,4 +1,6 @@
-# fiction-dl (*1.0.0*)
+# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.1.0a1*)
+
+**(Current stable release is 1.0.0 - you can find it in the *[Releases](https://github.com/DreamCobbler/fiction-dl/releases)* tab on the GitHub page.)**
 
 **fiction-dl** is a command-line utility used for downloading works of fiction from the web, formatting them and storing them in a few common file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
 
@@ -50,6 +52,14 @@ The application can download images found in story content and embed them in out
 ### Typographic corrections
 
 **fiction-dl** can apply basic typographic corrections to the content of downloaded stories.
+
+## Installation
+
+You can install **fiction-dl** using *pip*:
+
+    pip install --upgrade fiction-dl
+
+(If the package's already installed, this command will also update it.)
 
 ## Usage
 
