@@ -125,20 +125,26 @@ class ExtractorReddit(Extractor):
 
         if submission.author:
 
-            for nextSubmission in submission.author.submissions.new():
+            try:
 
-                if submission.subreddit.display_name != nextSubmission.subreddit.display_name:
-                    continue
+                for nextSubmission in submission.author.submissions.new():
 
-                titleProper = self._GetTitleProper(nextSubmission.title)
-                if not titleProper:
-                    continue
+                    if submission.subreddit.display_name != nextSubmission.subreddit.display_name:
+                        continue
 
-                distance = GetLevenshteinDistance(storyTitleProper, titleProper)
-                if distance > 5:
-                    continue
+                    titleProper = self._GetTitleProper(nextSubmission.title)
+                    if not titleProper:
+                        continue
+
+                    distance = GetLevenshteinDistance(storyTitleProper, titleProper)
+                    if distance > 5:
+                        continue
 
                 self._chapterURLs.append(nextSubmission.url)
+
+            except Forbidden:
+
+                pass
 
             self._chapterURLs.reverse()
 
