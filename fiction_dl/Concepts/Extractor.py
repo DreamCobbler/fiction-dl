@@ -90,11 +90,11 @@ class Extractor:
 
         return False
 
-    def Authenticate(self, username: str, password: str) -> bool:
+    def Authenticate(self) -> bool:
 
         ##
         #
-        # Logs the user in, using provided data.
+        # Logs the user in, interactively.
         #
         # @param username The username.
         # @param password The password.

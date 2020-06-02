@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.General import GetDateFromTimestamp, Stringify
+from fiction_dl.Utilities.Terminal import ReadString
 from fiction_dl.Utilities.Web import DownloadSoup, GetSiteURL
 
 # Standard packages.
@@ -77,11 +78,11 @@ class ExtractorXenForo(Extractor):
 
         return True
 
-    def Authenticate(self, username: str, password: str) -> bool:
+    def Authenticate(self) -> bool:
 
         ##
         #
-        # Logs the user in, using provided data.
+        # Logs the user in, interactively.
         #
         # @param username The username.
         # @param password The password.
@@ -89,6 +90,9 @@ class ExtractorXenForo(Extractor):
         # @return **True** if the user has been authenticated correctly, **False** otherwise.
         #
         ##
+
+        username = ReadString("Your username")
+        password = ReadString("Your password")
 
         data = {
             "login": username,

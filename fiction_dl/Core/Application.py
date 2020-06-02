@@ -210,19 +210,17 @@ class Application:
 
         # Authenticate the user (if supported by the extractor).
 
-        if self._arguments.Username or self._arguments.Password:
+        if self._arguments.Authenticate:
 
             if not extractor.SupportsAuthentication():
-                logging.error("This specific extractor does NOT support authentication.")
+                print("# This specific extractor does NOT support authentication.")
 
-            elif extractor.Authenticate(self._arguments.Username, self._arguments.Password):
-                print ("# Authenticated successfully.")
+            elif not extractor.Authenticate():
+                logging.error("Failed attempt to authenticate.")
+                return False
 
             else:
-                print(
-                    "! Failed to authenticate. Either the extractor's broken/outdated, or the "
-                    "username-and-password combination is incorrect."
-                )
+                print("# Authenticated successfully.")
 
         # Scan the story.
 

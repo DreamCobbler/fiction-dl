@@ -106,6 +106,13 @@ def ReadCommandLineArguments() -> Namespace:
     )
 
     argumentParser.add_argument(
+        "-a",
+        dest = "Authenticate",
+        action = "store_true",
+        help = "authenticate to supported sites in interactive mode"
+    )
+
+    argumentParser.add_argument(
         "-c",
         dest = "ClearCache",
         action = "store_true",

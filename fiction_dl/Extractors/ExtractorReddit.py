@@ -62,11 +62,6 @@ import webbrowser
 
 class ExtractorReddit(Extractor):
 
-    @staticmethod
-    def SupportsAuthentication() -> bool:
-
-        return False
-
     def __init__(self) -> None:
 
         ##
@@ -117,13 +112,13 @@ class ExtractorReddit(Extractor):
         #
         ##
 
-        return False
+        return True
 
-    def Authenticate(self, username: str, password: str) -> bool:
+    def Authenticate(self) -> bool:
 
         ##
         #
-        # Logs the user in, using provided data.
+        # Logs the user in, interactively.
         #
         # @param username The username.
         # @param password The password.
@@ -200,7 +195,7 @@ class ExtractorReddit(Extractor):
             user_agent = Configuration.UserAgent
         )
 
-        print(f'# You are authorized as "{self._redditInstance.user.me()}".')
+        print(f'# You are authenticated as "{self._redditInstance.user.me()}".')
 
         return True
 
@@ -215,8 +210,6 @@ class ExtractorReddit(Extractor):
         #
         ##
 
-        self.Authenticate("", "")
-
         try:
 
             if not self.Story:
@@ -228,6 +221,7 @@ class ExtractorReddit(Extractor):
             try:
 
                 submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
+                subredditName = submission.subreddit.display_name
 
                 storyTitleProper = self._GetTitleProper(submission.title)
                 if not storyTitleProper:
@@ -255,7 +249,9 @@ class ExtractorReddit(Extractor):
 
                     for nextSubmission in submission.author.submissions.new():
 
-                        if submission.subreddit.display_name != nextSubmission.subreddit.display_name:
+                        nextSubmissionSubredditName = submission.subreddit.display_name
+
+                        if subredditName != nextSubmissionSubredditName:
                             continue
 
                         titleProper = self._GetTitleProper(nextSubmission.title)
@@ -266,7 +262,7 @@ class ExtractorReddit(Extractor):
                         if distance > 5:
                             continue
 
-                    self._chapterURLs.append(nextSubmission.url)
+                        self._chapterURLs.append(nextSubmission.url)
 
                 except (NotFound, InvalidURL, Forbidden):
 

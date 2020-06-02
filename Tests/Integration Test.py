@@ -61,6 +61,7 @@ logging.basicConfig(level = logging.INFO)
 #
 
 arguments = Namespace(
+    Authenticate = False,
     ClearCache = True,
     Verbose = True,
     Force = True,
@@ -84,6 +85,7 @@ Application(
 #
 
 arguments = Namespace(
+    Authenticate = False,
     ClearCache = False,
     Verbose = True,
     Force = True,
