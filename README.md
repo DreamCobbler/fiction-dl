@@ -1,4 +1,4 @@
-# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.1.1*)
+# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.2.0 Alpha*)
 
 **fiction-dl** is a command-line utility used for downloading works of fiction from the web, formatting them and storing them in a few common file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
 
