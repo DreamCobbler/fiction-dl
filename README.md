@@ -21,14 +21,14 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 
 - [Archive of Our Own](https://archiveofourown.org/).
 - [FanFiction.net](https://www.fanfiction.net/).
-- [SpaceBattles.com](https://forums.spacebattles.com/).
-- [SufficientVelocity.com](https://forums.sufficientvelocity.com/).
-- [AlternateHistory.com](https://www.alternatehistory.com/forum/).
+- [SpaceBattles.com](https://forums.spacebattles.com/). (Support user authentication.)
+- [SufficientVelocity.com](https://forums.sufficientvelocity.com/). (Support user authentication.)
+- [AlternateHistory.com](https://www.alternatehistory.com/forum/). (Support user authentication.)
 
 ##### Original Fiction
 
 - [Fiction Press](https://www.fictionpress.com/).
-- [Reddit](https://www.reddit.com/).
+- [Reddit](https://www.reddit.com/). (Support user authentication.)
 
 ##### Erotica
 
