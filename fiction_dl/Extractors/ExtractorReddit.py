@@ -32,7 +32,7 @@ from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.General import GetDateFromTimestamp
 from fiction_dl.Utilities.Text import GetLevenshteinDistance
-import fiction_dl.Configuration
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
@@ -74,9 +74,10 @@ class ExtractorReddit(Extractor):
         super().__init__()
 
         self._redditInstance = Reddit(
-            client_id = fiction_dl.Configuration.RedditClientID,
-            client_secret = fiction_dl.Configuration.RedditClientSecret,
-            user_agent = fiction_dl.Configuration.UserAgent
+            client_id = Configuration.RedditClientID,
+            client_secret = "",
+            redirect_uri = "",
+            user_agent = Configuration.UserAgent
         )
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -92,6 +93,33 @@ class ExtractorReddit(Extractor):
         return [
             "reddit.com"
         ]
+
+    def SupportsAuthentication(self) -> bool:
+
+        ##
+        #
+        # Checks whether the extractor supports user authentication.
+        #
+        # @return **True** if the site *does* support authentication, **False** otherwise.
+        #
+        ##
+
+        return False
+
+    def Authenticate(self, username: str, password: str) -> bool:
+
+        ##
+        #
+        # Logs the user in, using provided data.
+        #
+        # @param username The username.
+        # @param password The password.
+        #
+        # @return **True** if the user has been authenticated correctly, **False** otherwise.
+        #
+        ##
+
+        return False
 
     def Scan(self) -> bool:
 

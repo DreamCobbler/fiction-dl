@@ -52,8 +52,7 @@ CreatorContact = "dreamcobbler@outlook.com"
 
 UserAgent = f"{ApplicationName} {ApplicationVersion}"
 
-RedditClientID = "eEJrNMCKEoqFtg"
-RedditClientSecret = "WYEY5JkpJNEmva2zItBqZ8p49-U"
+RedditClientID = "ScszEQn1cI7GgQ"
 
 CacheDirectoryPath = tempfile.gettempdir() / Path(f"{ApplicationName} Cache")
 DebugDirectoryPath = Path(f"{ApplicationName} Debug Data")
