@@ -53,6 +53,7 @@ CreatorContact = "dreamcobbler@outlook.com"
 UserAgent = f"{ApplicationName} {ApplicationVersion}"
 
 RedditClientID = "ScszEQn1cI7GgQ"
+RedditRedirectURI = "http://localhost:8080"
 
 CacheDirectoryPath = tempfile.gettempdir() / Path(f"{ApplicationName} Cache")
 DebugDirectoryPath = Path(f"{ApplicationName} Debug Data")

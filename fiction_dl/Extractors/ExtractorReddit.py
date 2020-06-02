@@ -37,7 +37,9 @@ import fiction_dl.Configuration as Configuration
 # Standard packages.
 
 import logging
+from random import randint
 import re
+import socket
 from typing import List, Optional
 
 # Non-standard packages.
@@ -46,7 +48,9 @@ from markdown import markdown
 from praw import Reddit
 from praw.exceptions import InvalidURL
 from praw.models import Submission
-from prawcore.exceptions import Forbidden, NotFound
+from prawcore.exceptions import Forbidden, InsufficientScope, NotFound
+from time import sleep
+import webbrowser
 
 #
 #
@@ -73,12 +77,21 @@ class ExtractorReddit(Extractor):
 
         super().__init__()
 
-        self._redditInstance = Reddit(
-            client_id = Configuration.RedditClientID,
-            client_secret = "",
-            redirect_uri = "",
-            user_agent = Configuration.UserAgent
-        )
+        if not ExtractorReddit._RefreshToken:
+            self._redditInstance = Reddit(
+                client_id = Configuration.RedditClientID,
+                client_secret = None,
+                redirect_uri = Configuration.RedditRedirectURI,
+                user_agent = Configuration.UserAgent
+            )
+
+        else:
+            self._redditInstance = Reddit(
+                client_id = Configuration.RedditClientID,
+                client_secret = None,
+                refresh_token = ExtractorReddit._RefreshToken,
+                user_agent = Configuration.UserAgent
+            )
 
     def GetSupportedHostnames(self) -> List[str]:
 
@@ -119,7 +132,77 @@ class ExtractorReddit(Extractor):
         #
         ##
 
-        return False
+        if not ExtractorReddit._RefreshToken:
+
+            scopes = [
+                "identity",
+                "read",
+                "history",
+            ]
+
+            state = str(randint(0, 65000))
+            authorizationURL = self._redditInstance.auth.url(scopes, state, "permanent")
+
+            print(
+                f'# You authorization URL is: "{authorizationURL}". {Configuration.ApplicationName}'
+                " has just attempted to open it in your web browser - if it has failed, then please"
+                " open it manually and confirm granting access to"
+                f" {Configuration.ApplicationName}."
+            )
+
+            webbrowser.open(authorizationURL, new = 2)
+
+            # Receive the connection.
+
+            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server.bind(("localhost", 8080))
+            server.listen(1)
+
+            client = server.accept()[0]
+            server.close()
+
+            # Process received data.
+
+            data = client.recv(1024).decode("utf-8")
+
+            if (" " not in data) or ("?" not in data) or ("&" not in data):
+                SendMessage("Error: invalid response.")
+                return False
+
+            parameterTokens = data.split(" ", 2)[1].split("?", 1)[1].split("&")
+            parameters = {
+                key: value
+                for (key, value) in [token.split("=") for token in parameterTokens]
+            }
+
+            if parameters["state"] != state:
+                SendMessage(client, "Error: invalid state in response.")
+                return False
+
+            elif "error" in parameters:
+                SendMessage(client, f'Error: {parameters["error"]}.')
+                return False
+
+            else:
+                SendMessage(client, "OK.")
+
+            # Authorize.
+
+            ExtractorReddit._RefreshToken = self._redditInstance.auth.authorize(parameters["code"])
+
+        # Re-create the reddit instance and notify the user.
+
+        self._redditInstance = Reddit(
+            client_id = Configuration.RedditClientID,
+            client_secret = None,
+            refresh_token = ExtractorReddit._RefreshToken,
+            user_agent = Configuration.UserAgent
+        )
+
+        print(f'# You are authorized as "{self._redditInstance.user.me()}".')
+
+        return True
 
     def Scan(self) -> bool:
 
@@ -131,6 +214,8 @@ class ExtractorReddit(Extractor):
         # @return **False** when the scan fails, **True** when it doesn't fail.
         #
         ##
+
+        self.Authenticate("", "")
 
         try:
 
@@ -220,6 +305,11 @@ class ExtractorReddit(Extractor):
             logging.error("PRAW says: Forbidden.")
             return False
 
+        except InsufficientScope:
+
+            logging.error("PRAW says: InsufficientScope.")
+            return False
+
         except InvalidURL:
 
             logging.error("PRAW says: InvalidURL.")
@@ -282,3 +372,30 @@ class ExtractorReddit(Extractor):
         titleProper = titleProper.strip()
 
         return titleProper.strip()
+
+    _RefreshToken = None
+
+#
+#
+#
+# Functions.
+#
+#
+#
+
+def SendMessage(client: socket.socket, message: str) -> None:
+
+    ##
+    #
+    # Sends a message to client, then closes the connection.
+    #
+    # @param client  The client.
+    # @param message The message.
+    #
+    ##
+
+    if (not client) or (not message):
+        return
+
+    client.send("HTTP/1.1 200 OK\r\n\r\n{}".format(message).encode("utf-8"))
+    client.close()
