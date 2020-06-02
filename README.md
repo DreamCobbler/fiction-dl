@@ -4,7 +4,7 @@
 
 **fiction-dl** is a command-line utility used for downloading works of fiction from the web, formatting them and storing them in a few common file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
 
-I've created it mostly as an exercise in Python - the good old [FanFicFare](https://github.com/JimmXinu/FanFicFare) serves the same purpose and has a much longer list of supported sites. It can also *update* already downloaded stories, not to mention that it can be used as a [Calibre](https://calibre-ebook.com/) plug-in just as a well as a command-line tool! But with all that said, **fiction-dl** *does* have some adventages over FFF:
+I've created it mostly as an exercise in Python - the good old [FanFicFare](https://github.com/JimmXinu/FanFicFare) serves the same purpose and has a much longer list of supported sites. It can also *update* already downloaded stories, not to mention that it can be used as a [Calibre](https://calibre-ebook.com/) plug-in just as well as a command-line tool! But with all that said, **fiction-dl** *does* have some adventages over FFF:
 
 - It supports some sites FFF doesn't (Reddit).
 - It can generate ODT and PDF files.
