@@ -1,0 +1,121 @@
+####
+#
+# fiction-dl
+# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+####
+
+#
+#
+#
+# Imports.
+#
+#
+#
+
+from __future__ import annotations
+
+# Application.
+
+from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
+from fiction_dl.Utilities.Text import PrettifyDate, PrettifyNumber, Truncate
+
+# Standard packages.
+
+from typing import Optional
+
+# Non-standard packages.
+
+from titlecase import titlecase
+
+#
+#
+#
+# Classes.
+#
+#
+#
+
+##
+#
+# Represents a story's metadata.
+#
+##
+
+class Metadata:
+
+    def __init__(self) -> None:
+
+        ##
+        #
+        # The constructor.
+        #
+        ##
+
+        self.URL = None
+
+        self.Title = None
+        self.Author = None
+        self.Summary = None
+
+        # All dates are ISO 8601 dates (YYYY-MM-DD).
+        self.DatePublished = None
+        self.DateUpdated = None
+        self.DateExtracted = None
+
+        self.ChapterCount = None
+        self.WordCount = None
+
+    def GetPrettified(self) -> Metadata:
+
+        ##
+        #
+        # Returns prettified metadata (to be used when printing anything).
+        #
+        # @return Prettified metadata.
+        #
+        ##
+
+        metadata = Metadata()
+
+        metadata.URL = self.URL
+
+        metadata.Title = titlecase(self.Title)
+        metadata.Author = self.Author
+        metadata.Summary = self.Summary
+
+        metadata.DatePublished = PrettifyDate(self.DatePublished)
+        metadata.DateUpdated = PrettifyDate(self.DateUpdated)
+        metadata.DateExtracted = PrettifyDate(self.DateExtracted)
+
+        metadata.ChapterCount = PrettifyNumber(self.ChapterCount)
+        metadata.WordCount = PrettifyNumber(self.WordCount)
+
+        return metadata
+
+    def Process(self, summaryLength: Optional[int] = 500) -> None:
+
+        ##
+        #
+        # Processes the metadata. To be used before generating output files.
+        #
+        ##
+
+        self.Title = titlecase(self.Title)
+
+        self.Summary = TypographyProcessor().Process(self.Summary).strip()
+        if summaryLength:
+            self.Summary = Truncate(self.Summary, summaryLength)

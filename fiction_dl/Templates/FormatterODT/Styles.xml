@@ -1,0 +1,29 @@
+<style:style style:name="Imported_Bold" style:display-name="Imported Bold" style:family="text">
+
+	<style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
+
+</style:style>
+
+<style:style style:name="Imported_Emphasis" style:display-name="Imported Emphasis" style:family="text">
+
+	<style:text-properties fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic"/>
+
+</style:style>
+
+<style:style style:name="Imported_Underline" style:display-name="Imported Underline" style:family="text">
+
+	<style:text-properties style:text-underline-style="solid" style:text-underline-width="auto" style:text-underline-color="font-color"/>
+
+</style:style>
+
+<style:style style:name="Imported_Chapter" style:display-name="Imported Chapter" style:family="paragraph" style:parent-style-name="Heading_20_1">
+
+	<style:paragraph-properties fo:break-before="page"/>
+
+</style:style>
+
+<style:style style:name="Imported_Image" style:display-name="Imported Image" style:family="graphic" style:parent-style-name="Graphics">
+
+	<style:graphic-properties style:run-through="foreground" style:wrap="none" style:horizontal-pos="center" style:horizontal-rel="paragraph" style:mirror="none" fo:clip="rect(0cm, 0cm, 0cm, 0cm)" draw:luminance="0%" draw:contrast="0%" draw:red="0%" draw:green="0%" draw:blue="0%" draw:gamma="100%" draw:color-inversion="false" draw:image-opacity="100%" draw:color-mode="standard"/>
+
+</style:style>
