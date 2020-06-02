@@ -123,22 +123,24 @@ class ExtractorReddit(Extractor):
             logging.error('PRAW says "Forbidden".')
             return False
 
-        for nextSubmission in submission.author.submissions.new():
+        if submission.author:
 
-            if submission.subreddit.display_name != nextSubmission.subreddit.display_name:
-                continue
+            for nextSubmission in submission.author.submissions.new():
 
-            titleProper = self._GetTitleProper(nextSubmission.title)
-            if not titleProper:
-                continue
+                if submission.subreddit.display_name != nextSubmission.subreddit.display_name:
+                    continue
 
-            distance = GetLevenshteinDistance(storyTitleProper, titleProper)
-            if distance > 5:
-                continue
+                titleProper = self._GetTitleProper(nextSubmission.title)
+                if not titleProper:
+                    continue
 
-            self._chapterURLs.append(nextSubmission.url)
+                distance = GetLevenshteinDistance(storyTitleProper, titleProper)
+                if distance > 5:
+                    continue
 
-        self._chapterURLs.reverse()
+                self._chapterURLs.append(nextSubmission.url)
+
+            self._chapterURLs.reverse()
 
         if not self._chapterURLs:
             self._chapterURLs = [submission.url]
@@ -151,7 +153,11 @@ class ExtractorReddit(Extractor):
         storyTitleProper = self._GetTitleProper(firstSubmission.title)
 
         self.Story.Metadata.Title = storyTitleProper
-        self.Story.Metadata.Author = firstSubmission.author.name
+        self.Story.Metadata.Author = (
+            firstSubmission.author.name
+            if firstSubmission.author else
+            "[deleted]"
+        )
         self.Story.Metadata.DatePublished = GetDateFromTimestamp(int(firstSubmission.created_utc))
         self.Story.Metadata.DateUpdated = GetDateFromTimestamp(int(lastSubmission.created_utc))
         self.Story.Metadata.ChapterCount = len(self._chapterURLs)
