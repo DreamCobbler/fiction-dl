@@ -155,22 +155,6 @@ def ReadCommandLineArguments() -> Namespace:
     )
 
     argumentParser.add_argument(
-        "-u",
-        dest = "Username",
-        type = str,
-        default = "",
-        help = "username (for those sites that require authentication)"
-    )
-
-    argumentParser.add_argument(
-        "-p",
-        dest = "Password",
-        type = str,
-        default = "",
-        help = "password (for those sites that require authentication)"
-    )
-
-    argumentParser.add_argument(
         "-lo",
         dest = "LibreOffice",
         type = Path,
