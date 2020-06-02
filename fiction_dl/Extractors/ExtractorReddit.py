@@ -44,8 +44,9 @@ from typing import List, Optional
 
 from markdown import markdown
 from praw import Reddit
+from praw.exceptions import InvalidURL
 from praw.models import Submission
-from prawcore.exceptions import Forbidden
+from prawcore.exceptions import Forbidden, NotFound
 
 #
 #
@@ -103,76 +104,103 @@ class ExtractorReddit(Extractor):
         #
         ##
 
-        if not self.Story:
-            logging.error("The extractor isn't initialized.")
-            return False
-
-        # Retrieve chapter URLs.
-
         try:
 
-            submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
-
-            storyTitleProper = self._GetTitleProper(submission.title)
-            if not storyTitleProper:
-                logging.error("Failed to read story title.")
+            if not self.Story:
+                logging.error("The extractor isn't initialized.")
                 return False
 
-        except Forbidden:
-
-            logging.error('PRAW says "Forbidden".')
-            return False
-
-        if submission.author:
+            # Retrieve chapter URLs.
 
             try:
 
-                for nextSubmission in submission.author.submissions.new():
+                submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
 
-                    if submission.subreddit.display_name != nextSubmission.subreddit.display_name:
-                        continue
-
-                    titleProper = self._GetTitleProper(nextSubmission.title)
-                    if not titleProper:
-                        continue
-
-                    distance = GetLevenshteinDistance(storyTitleProper, titleProper)
-                    if distance > 5:
-                        continue
-
-                self._chapterURLs.append(nextSubmission.url)
+                storyTitleProper = self._GetTitleProper(submission.title)
+                if not storyTitleProper:
+                    logging.error("Failed to read story title.")
+                    return False
 
             except Forbidden:
 
-                pass
+                logging.error("PRAW says: Forbidden.")
+                return False
 
-            self._chapterURLs.reverse()
+            except InvalidURL:
 
-        if not self._chapterURLs:
-            self._chapterURLs = [submission.url]
+                logging.error("PRAW says: InvalidURL.")
+                return False
 
-        # Extract metadata.
+            except NotFound:
 
-        firstSubmission = Submission(self._redditInstance, url = self._chapterURLs[0])
-        lastSubmission = Submission(self._redditInstance, url = self._chapterURLs[-1])
+                logging.error("PRAW says: Forbidden.")
+                return False
 
-        storyTitleProper = self._GetTitleProper(firstSubmission.title)
+            if submission.author:
 
-        self.Story.Metadata.Title = storyTitleProper
-        self.Story.Metadata.Author = (
-            firstSubmission.author.name
-            if firstSubmission.author else
-            "[deleted]"
-        )
-        self.Story.Metadata.DatePublished = GetDateFromTimestamp(int(firstSubmission.created_utc))
-        self.Story.Metadata.DateUpdated = GetDateFromTimestamp(int(lastSubmission.created_utc))
-        self.Story.Metadata.ChapterCount = len(self._chapterURLs)
-        self.Story.Metadata.WordCount = 0
-        self.Story.Metadata.Summary = "No summary."
+                try:
 
-        # Return.
+                    for nextSubmission in submission.author.submissions.new():
 
-        return True
+                        if submission.subreddit.display_name != nextSubmission.subreddit.display_name:
+                            continue
+
+                        titleProper = self._GetTitleProper(nextSubmission.title)
+                        if not titleProper:
+                            continue
+
+                        distance = GetLevenshteinDistance(storyTitleProper, titleProper)
+                        if distance > 5:
+                            continue
+
+                    self._chapterURLs.append(nextSubmission.url)
+
+                except (NotFound, InvalidURL, Forbidden):
+
+                    pass
+
+                self._chapterURLs.reverse()
+
+            if not self._chapterURLs:
+                self._chapterURLs = [submission.url]
+
+            # Extract metadata.
+
+            firstSubmission = Submission(self._redditInstance, url = self._chapterURLs[0])
+            lastSubmission = Submission(self._redditInstance, url = self._chapterURLs[-1])
+
+            storyTitleProper = self._GetTitleProper(firstSubmission.title)
+
+            self.Story.Metadata.Title = storyTitleProper
+            self.Story.Metadata.Author = (
+                firstSubmission.author.name
+                if firstSubmission.author else
+                "[deleted]"
+            )
+            self.Story.Metadata.DatePublished = GetDateFromTimestamp(int(firstSubmission.created_utc))
+            self.Story.Metadata.DateUpdated = GetDateFromTimestamp(int(lastSubmission.created_utc))
+            self.Story.Metadata.ChapterCount = len(self._chapterURLs)
+            self.Story.Metadata.WordCount = 0
+            self.Story.Metadata.Summary = "No summary."
+
+            # Return.
+
+            return True
+
+        except Forbidden:
+
+            logging.error("PRAW says: Forbidden.")
+            return False
+
+        except InvalidURL:
+
+            logging.error("PRAW says: InvalidURL.")
+            return False
+
+        except NotFound:
+
+            logging.error("PRAW says: Forbidden.")
+            return False
 
     def ExtractChapter(self, index: int) -> Optional[Chapter]:
 
