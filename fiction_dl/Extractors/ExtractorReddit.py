@@ -45,6 +45,7 @@ from typing import List, Optional
 from markdown import markdown
 from praw import Reddit
 from praw.models import Submission
+from prawcore.exceptions import Forbidden
 
 #
 #
@@ -108,11 +109,18 @@ class ExtractorReddit(Extractor):
 
         # Retrieve chapter URLs.
 
-        submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
+        try:
 
-        storyTitleProper = self._GetTitleProper(submission.title)
-        if not storyTitleProper:
-            logging.error("Failed to read story title.")
+            submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
+
+            storyTitleProper = self._GetTitleProper(submission.title)
+            if not storyTitleProper:
+                logging.error("Failed to read story title.")
+                return False
+
+        except Forbidden:
+
+            logging.error('PRAW says "Forbidden".')
             return False
 
         for nextSubmission in submission.author.submissions.new():
