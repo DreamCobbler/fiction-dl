@@ -35,6 +35,7 @@ from fiction_dl.Utilities.Text import PrettifyDate, PrettifyNumber, Truncate
 
 # Standard packages.
 
+from copy import deepcopy
 from typing import Optional
 
 # Non-standard packages.
@@ -89,13 +90,8 @@ class Metadata:
         #
         ##
 
-        metadata = Metadata()
-
-        metadata.URL = self.URL
-
-        metadata.Title = titlecase(self.Title)
-        metadata.Author = self.Author
-        metadata.Summary = self.Summary
+        metadata = deepcopy(self)
+        metadata.Process(summaryLength = None)
 
         metadata.DatePublished = PrettifyDate(self.DatePublished)
         metadata.DateUpdated = PrettifyDate(self.DateUpdated)
@@ -114,8 +110,10 @@ class Metadata:
         #
         ##
 
-        self.Title = titlecase(self.Title)
+        typographyProcessor = TypographyProcessor()
 
-        self.Summary = TypographyProcessor().Process(self.Summary).strip()
+        self.Title = titlecase(typographyProcessor.Process(self.Title).strip())
+        self.Summary = typographyProcessor.Process(self.Summary).strip()
+
         if summaryLength:
             self.Summary = Truncate(self.Summary, summaryLength)
