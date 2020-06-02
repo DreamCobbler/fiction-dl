@@ -31,7 +31,7 @@ from __future__ import annotations
 # Application.
 
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
-from fiction_dl.Utilities.Text import PrettifyDate, PrettifyNumber, Truncate
+from fiction_dl.Utilities.Text import GetTitleProper, PrettifyDate, PrettifyNumber, Truncate
 
 # Standard packages.
 
@@ -112,7 +112,7 @@ class Metadata:
 
         typographyProcessor = TypographyProcessor()
 
-        self.Title = titlecase(typographyProcessor.Process(self.Title).strip())
+        self.Title = titlecase(typographyProcessor.Process(GetTitleProper(self.Title)).strip())
         self.Summary = typographyProcessor.Process(self.Summary).strip()
 
         if summaryLength:

@@ -33,7 +33,8 @@ from fiction_dl.Utilities.General import Stringify
 # Standard packages.
 
 from datetime import datetime
-from typing import Any
+import re
+from typing import Any, Optional
 
 # Non-standard packages.
 
@@ -116,6 +117,35 @@ def GetLevenshteinDistance(firstString: str, secondString: str) -> int:
                 )
 
     return matrix[sizeH - 1, sizeV - 1]
+
+def GetTitleProper(title: str) -> Optional[str]:
+
+    ##
+    #
+    # Retrieves the proper title of the story (removing parts like "(Part 6)" or "[Chapter 2]").
+    #
+    # @param title The title as it was retrieved from the web.
+    #
+    # @return The title proper.
+    #
+    ##
+
+    if not title:
+        return None
+
+    titleProper = title
+
+    titleProper = re.sub("\[?\(?Finale\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Final part\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Final update\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Final\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Chapter (\d+)\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Part (\d+)\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Update (\d+)\)?\]?\.?", "", titleProper)
+
+    titleProper = titleProper.strip()
+
+    return titleProper.strip()
 
 def IsStringTrulyEmpty(text: str) -> bool:
 
