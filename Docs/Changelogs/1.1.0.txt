@@ -1,0 +1,7 @@
+- Reworked the way authentication works in all extractors.
+
+- Added support for Reddit authentication.
+- Expanded exception handling in the Reddit extractor.
+- The Reddit extractor now handles extracting posts made by deleted users and suspended users.
+
+- Added some more processing for story titles.
