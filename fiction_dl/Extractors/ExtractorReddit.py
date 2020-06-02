@@ -30,8 +30,9 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
+from fiction_dl.Utilities.Filesystem import GetPackageDirectory, ReadTextFile
 from fiction_dl.Utilities.General import GetDateFromTimestamp
-from fiction_dl.Utilities.Text import GetLevenshteinDistance
+from fiction_dl.Utilities.Text import GetLevenshteinDistance, GetTitleProper
 import fiction_dl.Configuration as Configuration
 
 # Standard packages.
@@ -160,9 +161,11 @@ class ExtractorReddit(Extractor):
             # Process received data.
 
             data = client.recv(1024).decode("utf-8")
+            responseTemplate = ReadTextFile(GetPackageDirectory() / "Resources" / "PrettyHTMLText.html")
+            responseTemplate = responseTemplate.replace("@@@ApplicationName@@@", Configuration.ApplicationName)
 
             if (" " not in data) or ("?" not in data) or ("&" not in data):
-                SendMessage("Error: invalid response.")
+                SendMessage(client, responseTemplate.replace("@@@Content@@@", "Error: invalid response."))
                 return False
 
             parameterTokens = data.split(" ", 2)[1].split("?", 1)[1].split("&")
@@ -172,15 +175,15 @@ class ExtractorReddit(Extractor):
             }
 
             if parameters["state"] != state:
-                SendMessage(client, "Error: invalid state in response.")
+                SendMessage(client, responseTemplate.replace("@@@Content@@@", "Error: invalid state in response."))
                 return False
 
             elif "error" in parameters:
-                SendMessage(client, f'Error: {parameters["error"]}.')
+                SendMessage(client, responseTemplate.replace("@@@Content@@@", f'Error: {parameters["error"]}.'))
                 return False
 
             else:
-                SendMessage(client, "OK.")
+                SendMessage(client, responseTemplate.replace("@@@Content@@@", "Everything went well. ;)"))
 
             # Authorize.
 
@@ -223,7 +226,7 @@ class ExtractorReddit(Extractor):
                 submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
                 subredditName = submission.subreddit.display_name
 
-                storyTitleProper = self._GetTitleProper(submission.title)
+                storyTitleProper = GetTitleProper(submission.title)
                 if not storyTitleProper:
                     logging.error("Failed to read story title.")
                     return False
@@ -254,7 +257,7 @@ class ExtractorReddit(Extractor):
                         if subredditName != nextSubmissionSubredditName:
                             continue
 
-                        titleProper = self._GetTitleProper(nextSubmission.title)
+                        titleProper = GetTitleProper(nextSubmission.title)
                         if not titleProper:
                             continue
 
@@ -278,7 +281,7 @@ class ExtractorReddit(Extractor):
             firstSubmission = Submission(self._redditInstance, url = self._chapterURLs[0])
             lastSubmission = Submission(self._redditInstance, url = self._chapterURLs[-1])
 
-            storyTitleProper = self._GetTitleProper(firstSubmission.title)
+            storyTitleProper = GetTitleProper(firstSubmission.title)
 
             self.Story.Metadata.Title = storyTitleProper
             self.Story.Metadata.Author = (
@@ -339,35 +342,6 @@ class ExtractorReddit(Extractor):
         submission = Submission(self._redditInstance, url = self._chapterURLs[index - 1])
 
         return Chapter(content = markdown(submission.selftext))
-
-    @staticmethod
-    def _GetTitleProper(title: str) -> Optional[str]:
-
-        ##
-        #
-        # Retrieves the proper title of the story (removing parts like "(Part 6)" or "[Chapter 2]").
-        #
-        # @param title The title as it was retrieved from Reddit.
-        #
-        # @return The title proper.
-        #
-        ##
-
-        if not title:
-            return None
-
-        titleProper = title
-
-        titleProper = re.sub("\[?\(?Finale\)?\]?\.?", "", titleProper)
-        titleProper = re.sub("\[?\(?Final part\)?\]?\.?", "", titleProper)
-        titleProper = re.sub("\[?\(?Final update\)?\]?\.?", "", titleProper)
-        titleProper = re.sub("\[?\(?Final\)?\]?\.?", "", titleProper)
-        titleProper = re.sub("\[?\(?Part (\d+)\)?\]?\.?", "", titleProper)
-        titleProper = re.sub("\[?\(?Update (\d+)\)?\]?\.?", "", titleProper)
-
-        titleProper = titleProper.strip()
-
-        return titleProper.strip()
 
     _RefreshToken = None
 
