@@ -36,6 +36,7 @@ from fiction_dl.Utilities.Web import DownloadSoup, GetSiteURL
 
 # Standard packages.
 
+from getpass import getpass
 import logging
 import re
 import requests
@@ -92,7 +93,7 @@ class ExtractorXenForo(Extractor):
         ##
 
         username = ReadString("Your username")
-        password = ReadString("Your password")
+        password = getpass(prompt = "Your password")
 
         data = {
             "login": username,
