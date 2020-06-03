@@ -32,6 +32,7 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 
 ##### Erotica
 
+- [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php).
 - [Literotica](https://www.literotica.com/).
 
 ### Formatting stories

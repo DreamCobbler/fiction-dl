@@ -29,6 +29,7 @@
 # Application.
 
 from fiction_dl.Concepts.Extractor import Extractor
+from fiction_dl.Extractors.ExtractorAdultFanfiction import ExtractorAdultFanfiction
 from fiction_dl.Extractors.ExtractorAH import ExtractorAH
 from fiction_dl.Extractors.ExtractorAO3 import ExtractorAO3
 from fiction_dl.Extractors.ExtractorFFNet import ExtractorFFNet
@@ -62,6 +63,7 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
     ##
 
     availableExtractors = [
+        ExtractorAdultFanfiction(),
         ExtractorAH(),
         ExtractorAO3(),
         ExtractorFFNet(),
