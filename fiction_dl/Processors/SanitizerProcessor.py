@@ -36,6 +36,10 @@ from fiction_dl.Utilities.HTML import CleanHTML, StripEmptyTags, StripTags
 import re
 from typing import Optional
 
+# Non-standard packages.
+
+from bs4 import  BeautifulSoup
+
 #
 #
 #
@@ -59,7 +63,9 @@ class SanitizerProcessor(Processor):
         # Processes the content given and returns a sanitized version of it.
         #
         # Sanitized code is defined as HTML code that contains no other tags than "p", "img", "hr",
-        # "b", "strong", "i", "em" and "u". No tag contains any attributes, no tag is empty.
+        # "b", "strong", "i", "em", "u", and "a". No tag is empty, other than "img" and "hr". No tag
+        # containes any attributes, with the exception of "a" - and the only attribute this tag is
+        # allowed to have is "href".
         #
         # @param content The content to be processed.
         #
@@ -82,6 +88,34 @@ class SanitizerProcessor(Processor):
         # Strip empty tags.
 
         content = StripEmptyTags(content, ["hr", "img"])
+
+        # Strip attributes.
+
+        soup = BeautifulSoup(content, features = "html.parser")
+
+        for tag in soup.find_all(lambda x: len(x.attrs) > 0):
+
+            for name, value in tag.attrs.items():
+
+                if ("a" == tag.name) and ("href" == name):
+
+                    # Fix parentheses - Typography Processor messes the up.
+
+                    if value.startswith("“"):
+                        value = value[1:]
+
+                    if value.endswith("”"):
+                        value = value[:-1]
+
+                    tag[name] = value
+
+                    continue
+
+                else:
+
+                    del tag[name]
+
+        content = str(soup)
 
         # Strip newlines.
 
@@ -124,4 +158,4 @@ class SanitizerProcessor(Processor):
 
         return content
 
-    _Tags = ["p", "img", "hr", "b", "strong", "i", "em", "u"]
+    _Tags = ["p", "img", "hr", "b", "strong", "i", "em", "u", "a"]

@@ -308,6 +308,16 @@ class FormatterODT(Formatter):
                 tag.name = "text:span"
                 tag["text:style-name"] = "Imported_Underline"
 
+            elif "a" == tag.name:
+
+                tag.name = "text:a"
+                tag["xlink:type"] = "simple"
+                tag["xlink:href"] = tag["href"]
+                tag["text:style-name"] = "Internet_20_link"
+                tag["text:visited-style-name"] = "Visited_20_Internet_20_Link"
+
+                del tag["href"]
+
             elif ("img" == tag.name):
 
                 if (not self._embedImages) or (imageIndex >= len(story.Images)):
