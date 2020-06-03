@@ -78,7 +78,7 @@ In order to download multiple stories, create a text file and place the URLs in 
 
 ## License
 
-**GNU GPL 3**. The text of the license is provided in the *Docs/License.txt* file.
+**GNU GPL 3**. The text of the license is provided in the *LICENSE* file.
 
 ## Changelog
 
