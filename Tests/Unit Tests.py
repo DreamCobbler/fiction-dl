@@ -34,7 +34,7 @@ sys.path.insert(0, "../")
 
 # Application.
 
-from fiction_dl.Utilities.Text import IsStringTrulyEmpty, Truncate
+from fiction_dl.Utilities.Text import GetTitleProper, IsStringTrulyEmpty, Truncate
 from fiction_dl.Utilities.Web import GetHostname, GetSiteURL
 
 # Standard packages.
@@ -50,6 +50,43 @@ import unittest
 #
 
 class TestUtilitiesText(unittest.TestCase):
+
+    def test_GetTitleProper(self):
+
+        self.assertEqual(
+            GetTitleProper("[Finale] Story Title"),
+            "Story Title"
+        )
+
+        self.assertEqual(
+            GetTitleProper("[Final part] Story Title"),
+            "Story Title"
+        )
+
+        self.assertEqual(
+            GetTitleProper("[Final part] Story Title"),
+            "Story Title"
+        )
+
+        self.assertEqual(
+            GetTitleProper("Story Title [Update]"),
+            "Story Title"
+        )
+
+        self.assertEqual(
+            GetTitleProper("[Update 3] Story Title"),
+            "Story Title"
+        )
+
+        self.assertEqual(
+            GetTitleProper("[Chapter 2] Story Title"),
+            "Story Title"
+        )
+
+        self.assertEqual(
+            GetTitleProper("Story Title   [Part 6]"),
+            "Story Title"
+        )
 
     def test_IsStringTrulyEmpty(self):
 

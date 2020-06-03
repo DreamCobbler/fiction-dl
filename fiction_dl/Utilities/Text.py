@@ -139,9 +139,9 @@ def GetTitleProper(title: str) -> Optional[str]:
     titleProper = re.sub("\[?\(?Final part\)?\]?\.?", "", titleProper)
     titleProper = re.sub("\[?\(?Final update\)?\]?\.?", "", titleProper)
     titleProper = re.sub("\[?\(?Final\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Chapter (\d+)\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Part (\d+)\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Update (\d+)\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Chapter(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Part(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
+    titleProper = re.sub("\[?\(?Update(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
 
     titleProper = titleProper.strip()
 
