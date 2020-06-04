@@ -111,27 +111,27 @@ class ExtractorAdultFanfiction(Extractor):
         siteURL = GetSiteURL(self.Story.Metadata.URL)
 
         for linkElement in soup.select("div.dropdown-content > a"):
-
-            if not linkElement.has_attr("href"):
-                continue
-
             self._chapterURLs.append(MakeURLAbsolute(linkElement["href"], siteURL))
 
-        # Find the stpry in the author's profile.
+        # Find the story entry in the author's profile.
 
         authorProfileLinkElement = soup.select_one("#contentdata tr > td > b > i > a")
-        if not authorProfileLinkElement or not authorProfileLinkElement.has_attr("href"):
+        if not authorProfileLinkElement:
             logging.error("Author profile link element not found.")
             return False
 
-        authorProfileURL = authorProfileLinkElement["href"]
+        authorProfileBaseURL = authorProfileLinkElement["href"]
         zoneName = urlparse(self.Story.Metadata.URL).hostname.split(".")[0]
 
-        authorProfileURL = f"{authorProfileURL}&view=story&zone={zoneName}"
-
+        authorProfileURL = f"{authorProfileBaseURL}&view=story&zone={zoneName}"
         authorProfileSoup = DownloadSoup(authorProfileURL)
         if not soup:
             logging.error(f'Failed to download page: "{authorProfileURL}".')
+            return False
+
+        authorElement = authorProfileSoup.select_one("div#contentdata > h2")
+        if not authorElement:
+            logging.error("Author element not found.")
             return False
 
         authorProfilePaginationElements = authorProfileSoup.select("div.pagination > ul > li")
@@ -142,15 +142,10 @@ class ExtractorAdultFanfiction(Extractor):
         pageCount = len(authorProfilePaginationElements)
 
         authorProfilePageURLs = [authorProfileURL]
+        for pageIndex in range(2, pageCount + 1):
+            authorProfilePageURLs.append(f"{authorProfileURL}\&page\={pageIndex}")
 
-        if pageCount > 1:
-
-            for pageIndex in range(2, pageCount + 1):
-
-                authorProfilePageURLs.append(f"{authorProfileURL}\&page\={pageIndex}")
-
-        rightAuthorElement = None
-        rightStoryLinkElement = None
+        matchingStoryLinkElement = None
 
         for URL in authorProfilePageURLs:
 
@@ -159,39 +154,28 @@ class ExtractorAdultFanfiction(Extractor):
                 logging.error(f'Failed to download page: "{URL}".')
                 return False
 
-            rightAuthorElement = authorProfileSoup.select_one("div#contentdata > h2")
-            if not rightAuthorElement:
-                logging.error("Author element not found.")
-                return False
-
-            storyLinkElements = authorProfileSoup.select("div.alist > ul > li > a")
-
-            for linkElement in storyLinkElements:
-
-                if not linkElement.has_attr("href"):
-                    continue
+            for linkElement in authorProfileSoup.select("div.alist > ul > li > a"):
 
                 if linkElement["href"].strip() == self.Story.Metadata.URL.strip():
 
-                    rightStoryLinkElement = linkElement.parent
+                    matchingStoryLinkElement = linkElement.parent
                     break
 
-            if rightStoryLinkElement:
+            if matchingStoryLinkElement:
                 break
 
-        if not rightStoryLinkElement:
+        if not matchingStoryLinkElement:
             logging.error("Story description in the author's profile page not found.")
             return False
 
-        rightStoryLinkElement.select_one("a").decompose()
-        storyDescriptionContent = rightStoryLinkElement.get_text().strip()
+        matchingStoryLinkElement.select_one("a").decompose()
+        storyDescriptionContent = matchingStoryLinkElement.get_text().strip()
 
         locatedTextPosition = storyDescriptionContent.find("Located : ")
         if -1 == locatedTextPosition:
             logging.error("Story description doesn't conform to expected format.")
             return False
 
-        author = rightAuthorElement.get_text().strip()
         summary = storyDescriptionContent[:locatedTextPosition].strip()
 
         publishedMatch = re.search("Posted \: (\d\d\d\d\-\d\d\-\d\d)", storyDescriptionContent)
@@ -207,7 +191,7 @@ class ExtractorAdultFanfiction(Extractor):
         # Set the metadata.
 
         self.Story.Metadata.Title = soup.select_one("h2 > a").get_text().strip()
-        self.Story.Metadata.Author = author
+        self.Story.Metadata.Author = authorElement.get_text().strip()
 
         self.Story.Metadata.DatePublished = publishedMatch.group(1).strip()
         self.Story.Metadata.DateUpdated = updatedMatch.group(1).strip()
