@@ -310,13 +310,19 @@ class FormatterODT(Formatter):
 
             elif "a" == tag.name:
 
-                tag.name = "text:a"
-                tag["xlink:type"] = "simple"
-                tag["xlink:href"] = tag["href"]
-                tag["text:style-name"] = "Internet_20_link"
-                tag["text:visited-style-name"] = "Visited_20_Internet_20_Link"
+                if tag.has_attr("href"):
 
-                del tag["href"]
+                    tag.name = "text:a"
+                    tag["xlink:type"] = "simple"
+                    tag["xlink:href"] = tag["href"]
+                    tag["text:style-name"] = "Internet_20_link"
+                    tag["text:visited-style-name"] = "Visited_20_Internet_20_Link"
+
+                    del tag["href"]
+
+                else:
+
+                    tag.replaceWith("")
 
             elif ("img" == tag.name):
 
