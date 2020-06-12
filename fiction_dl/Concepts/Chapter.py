@@ -28,6 +28,7 @@
 
 # Standard packages.
 
+import re
 from typing import Optional
 
 # Non-standard packages.
@@ -73,7 +74,18 @@ class Chapter:
         ##
 
         if self.Title:
+
+            self.Title = re.sub(
+                "\[?\(?Chapter \d+\:?\)?\]?\.?",
+                "",
+                self.Title,
+                flags = re.IGNORECASE
+            )
+
             self.Title = titlecase(self.Title)
+
+            if not self.Title:
+                self.Title = None
 
     def __bool__(self) -> bool:
 
