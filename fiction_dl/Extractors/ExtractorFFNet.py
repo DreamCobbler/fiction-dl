@@ -30,7 +30,7 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
-from fiction_dl.Utilities.General import Stringify
+from fiction_dl.Utilities.General import GetCurrentDate, Stringify
 from fiction_dl.Utilities.HTML import StripHTML
 from fiction_dl.Utilities.Web import DownloadSoup, GetSiteURL
 
@@ -226,16 +226,22 @@ class ExtractorFFNet(Extractor):
         if not date:
             return None
 
-        # Dates on FF.net come in two formats: "m/d/yyyy" and "m/d".
-        # We want to convert the shorter format to the longer one.
+        try:
 
-        longDatePattern = re.compile("^\d+/\d+/\d+$")
+            # Dates on FF.net come in two formats: "m/d/yyyy" and "m/d".
+            # We want to convert the shorter format to the longer one.
 
-        if not longDatePattern.match(date):
-            date += f"/{datetime.now().year}"
+            longDatePattern = re.compile("^\d+/\d+/\d+$")
 
-        # And then the longer format to the standard format.
+            if not longDatePattern.match(date):
+                date += f"/{datetime.now().year}"
 
-        date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
+            # And then the longer format to the standard format.
 
-        return date
+            date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+            return date
+
+        except ValueError:
+
+            return GetCurrentDate()
