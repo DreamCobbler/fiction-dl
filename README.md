@@ -1,6 +1,4 @@
-# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.3.0 alpha*)
-
-**(Current stable release is 1.2.0 - you can find it in the [Releases tab](https://github.com/DreamCobbler/fiction-dl/releases) on GitHub.)**
+# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.3.0*)
 
 ![Screenshot](/Screenshot.png?raw=true)
 
