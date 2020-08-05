@@ -102,7 +102,7 @@ class Metadata:
 
         return metadata
 
-    def Process(self, summaryLength: Optional[int] = 500) -> None:
+    def Process(self, summaryLength: Optional[int] = 250) -> None:
 
         ##
         #

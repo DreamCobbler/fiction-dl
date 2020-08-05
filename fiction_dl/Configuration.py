@@ -69,3 +69,6 @@ PostChapterSleepTime = 0.5
 # About repeated connection attempts.
 MaximumConnectionAttemptCount = 10
 ConnectionAttemptWait = 2.0
+
+# The text that's supposed to be the in the beginning of a text source file.
+TextSourceFileMagicText = "LOCAL TEXT STORY"

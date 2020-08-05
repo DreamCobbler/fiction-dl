@@ -112,16 +112,15 @@ class ExtractorTextFile(Extractor):
 
             return False
 
-        if len(self._fileContent) < 7:
+        if len(self._fileContent) < 6:
             return False
 
-        self.Story.Metadata.Title = self._fileContent[1].strip()
-        self.Story.Metadata.Author = self._fileContent[2].strip()
+        self.Story.Metadata.URL = self._fileContent[1].strip()
 
-        self.Story.Metadata.Summary = self._fileContent[3].strip()
+        self.Story.Metadata.Title = self._fileContent[2].strip()
+        self.Story.Metadata.Author = self._fileContent[3].strip()
 
-        self.Story.Metadata.DatePublished = self._fileContent[4].strip()
-        self.Story.Metadata.DateUpdated = self._fileContent[5].strip()
+        self.Story.Metadata.Summary = self._fileContent[4].strip()
 
         self.Story.Metadata.ChapterCount = 1
         self.Story.Metadata.WordCount = 0
@@ -143,6 +142,6 @@ class ExtractorTextFile(Extractor):
         if 1 != index:
             return None
 
-        chapterContent = "".join(self._fileContent[6:])
+        chapterContent = "".join(self._fileContent[4:])
 
         return Chapter(content = chapterContent)

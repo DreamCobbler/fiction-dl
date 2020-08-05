@@ -117,7 +117,7 @@ class Application:
 
                 lines = self._ReadURLsFromLines(file.readlines())
 
-                if (len(lines) > 0) and lines[0].startswith("STORY"):
+                if (len(lines) > 0) and lines[0].startswith(Configuration.TextSourceFileMagicText):
 
                     isTextFileSource = True
 

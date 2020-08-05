@@ -66,8 +66,11 @@ class Story:
         ##
 
         self.Metadata = Metadata()
+
         self.Metadata.URL = URL
-        self.Metadata.DateExtracted = GetCurrentDate()
+        self.Metadata.DatePublished = GetCurrentDate()
+        self.Metadata.DateUpdated = self.Metadata.DatePublished
+        self.Metadata.DateExtracted = self.Metadata.DatePublished
 
         self.Chapters = []
         self.Images = []
