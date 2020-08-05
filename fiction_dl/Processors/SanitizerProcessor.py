@@ -95,7 +95,7 @@ class SanitizerProcessor(Processor):
 
         for tag in soup.find_all(lambda x: len(x.attrs) > 0):
 
-            for name, value in tag.attrs.items():
+            for name, value in list(tag.attrs.items()):
 
                 if ("a" == tag.name) and ("href" == name):
 
