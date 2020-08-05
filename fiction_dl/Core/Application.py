@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Core.Cache import Cache
+from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
 from fiction_dl.Formatters.FormatterEPUB import FormatterEPUB
 from fiction_dl.Formatters.FormatterHTML import FormatterHTML
 from fiction_dl.Formatters.FormatterODT import FormatterODT
@@ -105,6 +106,7 @@ class Application:
         print()
         print("> Creating the list of input URLs...")
 
+        isTextFileSource = False
         URLs = []
 
         try:
@@ -112,7 +114,16 @@ class Application:
             # Assume that the Input argument is a path to a text file.
 
             with open(self._arguments.Input, "r", encoding = "utf-8") as file:
-                URLs = self._ReadURLsFromLines(file.readlines())
+
+                lines = self._ReadURLsFromLines(file.readlines())
+
+                if (len(lines) > 0) and lines[0].startswith("STORY"):
+
+                    isTextFileSource = True
+
+                else:
+
+                    URLs = lines
 
         except OSError:
 
@@ -122,39 +133,50 @@ class Application:
 
         print(f"# The list contains {len(URLs)} item(s).")
 
-        # Process each URL.
+        # Process the stories.
 
-        skippedURLs = []
+        if not isTextFileSource:
 
-        for index, URL in enumerate(URLs, start = 1):
+            # Process each URL.
+
+            skippedURLs = []
+
+            for index, URL in enumerate(URLs, start = 1):
+
+                print()
+                print(79 * "-")
+
+                print()
+                print(f'# {index}/{len(URLs)}: "{URL}".')
+
+                if not self._ProcessURL(URL):
+                    skippedURLs.append(URL)
 
             print()
             print(79 * "-")
 
+            # Print information about skipped stories.
+
+            if skippedURLs:
+
+                print()
+
+                for URL in skippedURLs:
+                    print(f'! Failed to download a story from URL: "{URL}".')
+
+                WriteTextFile(Configuration.SkippedURLsFilePath, "\n".join(skippedURLs))
+
+            # Print some final information.
+
             print()
-            print(f'# {index}/{len(URLs)}: "{URL}".')
+            print(f"# Successfully retrieved {len(URLs) - len(skippedURLs)}/{len(URLs)} stories.")
 
-            if not self._ProcessURL(URL):
-                skippedURLs.append(URL)
+        else:
 
-        print()
-        print(79 * "-")
+            extractor = ExtractorTextFile()
+            extractor.Initialize(self._arguments.Input)
 
-        # Print information about skipped stories.
-
-        if skippedURLs:
-
-            print()
-
-            for URL in skippedURLs:
-                print(f'! Failed to download a story from URL: "{URL}".')
-
-            WriteTextFile(Configuration.SkippedURLsFilePath, "\n".join(skippedURLs))
-
-        # Print some final information.
-
-        print()
-        print(f"# Successfully retrieved {len(URLs) - len(skippedURLs)}/{len(URLs)} stories.")
+            self._ProcessStoryUsingExtractor(extractor)
 
         # Clear the cache.
 
@@ -222,7 +244,11 @@ class Application:
             else:
                 print("# Authenticated successfully.")
 
-        # Scan the story.
+        # Process the story.
+
+        return self._ProcessStoryUsingExtractor(extractor)
+
+    def _ProcessStoryUsingExtractor(self, extractor) -> bool:
 
         print()
         print("> Scanning the story...")
