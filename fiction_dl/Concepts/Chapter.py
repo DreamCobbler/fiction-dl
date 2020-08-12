@@ -76,7 +76,7 @@ class Chapter:
         if self.Title:
 
             self.Title = re.sub(
-                "\[?\(?Chapter \d+\:?\)?\]?\.?",
+                "\[?\(?Chapter \d+\:?\)?\]?\s*\.?-?\s*",
                 "",
                 self.Title,
                 flags = re.IGNORECASE
