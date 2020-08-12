@@ -60,7 +60,13 @@ You can install **fiction-dl** using *pip*:
 
     pip install --upgrade fiction-dl
 
-(If the package's already installed, this command will also update it.)
+If the package's already installed, this command will also update it.
+
+If you're running a Debian-derived Linux distribution, you might also want to install the following packages:
+
+    apt-get install libgl1-mesa-glx libglib2.0-0
+
+(**fiction-dl** uses OpenCV for processing downloaded images, which requires them to be installed.)
 
 ## Usage
 
