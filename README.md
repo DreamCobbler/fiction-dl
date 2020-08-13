@@ -82,6 +82,20 @@ In order to download multiple stories, create a text file and place the URLs in 
 
     fiction-dl -h
 
+## Using the Text File Extractor
+
+Create a text file meant to contain the story. In its first lines type:
+
+    LOCAL TEXT STORY
+    *URL*
+    *The Title of the Story*
+    *The Author*
+    *The One-Line Summary*
+
+Follow it by the story's content, wrapped in HTML tags. Then call:
+
+    fiction-dl FilePath.txt
+
 ## License
 
 **GNU GPL 3**. The text of the license is provided in the *LICENSE* file.
