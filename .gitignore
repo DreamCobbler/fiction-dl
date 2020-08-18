@@ -21,6 +21,8 @@ sdist/
 var/
 wheels/
 share/python-wheels/
+Tests/fiction-dl Downloads/
+Tests/fiction-dl Debug Data/
 *.egg-info/
 .installed.cfg
 *.egg
