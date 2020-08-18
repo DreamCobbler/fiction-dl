@@ -70,7 +70,6 @@ setup(
         "opencv-python",
         "numpy",
 
-        "fitz",
         "PyMuPDF",
 
         "markdown",
