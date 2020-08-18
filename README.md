@@ -35,6 +35,10 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 - [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php).
 - [Literotica](https://www.literotica.com/).
 
+##### Other
+
+- *Raw text files*. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
+
 ### Formatting stories
 
 Downloaded stories can be saved in following file formats:
