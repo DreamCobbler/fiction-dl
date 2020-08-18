@@ -93,7 +93,7 @@ class ExtractorXenForo(Extractor):
         ##
 
         username = ReadString("Your username")
-        password = getpass(prompt = "Your password")
+        password = getpass(prompt = "Your password: ")
 
         data = {
             "login": username,
