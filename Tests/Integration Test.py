@@ -57,11 +57,11 @@ from pathlib import Path
 logging.basicConfig(level = logging.INFO)
 
 #
-# The first time, with images.
+# Run the test.
 #
 
 arguments = Namespace(
-    Authenticate = False,
+    Authenticate = True,
     ClearCache = True,
     Verbose = True,
     Force = True,
@@ -72,30 +72,6 @@ arguments = Namespace(
     Password = "",
     LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
     Output = OutputDirectoryPath / "Images",
-    Input = "Integration Test Dataset.txt"
-)
-
-Application(
-    arguments = arguments,
-    cacheDirectoryPath = CacheDirectoryPath
-).Launch()
-
-#
-# The second time, without images.
-#
-
-arguments = Namespace(
-    Authenticate = False,
-    ClearCache = False,
-    Verbose = True,
-    Force = True,
-    Debug = True,
-    Images = False,
-    PersistentCache = True,
-    Username = "",
-    Password = "",
-    LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
-    Output = OutputDirectoryPath / "No Images",
     Input = "Integration Test Dataset.txt"
 )
 
