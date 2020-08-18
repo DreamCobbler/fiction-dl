@@ -35,7 +35,7 @@ from typing import Any, List, Optional, Tuple
 
 # Non-standard packages.
 
-import fitz # Requires also PyMuPDF.
+import fitz # Requires PyMuPDF.
 
 #
 #
