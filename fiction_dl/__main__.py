@@ -109,14 +109,14 @@ def ReadCommandLineArguments() -> Namespace:
         "-a",
         dest = "Authenticate",
         action = "store_true",
-        help = "authenticate to supported sites in interactive mode"
+        help = "authenticates to supported sites using interactive mode"
     )
 
     argumentParser.add_argument(
         "-c",
         dest = "ClearCache",
         action = "store_true",
-        help = "clear cache beforehand"
+        help = "clears cache before launching the application"
     )
 
     argumentParser.add_argument(
@@ -130,14 +130,14 @@ def ReadCommandLineArguments() -> Namespace:
         "-f",
         dest = "Force",
         action = "store_true",
-        help = "force (overwrite output files)"
+        help = "overwrites output files (if they already exist)"
     )
 
     argumentParser.add_argument(
         "-d",
         dest = "Debug",
         action = "store_true",
-        help = "enables debug mode (stores processes chapter content)"
+        help = "enables debug mode (stores processed chapter content)"
     )
 
     argumentParser.add_argument(
@@ -151,7 +151,7 @@ def ReadCommandLineArguments() -> Namespace:
         "-persistent-cache",
         dest = "PersistentCache",
         action = "store_true",
-        help = "doesn't delete cache after the application finishes"
+        help = "preserves the cache after the application quits"
     )
 
     argumentParser.add_argument(
