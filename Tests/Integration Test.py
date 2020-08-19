@@ -71,7 +71,7 @@ arguments = Namespace(
     Username = "",
     Password = "",
     LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
-    Output = OutputDirectoryPath / "Images",
+    Output = OutputDirectoryPath,
     Input = "Integration Test Dataset.txt"
 )
 
