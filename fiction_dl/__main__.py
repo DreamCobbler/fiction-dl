@@ -101,8 +101,18 @@ def ReadCommandLineArguments() -> Namespace:
     #
     ##
 
+    epilogMessage =                                                                      \
+        "You can use the application to auto-format a story saved in a text file.\r\n"   \
+        "\r\n"                                                                           \
+        "Put the text \"LOCAL TEXT STORY\" in the very first line of the file, then\r\n" \
+        "the story's original URL in the next one, then the title in the third one,\r\n" \
+        "then the author's name in the fourth, the one line summary in the fifth.\r\n"   \
+        "\r\n"                                                                           \
+        "Then put the HTML-formatted story content in the line after that."
+
     argumentParser = ArgumentParser(
-        description = ApplicationShortDescription
+        description = ApplicationShortDescription,
+        epilog = epilogMessage
     )
 
     argumentParser.add_argument(
