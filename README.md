@@ -56,7 +56,16 @@ The application can download images found in story content and embed them in out
 
 ### Typographic corrections
 
-**fiction-dl** can apply basic typographic corrections to the content of downloaded stories.
+**fiction-dl** can apply basic typographic corrections to the content of downloaded stories. For example:
+
+| Source Text                  | Corrected Text           |
+|------------------------------|--------------------------|
+| Lorem ipsum... dolor.        | Lorem ipsum… dolor.      |
+| Lorem ipsum...dolor.         | Lorem ipsum… dolor.      |
+| Lorem ipsum...... dolor.     | Lorem ipsum… dolor.      |
+| Lorem ipsum , dolor.         | Lorem ipsum, dolor.      |
+| Lorem ipsum????? Dolor.      | Lorem ipsum? Dolor.      |
+| Lorem ipsum - dolor.         | Lorem ipsum — dolor.     |
 
 ## Installation
 
