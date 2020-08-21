@@ -72,3 +72,6 @@ ConnectionAttemptWait = 2.0
 
 # The text that's supposed to be the in the beginning of a text source file.
 TextSourceFileMagicText = "LOCAL TEXT STORY"
+
+# The text that's supposed to serve as a chapter break in a text source file.
+TextSourceFileChapterBreak = "CHAPTER BREAK LINE"

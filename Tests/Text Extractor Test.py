@@ -71,8 +71,8 @@ arguments = Namespace(
     Username = "",
     Password = "",
     LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
-    Output = OutputDirectoryPath / "Images",
-    Input = "Text Source Example.txt"
+    Output = OutputDirectoryPath,
+    Input = "Text Extractor Example.txt"
 )
 
 Application(

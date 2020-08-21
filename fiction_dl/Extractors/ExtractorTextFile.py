@@ -31,9 +31,11 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Concepts.Story import Story
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
+from itertools import groupby
 import requests
 from typing import List, Optional
 
@@ -59,6 +61,7 @@ class ExtractorTextFile(Extractor):
 
         self._filePath = None
         self._fileContent = None
+        self._chapters = None
 
     def GetSupportedHostnames(self) -> List[str]:
 
@@ -115,15 +118,24 @@ class ExtractorTextFile(Extractor):
         if len(self._fileContent) < 6:
             return False
 
-        self.Story.Metadata.URL = self._fileContent[1].strip()
+        chapterCount = 1
+        for line in self._fileContent:
+            if line.startswith(Configuration.TextSourceFileChapterBreak):
+                chapterCount += 1
 
+        self.Story.Metadata.URL = self._fileContent[1].strip()
         self.Story.Metadata.Title = self._fileContent[2].strip()
         self.Story.Metadata.Author = self._fileContent[3].strip()
-
         self.Story.Metadata.Summary = self._fileContent[4].strip()
-
-        self.Story.Metadata.ChapterCount = 1
+        self.Story.Metadata.ChapterCount = chapterCount
         self.Story.Metadata.WordCount = 0
+
+        chapterGroups = groupby(
+            self._fileContent[5:],
+            lambda x: x.startswith(Configuration.TextSourceFileChapterBreak)
+        )
+
+        self._chapters = [list(group) for x, group in chapterGroups if not x]
 
         return True
 
@@ -139,9 +151,7 @@ class ExtractorTextFile(Extractor):
         #
         ##
 
-        if 1 != index:
+        if (not self._chapters) or (index < 1):
             return None
 
-        chapterContent = "".join(self._fileContent[4:])
-
-        return Chapter(content = chapterContent)
+        return Chapter(content = "".join(self._chapters[index - 1]))
