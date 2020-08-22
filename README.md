@@ -77,9 +77,9 @@ If the package's already installed, this command will also update it.
 
 If you're running a Debian-derived Linux distribution, you might also want to install the following packages:
 
-    apt-get install libgl1-mesa-glx libglib2.0-0
+    apt-get install libgl1-mesa-glx libglib2.0-0 libmupdf-dev
 
-(**fiction-dl** uses OpenCV for processing downloaded images, which requires them to be installed.)
+(**fiction-dl** uses OpenCV for processing downloaded images, which requires them to be installed. PyMuPDF requires libmupdf-dev when it's being build from source.)
 
 ## Usage
 
