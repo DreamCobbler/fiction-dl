@@ -95,7 +95,7 @@ In order to download multiple stories, create a text file and place the URLs in 
 
     fiction-dl -h
 
-## Using the Text File Extractor
+### Using the Text File Extractor
 
 Create a text file meant to contain the story. In its first lines type:
 
@@ -108,6 +108,8 @@ Create a text file meant to contain the story. In its first lines type:
 Follow it by the story's content, wrapped in HTML tags. Then call:
 
     fiction-dl FilePath.txt
+
+You can insert chapter-breaks in the story by typing "CHAPTER BREAK LINE" in an empty line.
 
 ## License
 
