@@ -20,7 +20,7 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 | Category         | Site                                                              | Authentication       | Channels       |
 |------------------|-------------------------------------------------------------------|----------------------|----------------|
 | fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                | ✗ no                 | ✓ **yes**      |
-| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                     | ✗ no                 | ✗ no           |
+| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                     | ✗ no                 | ✓ **yes**      |
 | fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)              | ✓ **yes**            | ✗ no           |
 | fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)  | ✓ **yes**            | ✗ no           |
 | fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)   | ✓ **yes**            | ✗ no           |

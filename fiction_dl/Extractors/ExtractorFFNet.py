@@ -32,7 +32,7 @@ from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.General import GetCurrentDate, Stringify
 from fiction_dl.Utilities.HTML import StripHTML
-from fiction_dl.Utilities.Web import DownloadSoup, GetSiteURL
+from fiction_dl.Utilities.Web import DownloadSoup, GetHostname, GetSiteURL
 
 # Standard packages.
 
@@ -76,6 +76,53 @@ class ExtractorFFNet(Extractor):
             "fanfiction.net",
             "fictionpress.com"
         ]
+
+    def ScanChannel(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
+            return None
+
+        userIDMatch = re.search("/u/(\d+)", URL)
+        if not userIDMatch:
+            return None
+
+        userID = userIDMatch.group(1)
+
+        siteURL = GetSiteURL(URL)
+        normalizedURL = f"{siteURL}/u/{userID}/"
+
+        pageSoup = DownloadSoup(normalizedURL)
+        if not pageSoup:
+            return None
+
+        storyIDs = []
+
+        storyElements = pageSoup.find_all("div", {"class": "mystories"})
+        for element in storyElements:
+
+            linkElement = element.find("a", {"class": "stitle"})
+            if (not linkElement) or (not linkElement.has_attr("href")):
+                logging.error("Failed to retrieve story URL.")
+                continue
+
+            storyIDMatch = re.search("/s/(\d+)", linkElement["href"])
+            if not storyIDMatch:
+                logging.error("Failed to retrieve story ID from its URL.")
+                continue
+
+            storyID = storyIDMatch.group(1)
+            storyIDs.append(storyID)
+
+        storyURLs = [f"{siteURL}/s/{ID}/" for ID in storyIDs]
+        return storyURLs
 
     def ScanStory(self) -> bool:
 

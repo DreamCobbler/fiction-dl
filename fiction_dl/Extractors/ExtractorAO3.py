@@ -86,6 +86,7 @@ class ExtractorAO3(Extractor):
 
         if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
             return None
+
         usernameMatch = re.search("/users/([a-zA-Z0-9_]+)", URL)
         if not usernameMatch:
             return None
