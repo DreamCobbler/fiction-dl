@@ -72,7 +72,7 @@ arguments = Namespace(
     Password = "",
     LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
     Output = OutputDirectoryPath,
-    Input = "Integration Test Dataset.txt"
+    Input = "Integration Test Dataset 1.txt"
 )
 
 Application(

@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Core.Cache import Cache
+from fiction_dl.Core.InputData import InputData
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
 from fiction_dl.Formatters.FormatterEPUB import FormatterEPUB
 from fiction_dl.Formatters.FormatterHTML import FormatterHTML
@@ -96,106 +97,51 @@ class Application:
             logging.info("Deleting the cache...")
             self._cache.Clear()
 
-        # Prepare the list of input arguments.
+        # Process the input arguments.
 
         print()
-        print("> Creating the list of input arguments...")
+        print("> Processing input arguments...")
 
-        isTextFileSource = False
-        inputArguments = []
+        inputData = InputData(self._arguments.Input)
+        inputData.ExpandRecursively()
 
-        # Scan the original input argument.
+        URLs = inputData.Access()
 
-        try:
-
-            with open(self._arguments.Input, "r", encoding = "utf-8") as file:
-
-                lines = self._ReadURLsFromLines(file.readlines())
-
-                if (len(lines) > 0) and lines[0].startswith(Configuration.TextSourceFileMagicText):
-
-                    isTextFileSource = True
-
-                else:
-
-                    inputArguments = lines
-
-        except OSError:
-
-            inputArguments = [self._arguments.Input]
-
-        print(f"# The list contains {len(inputArguments)} argument(s).")
-
-        # Scan the arguments.
-
-        print()
-        print("> Scanning the arguments...")
-
-        URLs = []
-
-        for argument in inputArguments:
-
-            extractor = CreateExtractor(argument)
-            if not extractor:
-                logging.error(f"! \"{argument}\": No matching extractor found.")
-                continue
-
-            localStoryURLs = extractor.ScanChannel(argument)
-
-            if not localStoryURLs:
-
-                URLs.append(argument)
-
-            else:
-
-                URLs.extend(localStoryURLs)
-
-        print(f"# The list now contains {len(URLs)} item(s).")
+        print(f"# The list contains {len(URLs)} item(s).")
 
         # Process the stories.
 
-        if not isTextFileSource:
+        skippedURLs = []
 
-            # Process each URL.
-
-            skippedURLs = []
-
-            for index, URL in enumerate(URLs, start = 1):
-
-                print()
-                print(Configuration.LineBreak)
-
-                print()
-                print(f'# {index}/{len(URLs)}: "{URL}".')
-
-                if not self._ProcessURL(URL):
-                    skippedURLs.append(URL)
+        for index, URL in enumerate(URLs, start = 1):
 
             print()
             print(Configuration.LineBreak)
 
-            # Print information about skipped stories.
+            print()
+            print(f'# {index}/{len(URLs)}: "{URL}".')
 
-            if skippedURLs:
+            if not self._ProcessURL(URL):
+                skippedURLs.append(URL)
 
-                print()
+        print()
+        print(Configuration.LineBreak)
 
-                for URL in skippedURLs:
-                    print(f'! Failed to download a story from URL: "{URL}".')
+        # Print information about skipped stories.
 
-                WriteTextFile(Configuration.SkippedURLsFilePath, "\n".join(skippedURLs))
-
-            # Print some final information.
+        if skippedURLs:
 
             print()
-            print(f"# Successfully retrieved {len(URLs) - len(skippedURLs)}/{len(URLs)} stories.")
 
-        else:
+            for URL in skippedURLs:
+                print(f'! Failed to download a story from URL: "{URL}".')
 
-            extractor = ExtractorTextFile()
-            extractor.Initialize(self._arguments.Input)
+            WriteTextFile(Configuration.SkippedURLsFilePath, "\n".join(skippedURLs))
 
-            self._ProcessStoryUsingExtractor(extractor)
+        # Print some final information.
+
+        print()
+        print(f"# Successfully retrieved {len(URLs) - len(skippedURLs)}/{len(URLs)} stories.")
 
         # Clear the cache.
 

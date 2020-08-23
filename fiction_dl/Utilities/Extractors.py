@@ -38,6 +38,7 @@ from fiction_dl.Extractors.ExtractorLiterotica import ExtractorLiterotica
 from fiction_dl.Extractors.ExtractorReddit import ExtractorReddit
 from fiction_dl.Extractors.ExtractorSpaceBattles import ExtractorSpaceBattles
 from fiction_dl.Extractors.ExtractorSufficientVelocity import ExtractorSufficientVelocity
+from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
 
 # Standard packages.
 
@@ -72,6 +73,7 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
         ExtractorReddit(),
         ExtractorSpaceBattles(),
         ExtractorSufficientVelocity(),
+        ExtractorTextFile(),
     ]
 
     validExtractors = [x for x in availableExtractors if x.Initialize(URL)]

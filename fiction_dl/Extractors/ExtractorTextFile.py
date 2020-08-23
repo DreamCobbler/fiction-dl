@@ -87,10 +87,51 @@ class ExtractorTextFile(Extractor):
         #
         ##
 
+        try:
+
+            with open(filePath, "r", encoding = "utf-8") as file:
+
+                lines = file.readlines()
+
+                if not lines:
+
+                    return False
+
+        except OSError:
+
+            return False
+
         self._filePath = filePath
         self.Story = Story()
 
         return True
+
+    def ScanChannel(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        try:
+
+            with open(URL, "r", encoding = "utf-8") as file:
+
+                lines = file.readlines()
+
+                if lines and lines[0].startswith(Configuration.TextSourceFileMagicText):
+                    return None
+
+                return self._ReadURLsFromLines(lines)
+
+        except OSError:
+
+            return None
+
+        return None
 
     def ScanStory(self) -> bool:
 
@@ -155,3 +196,25 @@ class ExtractorTextFile(Extractor):
             return None
 
         return Chapter(content = "".join(self._chapters[index - 1]))
+
+    @staticmethod
+    def _ReadURLsFromLines(lines: List[str]) -> List[str]:
+
+        ##
+        #
+        # Creates a list of input URLs from lines of a text file.
+        #
+        # @param lines List of strings being read lines of a text file.
+        #
+        # @return List of strings: URLs of the stories to be downloaded.
+        #
+        ##
+
+        if not lines:
+            return lines
+
+        URLs = [x.strip() for x in lines]
+        URLs = [x for x in URLs if len(x)] # Ignore empty lines.
+        URLs = [x for x in URLs if not x.startswith("#")] # Ignore comments.
+
+        return URLs

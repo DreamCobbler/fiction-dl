@@ -1,0 +1,15 @@
+##
+#
+# Local text file
+#
+##
+
+Text Extractor Example.txt
+
+##
+#
+# Local text file with a list of URLs
+#
+##
+
+Integration Test Dataset 2.txt
