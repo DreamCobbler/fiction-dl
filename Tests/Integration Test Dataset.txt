@@ -4,9 +4,13 @@
 #
 ##
 
-# A single-chapter work.
+# A channel with one page of works.
 
-https://archiveofourown.org/works/24169747
+https://archiveofourown.org/users/Perfidious_Albion/
+
+# A channel with multiple pages of works.
+
+https://archiveofourown.org/users/MayorHaggar/
 
 # A longer work, with titled chapters and a lot of images.
 
