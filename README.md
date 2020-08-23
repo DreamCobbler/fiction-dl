@@ -15,25 +15,27 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 
 ### Downloading stories
 
+**fiction-dl** can download stories from a multitude of sites - it some cases it also supports downloading all stories published by a specific user (downloading stories from a *channel*).
+
 **fiction-dl** can download stories from a multitude of sites:
 
-| Category         | Site                                                              | Authentication       | Channels       |
-|------------------|-------------------------------------------------------------------|----------------------|----------------|
-| fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                | ✗ no                 | ✓ **yes**      |
-| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                     | ✗ no                 | ✓ **yes**      |
-| fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)              | ✓ **yes**            | ✗ no           |
-| fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)  | ✓ **yes**            | ✗ no           |
-| fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)   | ✓ **yes**            | ✗ no           |
-| original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                 | ✗ no           |
-| original fiction | [Reddit](https://www.reddit.com/)                                 | ✓ **yes**            | ✗ no           |
-| erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                 | ✗ no           |
-| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                 | ✗ no           |
+| Category         | Site                                                              | Authentication support | Channel support |
+|------------------|-------------------------------------------------------------------|------------------------|-----------------|
+| fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                | ✗ no                   | ✓ **yes**       |
+| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                     | ✗ no                   | ✓ **yes**       |
+| fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)              | ✓ **yes**              | ✗ no            |
+| fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)  | ✓ **yes**              | ✗ no            |
+| fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)   | ✓ **yes**              | ✗ no            |
+| original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                   | ✗ no            |
+| original fiction | [Reddit](https://www.reddit.com/)                                 | ✓ **yes**              | ✗ no            |
+| erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                   | ✗ no            |
+| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✗ no            |
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
 
 ### Formatting stories
 
-Downloaded stories can be saved in following file formats:
+Downloaded stories are auto-formatted and saved in following file formats:
 
 - [HTML](https://en.wikipedia.org/wiki/HTML) (.html).
 - [EPUB](https://en.wikipedia.org/wiki/EPUB) (.epub).
