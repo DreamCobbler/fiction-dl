@@ -38,7 +38,7 @@ from fiction_dl.Formatters.FormatterODT import FormatterODT
 from fiction_dl.Formatters.FormatterPDF import FormatterPDF
 from fiction_dl.Processors.SanitizerProcessor import SanitizerProcessor
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
-from fiction_dl.Utilities.Extractors import CreateExtractor
+from fiction_dl.Utilities.Extractors import CreateExtractor, ScanURL
 from fiction_dl.Utilities.Filesystem import SanitizeFileName, WriteTextFile
 from fiction_dl.Utilities.General import RemoveDuplicates, RenderPageToBytes, Stringify
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
@@ -109,6 +109,8 @@ class Application:
         isTextFileSource = False
         URLs = []
 
+        # Scan the URL.
+
         try:
 
             # Assume that the Input argument is a path to a text file.
@@ -132,6 +134,28 @@ class Application:
             URLs = [self._arguments.Input]
 
         print(f"# The list contains {len(URLs)} item(s).")
+
+        # Scan the URLs.
+
+        print()
+        print("> Scanning the URLs...")
+
+        newURLs = []
+
+        for URL in URLs:
+
+            localStoryURLs = ScanURL(URL)
+
+            if not localStoryURLs:
+
+                newURLs.append(URL)
+
+            else:
+
+                newURLs.extend(localStoryURLs)
+
+        URLs = newURLs
+        print(f"# The list now contains {len(URLs)} item(s).")
 
         # Process the stories.
 
