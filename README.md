@@ -1,4 +1,4 @@
-# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.4.0*)
+# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.5.0 alpha*)
 
 ![Screenshot](/Screenshot.png?raw=true)
 
