@@ -122,13 +122,13 @@ class Application:
 
         for index, URL in enumerate(URLs, start = 1):
 
-            self._interface.Text(Configuration.LineBreak, section = True)
-            self._interface.Comment(f'{index}/{len(URLs)}: "{URL}".', section = True)
+            self._interface.LineBreak()
+            self._interface.Text(f'{index}/{len(URLs)}: "{URL}".', section = True)
 
             if not self._ProcessURL(URL):
                 skippedURLs.append(URL)
 
-        self._interface.Text(Configuration.LineBreak, section = True)
+        self._interface.LineBreak()
 
         # Print information about skipped stories.
 

@@ -26,6 +26,10 @@
 #
 #
 
+# Application.
+
+import fiction_dl.Configuration as Configuration
+
 # Standard packages.
 
 from typing import Optional
@@ -146,3 +150,17 @@ class Interface:
         ##
 
         print()
+
+    def LineBreak(self) -> None:
+
+        ##
+        #
+        # Prints a line break.
+        #
+        ##
+
+        self.Text(
+            Configuration.LineBreak,
+            section = True,
+            color = "cyan"
+        )
