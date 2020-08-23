@@ -15,29 +15,21 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 
 ### Downloading stories
 
-**fiction-dl** is capable of downloading stories from following sites:
+**fiction-dl** can download stories from a multitude of sites:
 
-##### Fanfiction
+| Category         | Site                                                              | Authentication       | Channels       |
+|------------------|-------------------------------------------------------------------|----------------------|----------------|
+| fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                | ✗ no                 | ✓ **yes**      |
+| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                     | ✗ no                 | ✗ no           |
+| fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)              | ✓ **yes**            | ✗ no           |
+| fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)  | ✓ **yes**            | ✗ no           |
+| fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)   | ✓ **yes**            | ✗ no           |
+| original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                 | ✗ no           |
+| original fiction | [Reddit](https://www.reddit.com/)                                 | ✓ **yes**            | ✗ no           |
+| erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                 | ✗ no           |
+| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                 | ✗ no           |
 
-- [Archive of Our Own](https://archiveofourown.org/).
-- [FanFiction.net](https://www.fanfiction.net/).
-- [SpaceBattles.com](https://forums.spacebattles.com/). (Supports user authentication.)
-- [SufficientVelocity.com](https://forums.sufficientvelocity.com/). (Supports user authentication.)
-- [AlternateHistory.com](https://www.alternatehistory.com/forum/). (Supports user authentication.)
-
-##### Original Fiction
-
-- [Fiction Press](https://www.fictionpress.com/).
-- [Reddit](https://www.reddit.com/). (Supports user authentication.)
-
-##### Erotica
-
-- [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php).
-- [Literotica](https://www.literotica.com/).
-
-##### Other
-
-- *Raw text files*. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
+It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
 
 ### Formatting stories
 
