@@ -124,7 +124,19 @@ class Extractor:
 
         return True
 
-    def Scan(self) -> bool:
+    def ScanChannel(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        return None
+
+    def ScanStory(self) -> bool:
 
         ##
         #

@@ -77,7 +77,7 @@ class ExtractorFFNet(Extractor):
             "fictionpress.com"
         ]
 
-    def Scan(self) -> bool:
+    def ScanStory(self) -> bool:
 
         ##
         #

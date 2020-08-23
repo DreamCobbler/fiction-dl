@@ -38,7 +38,7 @@ from fiction_dl.Formatters.FormatterODT import FormatterODT
 from fiction_dl.Formatters.FormatterPDF import FormatterPDF
 from fiction_dl.Processors.SanitizerProcessor import SanitizerProcessor
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
-from fiction_dl.Utilities.Extractors import CreateExtractor, ScanURL
+from fiction_dl.Utilities.Extractors import CreateExtractor
 from fiction_dl.Utilities.Filesystem import SanitizeFileName, WriteTextFile
 from fiction_dl.Utilities.General import RemoveDuplicates, RenderPageToBytes, Stringify
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
@@ -88,32 +88,25 @@ class Application:
         #
         ##
 
-        # Welcome the user.
+        # Welcome the user and clear the cache.
 
-        print(
-            f"{Configuration.ApplicationName} {Configuration.ApplicationVersion},"
-            f" by {Configuration.CreatorName} <{Configuration.CreatorContact}>"
-        )
-
-        # Clear the cache (optional).
+        print(Configuration.WelcomingMessage)
 
         if self._arguments.ClearCache:
             logging.info("Deleting the cache...")
             self._cache.Clear()
 
-        # Prepare the list of URLs.
+        # Prepare the list of input arguments.
 
         print()
-        print("> Creating the list of input URLs...")
+        print("> Creating the list of input arguments...")
 
         isTextFileSource = False
-        URLs = []
+        inputArguments = []
 
-        # Scan the URL.
+        # Scan the original input argument.
 
         try:
-
-            # Assume that the Input argument is a path to a text file.
 
             with open(self._arguments.Input, "r", encoding = "utf-8") as file:
 
@@ -125,36 +118,38 @@ class Application:
 
                 else:
 
-                    URLs = lines
+                    inputArguments = lines
 
         except OSError:
 
-            # If it's not a path, then it ought to be a URL.
+            inputArguments = [self._arguments.Input]
 
-            URLs = [self._arguments.Input]
+        print(f"# The list contains {len(inputArguments)} argument(s).")
 
-        print(f"# The list contains {len(URLs)} item(s).")
-
-        # Scan the URLs.
+        # Scan the arguments.
 
         print()
-        print("> Scanning the URLs...")
+        print("> Scanning the arguments...")
 
-        newURLs = []
+        URLs = []
 
-        for URL in URLs:
+        for argument in inputArguments:
 
-            localStoryURLs = ScanURL(URL)
+            extractor = CreateExtractor(argument)
+            if not extractor:
+                logging.error(f"! \"{argument}\": No matching extractor found.")
+                continue
+
+            localStoryURLs = extractor.ScanChannel(argument)
 
             if not localStoryURLs:
 
-                newURLs.append(URL)
+                URLs.append(argument)
 
             else:
 
-                newURLs.extend(localStoryURLs)
+                URLs.extend(localStoryURLs)
 
-        URLs = newURLs
         print(f"# The list now contains {len(URLs)} item(s).")
 
         # Process the stories.
@@ -168,7 +163,7 @@ class Application:
             for index, URL in enumerate(URLs, start = 1):
 
                 print()
-                print(79 * "-")
+                print(Configuration.LineBreak)
 
                 print()
                 print(f'# {index}/{len(URLs)}: "{URL}".')
@@ -177,7 +172,7 @@ class Application:
                     skippedURLs.append(URL)
 
             print()
-            print(79 * "-")
+            print(Configuration.LineBreak)
 
             # Print information about skipped stories.
 
@@ -277,7 +272,7 @@ class Application:
         print()
         print("> Scanning the story...")
 
-        if not extractor.Scan():
+        if not extractor.ScanStory():
             logging.error("Failed to scan the story.")
             return False
 

@@ -84,7 +84,7 @@ class ExtractorAdultFanfiction(Extractor):
             "adult-fanfiction.org"
         ]
 
-    def Scan(self) -> bool:
+    def ScanStory(self) -> bool:
 
         ##
         #

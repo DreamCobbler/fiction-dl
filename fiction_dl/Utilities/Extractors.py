@@ -39,8 +39,6 @@ from fiction_dl.Extractors.ExtractorReddit import ExtractorReddit
 from fiction_dl.Extractors.ExtractorSpaceBattles import ExtractorSpaceBattles
 from fiction_dl.Extractors.ExtractorSufficientVelocity import ExtractorSufficientVelocity
 
-from fiction_dl.Scanners.ScannerAO3 import ScannerAO3
-
 # Standard packages.
 
 from typing import List, Optional
@@ -52,32 +50,6 @@ from typing import List, Optional
 #
 #
 #
-
-def ScanURL(URL: str) -> Optional[List[str]]:
-
-    ##
-    #
-    # Scans the URL for story URLs.
-    #
-    # @param URL The URL.
-    #
-    # @return An list of story URLs.
-    #
-    ##
-
-    availableScanners = [
-        ScannerAO3(),
-    ]
-
-    storyURLs = []
-
-    for scanner in availableScanners:
-
-        storyURLs = scanner.Scan(URL)
-        if storyURLs:
-            break
-
-    return storyURLs if storyURLs else None
 
 def CreateExtractor(URL: str) -> Optional[Extractor]:
 

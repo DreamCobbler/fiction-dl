@@ -60,6 +60,13 @@ DebugDirectoryPath = Path(f"{ApplicationName} Debug Data")
 OutputDirectoryPath = Path(f"{ApplicationName} Downloads")
 SkippedURLsFilePath = Path(f"{ApplicationName} Skipped URLs.txt")
 
+# A simple line-break.
+
+LineBreak = 79 * "-"
+
+# The welcoming message, printed when the application starts.
+WelcomingMessage = f"{ApplicationName} {ApplicationVersion}, by {CreatorName} <{CreatorContact}>"
+
 # Maximum length of the longer side of an embedded image.
 MaximumImageSideLength = 800
 

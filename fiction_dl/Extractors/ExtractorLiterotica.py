@@ -77,7 +77,7 @@ class ExtractorLiterotica(Extractor):
             "literotica.com"
         ]
 
-    def Scan(self) -> bool:
+    def ScanStory(self) -> bool:
 
         ##
         #

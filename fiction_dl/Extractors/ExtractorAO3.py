@@ -32,7 +32,7 @@ from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.General import Stringify
 from fiction_dl.Utilities.HTML import StripHTML
-from fiction_dl.Utilities.Web import DownloadSoup
+from fiction_dl.Utilities.Web import DownloadSoup, GetHostname
 
 # Standard packages.
 
@@ -74,7 +74,79 @@ class ExtractorAO3(Extractor):
             "archiveofourown.org"
         ]
 
-    def Scan(self) -> bool:
+    def ScanChannel(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
+            return None
+
+        usernameMatch = re.search("/users/([a-zA-Z0-9]+)/", URL)
+        if not usernameMatch:
+            return None
+
+        username = usernameMatch.group(1)
+
+        normalizedURL = f"https://archiveofourown.org/users/{username}/"
+        worksURL = normalizedURL + "works"
+
+        worksSoup = DownloadSoup(worksURL)
+        if not worksSoup:
+            return None
+
+        worksPagesURLs = []
+
+        if not (worksPaginationElement := worksSoup.find("ol", {"title": "pagination"})):
+
+            worksPagesURLs.append(worksURL)
+
+        else:
+
+            worksPageButtonElements = worksPaginationElement.find_all("li")
+            worksPageCount = len(worksPageButtonElements) - 2
+            if worksPageCount < 1:
+                logging.error("Invalid number of pages on the Works webpage.")
+                return None
+
+            for index in range(1, worksPageCount + 1):
+                worksPagesURLs.append(worksURL + f"?page={index}")
+
+        workIDs = []
+
+        for pageURL in worksPagesURLs:
+
+            pageSoup = DownloadSoup(pageURL)
+            if not pageSoup:
+                logging.error("Failed to download a page of the Works webpage.")
+                continue
+
+            workElements = pageSoup.find_all("li", {"class": "work"})
+
+            for workElement in workElements:
+
+                linkElement = workElement.find("a")
+                if (not linkElement) or (not linkElement.has_attr("href")):
+                    logging.error("Failed to retrieve story URL from the Works webpage.")
+                    continue
+
+                storyIDMatch = re.search("/works/(\d+)", linkElement["href"])
+                if not storyIDMatch:
+                    logging.error("Failed to retrieve story ID from its URL.")
+                    continue
+
+                storyID = storyIDMatch.group(1)
+                workIDs.append(storyID)
+
+        storyURLs = [f"https://archiveofourown.org/works/{ID}" for ID in workIDs]
+        return storyURLs
+
+    def ScanStory(self) -> bool:
 
         ##
         #

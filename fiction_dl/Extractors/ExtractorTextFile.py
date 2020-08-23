@@ -92,7 +92,7 @@ class ExtractorTextFile(Extractor):
 
         return True
 
-    def Scan(self) -> bool:
+    def ScanStory(self) -> bool:
 
         ##
         #
