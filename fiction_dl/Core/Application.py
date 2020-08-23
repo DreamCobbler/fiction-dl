@@ -99,7 +99,7 @@ class Application:
 
         # Welcome the user and clear the cache.
 
-        self._interface.Text(Configuration.WelcomingMessage)
+        self._interface.Text(Configuration.WelcomingMessage, bold = True)
 
         if self._arguments.ClearCache:
             logging.info("Deleting the cache...")
@@ -123,7 +123,7 @@ class Application:
         for index, URL in enumerate(URLs, start = 1):
 
             self._interface.LineBreak()
-            self._interface.Text(f'{index}/{len(URLs)}: "{URL}".', section = True)
+            self._interface.Text(f'{index}/{len(URLs)}: "{URL}".', section = True, bold = True)
 
             if not self._ProcessURL(URL):
                 skippedURLs.append(URL)

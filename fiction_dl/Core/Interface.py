@@ -65,7 +65,8 @@ class Interface:
         section: bool = False,
         clearLine: bool = False,
         end: str = "\n",
-        color: Optional[str] = None
+        color: Optional[str] = None,
+        bold: bool = False
     ) -> None:
 
         ##
@@ -82,8 +83,12 @@ class Interface:
         if clearLine:
             print("\r", end = "")
 
+        attributes = ["bold"] if bold else []
+
         if color:
-            text = colored(text, color = color)
+            text = colored(text, color = color, attrs = attributes)
+        elif bold:
+            text = colored(text, attrs = attributes)
 
         print(text, end = end)
 
@@ -121,7 +126,7 @@ class Interface:
         #
         ##
 
-        self.Text("> " + text, section, clearLine, end, color = "green")
+        self.Text("> " + text, section, clearLine, end, color = "cyan", bold = True)
 
     def Error(
         self,
