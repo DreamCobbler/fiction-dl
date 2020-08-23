@@ -17,8 +17,6 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 
 **fiction-dl** can download stories from a multitude of sites - it some cases it also supports downloading all stories published by a specific user (downloading stories from a *channel*).
 
-**fiction-dl** can download stories from a multitude of sites:
-
 | Category         | Site                                                              | Authentication support | Channel support |
 |------------------|-------------------------------------------------------------------|------------------------|-----------------|
 | fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                | ✗ no                   | ✓ **yes**       |
