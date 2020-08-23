@@ -80,6 +80,9 @@ setup(
 
         "ebooklib",
 
+        "colorama",
+        "termcolor"
+
     ],
 
     packages = find_packages(),

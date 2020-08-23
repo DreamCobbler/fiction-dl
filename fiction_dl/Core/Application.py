@@ -32,6 +32,7 @@ from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Core.Cache import Cache
 from fiction_dl.Core.InputData import InputData
+from fiction_dl.Core.Interface import Interface
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
 from fiction_dl.Formatters.FormatterEPUB import FormatterEPUB
 from fiction_dl.Formatters.FormatterHTML import FormatterHTML
@@ -61,10 +62,16 @@ from urllib3.exceptions import ProtocolError
 #
 #
 #
+# Classes.
+#
+#
+#
+
+##
+#
 # The "Application" class encapsulates the whole logic of the application.
 #
-#
-#
+##
 
 class Application:
 
@@ -80,6 +87,7 @@ class Application:
 
         self._arguments = arguments
         self._cache = Cache(cacheDirectoryPath)
+        self._interface = Interface()
 
     def Launch(self) -> None:
 
@@ -91,7 +99,7 @@ class Application:
 
         # Welcome the user and clear the cache.
 
-        print(Configuration.WelcomingMessage)
+        self._interface.Text(Configuration.WelcomingMessage)
 
         if self._arguments.ClearCache:
             logging.info("Deleting the cache...")
@@ -99,15 +107,14 @@ class Application:
 
         # Process the input arguments.
 
-        print()
-        print("> Processing input arguments...")
+        self._interface.Process("Processing input arguments...", section = True)
 
         inputData = InputData(self._arguments.Input)
         inputData.ExpandRecursively()
 
         URLs = inputData.Access()
 
-        print(f"# The list contains {len(URLs)} item(s).")
+        self._interface.Comment(f"The list contains {len(URLs)} item(s).")
 
         # Process the stories.
 
@@ -115,17 +122,13 @@ class Application:
 
         for index, URL in enumerate(URLs, start = 1):
 
-            print()
-            print(Configuration.LineBreak)
-
-            print()
-            print(f'# {index}/{len(URLs)}: "{URL}".')
+            self._interface.Text(Configuration.LineBreak, section = True)
+            self._interface.Comment(f'{index}/{len(URLs)}: "{URL}".', section = True)
 
             if not self._ProcessURL(URL):
                 skippedURLs.append(URL)
 
-        print()
-        print(Configuration.LineBreak)
+        self._interface.Text(Configuration.LineBreak, section = True)
 
         # Print information about skipped stories.
 
@@ -134,42 +137,22 @@ class Application:
             print()
 
             for URL in skippedURLs:
-                print(f'! Failed to download a story from URL: "{URL}".')
+                self._interface.Error(f'Failed to download a story from URL: "{URL}".')
 
             WriteTextFile(Configuration.SkippedURLsFilePath, "\n".join(skippedURLs))
 
         # Print some final information.
 
-        print()
-        print(f"# Successfully retrieved {len(URLs) - len(skippedURLs)}/{len(URLs)} stories.")
+        self._interface.Comment(
+            f"Successfully retrieved {len(URLs) - len(skippedURLs)}/{len(URLs)} stories.",
+            section = True
+        )
 
         # Clear the cache.
 
         if not self._arguments.PersistentCache:
             logging.info("Deleting the cache...")
             self._cache.Clear()
-
-    @staticmethod
-    def _ReadURLsFromLines(lines: List[str]) -> List[str]:
-
-        ##
-        #
-        # Creates a list of input URLs from lines of a text file.
-        #
-        # @param lines List of strings being read lines of a text file.
-        #
-        # @return List of strings: URLs of the stories to be downloaded.
-        #
-        ##
-
-        if not lines:
-            return lines
-
-        URLs = [x.strip() for x in lines]
-        URLs = [x for x in URLs if len(x)] # Ignore empty lines.
-        URLs = [x for x in URLs if not x.startswith("#")] # Ignore comments.
-
-        return RemoveDuplicates(URLs)
 
     def _ProcessURL(self, URL: str) -> bool:
 
@@ -185,29 +168,28 @@ class Application:
 
         # Locate a working extractor.
 
-        print()
-        print("> Creating the extractor...")
+        self._interface.Process("Creating the extractor...", section = True)
 
         extractor = CreateExtractor(URL)
         if not extractor:
             logging.error("No matching extractor found.")
             return False
 
-        print(f'# Extractor created: "{type(extractor).__name__}".')
+        self._interface.Comment(f'Extractor created: "{type(extractor).__name__}".')
 
         # Authenticate the user (if supported by the extractor).
 
         if self._arguments.Authenticate:
 
             if not extractor.SupportsAuthentication():
-                print("# This specific extractor does NOT support authentication.")
+                self._interface.Comment("This specific extractor does NOT support authentication.")
 
             elif not extractor.Authenticate():
                 logging.error("Failed attempt to authenticate.")
                 return False
 
             else:
-                print("# Authenticated successfully.")
+                self._interface.Comment("Authenticated successfully.")
 
         # Process the story.
 
@@ -215,8 +197,7 @@ class Application:
 
     def _ProcessStoryUsingExtractor(self, extractor) -> bool:
 
-        print()
-        print("> Scanning the story...")
+        self._interface.Process("Scanning the story...", section = True)
 
         if not extractor.ScanStory():
             logging.error("Failed to scan the story.")
@@ -229,8 +210,10 @@ class Application:
         outputFilePaths = self._GetOutputFilePaths(self._arguments.Output, extractor.Story)
 
         if (not self._arguments.Force) and all(x.is_file() for x in outputFilePaths.values()):
-            print()
-            print("# Output files already exist; no need to recreate them.")
+            self._interface.Comment(
+                "Output files already exist; no need to recreate them.",
+                section = True
+            )
             return True
 
         elif self._arguments.Force:
@@ -238,8 +221,7 @@ class Application:
 
         # Extract content.
 
-        print()
-        print("> Extracting content...")
+        self._interface.Process("Extracting content...", section = True)
 
         for index in range(1, extractor.Story.Metadata.ChapterCount + 1):
 
@@ -280,13 +262,14 @@ class Application:
 
             # Notify the user, then sleep for a while.
 
-            print(
-                f"\r# Downloaded chapter {index}/{extractor.Story.Metadata.ChapterCount}.",
+            self._interface.Comment(
+                f"Downloaded chapter {index}/{extractor.Story.Metadata.ChapterCount}.",
+                clearLine = True,
                 end = ""
             )
 
             if extractor.Story.Metadata.ChapterCount == index:
-                print()
+                self._interface.EmptyLine()
 
             if not retrievedFromCache:
                 sleep(Configuration.PostChapterSleepTime)
@@ -295,8 +278,7 @@ class Application:
 
         if self._arguments.Images:
 
-            print()
-            print("> Downloading images...")
+            self._interface.Process("Downloading images...", section = True)
 
             # Locate the images.
 
@@ -307,7 +289,7 @@ class Application:
             for image in extractor.Story.Images:
                 image.URL = MakeURLAbsolute(image.URL, storySiteURL)
 
-            print(f"# Found {len(extractor.Story.Images)} image(s).")
+            self._interface.Comment(f"Found {len(extractor.Story.Images)} image(s).")
 
             # Download them.
 
@@ -341,7 +323,12 @@ class Application:
                                 image.Data
                             )
 
-                        print(f"\r# Downloaded image {index}/{imageCount}.", end = "")
+                        self._interface.Comment(
+                            f"Downloaded image {index}/{imageCount}.",
+                            clearLine = True,
+                            end = ""
+                        )
+
                         if imageCount == index:
                             print()
 
@@ -352,14 +339,13 @@ class Application:
                         if index > 1:
                             print()
 
-                        print(f'! Failed to download image {index}/{imageCount}: "{image.URL}".')
+                        self._interface.Error(f'Failed to download image {index}/{imageCount}: "{image.URL}".')
 
-                print(f"# Successfully downloaded {downloadedImageCount}/{imageCount} image(s).")
+                self._interface.Comment(f"Successfully downloaded {downloadedImageCount}/{imageCount} image(s).")
 
         # Process content.
 
-        print()
-        print("> Processing content...")
+        self._interface.Process("Processing content...", section = True)
 
         extractor.Story.Process()
 
@@ -400,12 +386,11 @@ class Application:
         if not extractor.Story.Metadata.WordCount:
             extractor.Story.Metadata.WordCount = extractor.Story.CalculateWordCount()
 
-        print("# Content processed.")
+        self._interface.Comment("Content processed.")
 
         # Format and save the story.
 
-        print()
-        print("> Formatting and saving the story...")
+        self._interface.Process("Formatting and saving the story...", section = True)
 
         # Create the output directory.
 
@@ -444,7 +429,9 @@ class Application:
 
             if not self._arguments.LibreOffice.is_file():
 
-                print("! Failed to locate the LibreOffice executable: can't create a PDF file.")
+                self._interface.Error(
+                    "Failed to locate the LibreOffice executable: can't create a PDF file."
+                )
 
             else:
 
@@ -470,7 +457,7 @@ class Application:
 
         # Notify the user.
 
-        print("# Story saved successfully!")
+        self._interface.Comment("Story saved successfully!")
 
         return True
 
@@ -486,12 +473,12 @@ class Application:
 
         prettifiedMetadata = story.Metadata.GetPrettified()
 
-        print(f"# Title: {prettifiedMetadata.Title}")
-        print(f"# Author: {prettifiedMetadata.Author}")
-        print(f"# Date published: {prettifiedMetadata.DatePublished}")
-        print(f"# Date updated: {prettifiedMetadata.DateUpdated}")
-        print(f"# Chapter count: {prettifiedMetadata.ChapterCount}")
-        print(f"# Word count: {prettifiedMetadata.WordCount}")
+        self._interface.Comment(f"Title: {prettifiedMetadata.Title}")
+        self._interface.Comment(f"Author: {prettifiedMetadata.Author}")
+        self._interface.Comment(f"Date published: {prettifiedMetadata.DatePublished}")
+        self._interface.Comment(f"Date updated: {prettifiedMetadata.DateUpdated}")
+        self._interface.Comment(f"Chapter count: {prettifiedMetadata.ChapterCount}")
+        self._interface.Comment(f"Word count: {prettifiedMetadata.WordCount}")
 
     def _GetStoryOutputDirectoryPath(self, outputDirectoryPath: str, story: Story) -> Dict:
 
@@ -527,10 +514,8 @@ class Application:
         sanitizedStoryTitle = SanitizeFileName(story.Metadata.GetPrettified().Title)
 
         return {
-
             "HTML": outputDirectoryPath / (sanitizedStoryTitle + ".html"),
             "ODT" : outputDirectoryPath / (sanitizedStoryTitle + ".odt" ),
             "PDF" : outputDirectoryPath / (sanitizedStoryTitle + ".pdf" ),
             "EPUB": outputDirectoryPath / (sanitizedStoryTitle + ".epub"),
-
         }
