@@ -32,6 +32,7 @@ import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
+import os
 from typing import Optional
 
 # Non-standard packages.
@@ -83,7 +84,7 @@ class Interface:
         if clearLine:
             print("\r", end = "")
 
-        attributes = ["bold"] if bold else []
+        attributes = ["bold"] if (bold and "nt" != os.name) else []
 
         if color:
             text = colored(text, color = color, attrs = attributes)
