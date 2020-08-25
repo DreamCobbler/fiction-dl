@@ -25,7 +25,7 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 
 ### Downloading stories
 
-**fiction-dl** can download stories from a multitude of sites - it some cases it also supports downloading all stories published by a specific user (downloading stories from a *channel*).
+**fiction-dl** can download stories from a multitude of sites - in some cases it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*).
 
 | Category         | Site                                                              | Authentication support | Channel support |
 |------------------|-------------------------------------------------------------------|------------------------|-----------------|
@@ -37,7 +37,8 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 | original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                   | ✓ **yes**       |
 | original fiction | [Reddit](https://www.reddit.com/)                                 | ✓ **yes**              | ✗ no            |
 | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                   | ✗ no            |
-| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✗ **yes**       |
+| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✓ **yes**       |
+| erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                 | ✗ no                   | ✓ **yes**       |
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
 
@@ -58,7 +59,7 @@ The application can download images found in story content and embed them in out
 
 ### Typographic corrections
 
-**fiction-dl** can apply basic typographic corrections to the content of downloaded stories. For example:
+**fiction-dl** automatically applies basic typographic corrections to the content of downloaded stories. For example:
 
 | Source Text                  | Corrected Text           |
 |------------------------------|--------------------------|

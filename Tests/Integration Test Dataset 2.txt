@@ -105,3 +105,13 @@ http://hp.adult-fanfiction.org/story.php?no=600100119
 # Multi-chapter work.
 
 http://hp.adult-fanfiction.org/story.php?no=600099266
+
+##
+#
+# Hentai Foundry
+#
+##
+
+# A channel with hundreds of stories, both single- and multi-chapter.
+
+http://www.hentai-foundry.com/stories/user/Cambrian
