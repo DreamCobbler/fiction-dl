@@ -4,12 +4,22 @@
 
 **fiction-dl** is a command-line utility used for downloading works of fiction from the web, formatting them and storing them in a few common file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
 
-I've created it mostly as an exercise in Python - the good old [FanFicFare](https://github.com/JimmXinu/FanFicFare) serves the same purpose and has a much longer list of supported sites. It can also *update* already downloaded stories, not to mention that it can be used as a [Calibre](https://calibre-ebook.com/) plug-in just as well as a command-line tool! But with all that said, **fiction-dl** *does* have some adventages over FFF:
+I've created it mostly as an exercise in Python - the good old [FanFicFare](https://github.com/JimmXinu/FanFicFare) serves the same purpose and has a much longer list of supported sites. It can also *update* already downloaded stories, not to mention that it can be used as a [Calibre](https://calibre-ebook.com/) plug-in just as well as a command-line tool! But with all that said, **fiction-dl** *does* have some advantages over FFF:
 
 - It supports some sites FFF doesn't (Reddit).
 - It can generate ODT and PDF files.
 - It applies some typographic corrections to downloaded texts.
 - It has much more verbose output.
+
+## Table of Contents
+
+1. [Features](#features).
+2. [Installation](#installation).
+3. [Usage](#usage).
+4. [License](#license).
+5. [Changelogs](#changelogs).
+5. [Technical](#technical).
+
 
 ## Features
 
@@ -71,7 +81,7 @@ If you're running a Debian-derived Linux distribution, you might also want to in
 
     apt-get install libgl1-mesa-glx libglib2.0-0 libmupdf-dev
 
-(**fiction-dl** uses OpenCV for processing downloaded images, which requires them to be installed. PyMuPDF requires libmupdf-dev when it's being build from source.)
+(**fiction-dl** uses OpenCV for processing downloaded images, which requires them to be installed. PyMuPDF requires libmupdf-dev when it's being built from the source.)
 
 ## Usage
 
@@ -83,7 +93,7 @@ In order to download multiple stories, create a text file and place the URLs in 
 
     fiction-dl YourFilesName
 
-**fiction-dl** offers a few options - you can view them using following command:
+**fiction-dl** offers a few options - you can view them using the following command:
 
     fiction-dl -h
 
