@@ -40,6 +40,7 @@ from fiction_dl.Utilities.Web import DownloadSoup, GetHostname
 
 from datetime import datetime
 import logging
+import re
 import requests
 from typing import List, Optional
 
@@ -76,6 +77,47 @@ class ExtractorLiterotica(Extractor):
         return [
             "literotica.com"
         ]
+
+    def ScanChannel(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
+            return None
+
+        userIDMatch = re.search("\?uid\=(\d+)", URL)
+        if not userIDMatch:
+            return None
+
+        userID = userIDMatch.group(1)
+        normalizedURL = \
+            f"https://www.literotica.com/stories/memberpage.php?uid={userID}&page=submissions"
+
+        pageSoup = DownloadSoup(normalizedURL)
+        if not pageSoup:
+            return None
+
+        storyURLs = []
+
+        storyElements = pageSoup.find_all("tr", {"class": "root-story"})
+        storyElements.extend(pageSoup.find_all("tr", {"class": "sl"}))
+
+        for storyElement in storyElements:
+
+            anchorElement = storyElement.find("a")
+            if (not anchorElement) or (not anchorElement.has_attr("href")):
+                logging.error("Failed to retrieve story URL from the Submissions webpage.")
+                continue
+
+            storyURLs.append(anchorElement["href"])
+
+        return storyURLs
 
     def ScanStory(self) -> bool:
 

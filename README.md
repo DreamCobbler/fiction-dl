@@ -27,7 +27,7 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 | original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                   | ✓ **yes**       |
 | original fiction | [Reddit](https://www.reddit.com/)                                 | ✓ **yes**              | ✗ no            |
 | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                   | ✗ no            |
-| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✗ no            |
+| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✗ **yes**       |
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
 
