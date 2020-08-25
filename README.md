@@ -24,7 +24,7 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 | fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)              | ✓ **yes**              | ✗ no            |
 | fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)  | ✓ **yes**              | ✗ no            |
 | fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)   | ✓ **yes**              | ✗ no            |
-| original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                   | ✗ no            |
+| original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                   | ✓ **yes**       |
 | original fiction | [Reddit](https://www.reddit.com/)                                 | ✓ **yes**              | ✗ no            |
 | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                   | ✗ no            |
 | erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✗ no            |
