@@ -207,32 +207,17 @@ class ExtractorLiterotica(Extractor):
 
         return True
 
-    def ExtractChapter(self, index: int) -> Optional[Chapter]:
+    def _InternallyExtractChapter(self, soup) -> Optional[Chapter]:
 
         ##
         #
         # Extracts specific chapter.
         #
-        # @param index The index of the chapter to be extracted.
+        # @param soup The tag soup of the page containing the chapter.
         #
         # @return **True** if the chapter is extracted correctly, **False** otherwise.
         #
         ##
-
-        if index > len(self._chapterURLs):
-            logging.error(
-                f"Trying to extract chapter {index}. "
-                f"Only {len(self._chapterURLs)} chapter(s) located. "
-                f"The story supposedly has {self.Story.Metadata.ChapterCount} chapter(s)."
-            )
-            return None
-
-        # Download the page.
-
-        soup = DownloadSoup(self.Story.Metadata.URL)
-        if not soup:
-            logging.error(f'Failed to download page: "{self.Story.Metadata.URL}".')
-            return False
 
         # Find the page count of the story.
 

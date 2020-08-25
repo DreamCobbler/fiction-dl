@@ -30,12 +30,17 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.Web import GetHostname
+from fiction_dl.Utilities.Web import DownloadSoup, GetHostname
 
 # Standard packages.
 
+import logging
 import requests
 from typing import List, Optional
+
+# Non-standard packages.
+
+from bs4 import BeautifulSoup
 
 #
 #
@@ -64,6 +69,7 @@ class Extractor:
 
         self.Story = None
 
+        self._session = requests.session()
         self._chapterURLs = []
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -161,7 +167,22 @@ class Extractor:
         #
         ##
 
-        raise NotImplementedError()
+        if index > len(self._chapterURLs):
+            logging.error(
+                f"Trying to extract chapter {index}. "
+                f"Only {len(self._chapterURLs)} chapter(s) located. "
+                f"The story supposedly has {self.Story.Metadata.ChapterCount} chapter(s)."
+            )
+            return None
+
+        chapterURL = self._chapterURLs[index - 1]
+
+        soup = DownloadSoup(chapterURL, self._session)
+        if not soup:
+            logging.error(f'Failed to download page: "{chapterURL}".')
+            return None
+
+        return self._InternallyExtractChapter(soup)
 
     def ExtractMedia(self, URL: str) -> Optional[bytes]:
 
@@ -183,6 +204,20 @@ class Extractor:
             return None
 
         return response.content
+
+    def _InternallyExtractChapter(self, soup: BeautifulSoup) -> Optional[Chapter]:
+
+        ##
+        #
+        # Extracts specific chapter.
+        #
+        # @param soup The tag soup of the page containing the chapter.
+        #
+        # @return **True** if the chapter is extracted correctly, **False** otherwise.
+        #
+        ##
+
+        raise NotImplementedError()
 
     def _GetNormalizedStoryURL(self, URL: str) -> str:
 

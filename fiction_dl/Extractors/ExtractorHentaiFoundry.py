@@ -40,7 +40,6 @@ from datetime import datetime
 import logging
 from math import ceil
 import re
-import requests
 from typing import List, Optional
 
 #
@@ -67,11 +66,7 @@ class ExtractorHentaiFoundry(Extractor):
         #
         ##
 
-        self.Story = None
-
-        self._chapterURLs = []
-
-        self._session = requests.session()
+        super().__init__()
 
     def GetSupportedHostnames(self) -> List[str]:
 
@@ -252,32 +247,17 @@ class ExtractorHentaiFoundry(Extractor):
 
         return True
 
-    def ExtractChapter(self, index: int) -> Optional[Chapter]:
+    def _InternallyExtractChapter(self, soup) -> Optional[Chapter]:
 
         ##
         #
         # Extracts specific chapter.
         #
-        # @param index The index of the chapter to be extracted.
+        # @param soup The tag soup of the page containing the chapter.
         #
         # @return **True** if the chapter is extracted correctly, **False** otherwise.
         #
         ##
-
-        if index > len(self._chapterURLs):
-            logging.error(
-                f"Trying to extract chapter {index}. "
-                f"Only {len(self._chapterURLs)} chapter(s) located. "
-                f"The story supposedly has {self.Story.Metadata.ChapterCount} chapter(s)."
-            )
-            return None
-
-        chapterURL = self._GetAdultView(self._chapterURLs[index - 1])
-
-        soup = DownloadSoup(chapterURL, self._session)
-        if not soup:
-            logging.error(f'Failed to download page: "{chapterURL}".')
-            return None
 
         # Read the title.
 
