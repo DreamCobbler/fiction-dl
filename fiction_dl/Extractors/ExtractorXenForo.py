@@ -94,6 +94,9 @@ class ExtractorXenForo(Extractor):
         ##
 
         username = ReadString("Your username")
+        if not username:
+            return True
+
         password = getpass(prompt = "Your password: ")
 
         data = {
