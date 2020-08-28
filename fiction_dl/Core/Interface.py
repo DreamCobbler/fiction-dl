@@ -82,7 +82,7 @@ class Interface:
             print()
 
         if clearLine:
-            print("\r", end = "")
+            self.ClearLine()
 
         attributes = ["bold"] if (bold and "nt" != os.name) else []
 
@@ -163,7 +163,17 @@ class Interface:
         #
         ##
 
-        self.Text("! " + text, section, clearLine, end, color = "green")
+        self.Text("Notice: " + text, section, clearLine, end, color = "green")
+
+    def ClearLine(self) -> None:
+
+        ##
+        #
+        # Clear current line.
+        #
+        ##
+
+        print("\r", end = "")
 
     def EmptyLine(self) -> None:
 

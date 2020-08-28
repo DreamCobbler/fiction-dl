@@ -120,13 +120,13 @@ class Application:
 
         if calibreNotFound:
             self._interface.Notice(
-                "Notice: Calibre doesn't seem to be installed on this machine. MOBI output files "
+                "Calibre doesn't seem to be installed on this machine. MOBI output files "
                 "will not be generated."
             )
 
         if libreOfficeNotFound:
             self._interface.Notice(
-                "Notice: LibreOffice doesn't seem to be installed on this machine. PDF output "
+                "LibreOffice doesn't seem to be installed on this machine. PDF output "
                 "files will not be generated."
             )
 
@@ -156,6 +156,20 @@ class Application:
             try:
 
                 successfullyProcessedURL = self._ProcessURL(URL)
+
+            except KeyboardInterrupt:
+
+                self._interface.ClearLine()
+                self._interface.Notice("Quitting...")
+
+                exit()
+
+            except BaseException as unknownException:
+
+                self._interface.Error(
+                    "An exception has been thrown while processing given URL: {unknownException}."
+                )
+                successfullyProcessedURL = False
 
             except:
 
