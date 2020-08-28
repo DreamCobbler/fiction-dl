@@ -124,6 +124,10 @@ class ExtractorHentaiFoundry(Extractor):
 
         storiesPerPage = int(pageCountDescriptionMatch.group(2))
         storiesInTotal = int(pageCountDescriptionMatch.group(3))
+
+        if not storiesPerPage:
+            return None
+
         pageCount = ceil(storiesInTotal / storiesPerPage)
 
         storyURLs = []
