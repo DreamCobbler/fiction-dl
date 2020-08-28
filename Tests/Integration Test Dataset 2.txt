@@ -115,3 +115,17 @@ http://hp.adult-fanfiction.org/story.php?no=600099266
 # A channel with hundreds of stories, both single- and multi-chapter.
 
 http://www.hentai-foundry.com/stories/user/Cambrian
+
+##
+#
+# FicWad
+#
+##
+
+# A channel with a few stories, all multi-chapter.
+
+https://ficwad.com/a/Thatoneshyslytherin
+
+# A (blocked) single-chapter story.
+
+https://ficwad.com/story/282579
