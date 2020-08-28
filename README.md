@@ -52,6 +52,7 @@ Downloaded stories are auto-formatted and saved in a few file formats.
 |----------------------------------------------------------------------|-----------------------------------------------------------------------|
 | [HTML](https://en.wikipedia.org/wiki/HTML) (.html)                   | *None.*                                                               |
 | [EPUB](https://en.wikipedia.org/wiki/EPUB) (.epub)                   | *None.*                                                               |
+| [MOBI](https://en.wikipedia.org/wiki/Mobipocket) (.mobi)             | [Calibre](https://calibre-ebook.com/) installed on the machine.       |
 | [OpenDocument](https://en.wikipedia.org/wiki/OpenDocument) (.odt)    | *None.*                                                               |
 | [Portable Document Format](https://en.wikipedia.org/wiki/PDF) (.pdf) | [LibreOffice](https://www.libreoffice.org/) installed on the machine. |
 

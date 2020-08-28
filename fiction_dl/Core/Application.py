@@ -36,6 +36,7 @@ from fiction_dl.Core.Interface import Interface
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
 from fiction_dl.Formatters.FormatterEPUB import FormatterEPUB
 from fiction_dl.Formatters.FormatterHTML import FormatterHTML
+from fiction_dl.Formatters.FormatterMOBI import FormatterMOBI
 from fiction_dl.Formatters.FormatterODT import FormatterODT
 from fiction_dl.Formatters.FormatterPDF import FormatterPDF
 from fiction_dl.Processors.SanitizerProcessor import SanitizerProcessor
@@ -467,6 +468,16 @@ class Application:
             ):
                 logging.error("Failed to format the story as EPUB.")
 
+        # Format and save the story to MOBI.
+
+        if not outputFilePaths["MOBI"].is_file():
+
+            if not FormatterMOBI(self._arguments.Images).ConvertFromEPUB(
+                outputFilePaths["ODT"],
+                outputFilePaths["PDF"].parent
+            ):
+                logging.error("Failed to format the story as MOBI.")
+
         # Notify the user.
 
         self._interface.Comment("Story saved successfully!")
@@ -533,4 +544,5 @@ class Application:
             "ODT" : outputDirectoryPath / (sanitizedStoryTitle + ".odt" ),
             "PDF" : outputDirectoryPath / (sanitizedStoryTitle + ".pdf" ),
             "EPUB": outputDirectoryPath / (sanitizedStoryTitle + ".epub"),
+            "MOBI": outputDirectoryPath / (sanitizedStoryTitle + ".mobi"),
         }

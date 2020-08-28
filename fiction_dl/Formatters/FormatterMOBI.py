@@ -48,11 +48,11 @@ from typing import AbstractSet, Optional
 
 ##
 #
-# The PDF formatter.
+# The MOBI formatter.
 #
 ##
 
-class FormatterPDF(Formatter):
+class FormatterMOBI(Formatter):
 
     def __init__(self, embedImages: bool = True) -> None:
 
@@ -83,24 +83,22 @@ class FormatterPDF(Formatter):
 
         raise NotImplementedError()
 
-    def ConvertFromODT(
+    def ConvertFromEPUB(
         self,
         sourceFilePath: Path,
-        outputDirectoryPath: Path,
-        converterFilePath: Path
+        outputDirectoryPath: Path
     ) -> bool:
 
         ##
         #
-        # Converts an ODT file to a PDF file. The output file may exist: it will be overwritten if
+        # Converts an EPUB file to a MOBI file. The output file may exist: it will be overwritten if
         # it does.
         #
-        # @param sourceFilePath      Path to the ODT file.
+        # @param sourceFilePath      Path to the EPUB file.
         # @param outputDirectoryPath Path to the output directory. The output file will be created
         #                            inside it; its (base)name will be the same as the name of the
         #                            source file. The directory **has** to exist beforehand, this
         #                            method does *not* create it.
-        # @param converterFilePath   Path to the LibreOffice executable (soffice.exe/soffice).
         #
         # @return **True** if the conversion has been performed successfully, **False** otherwise.
         #
@@ -112,18 +110,11 @@ class FormatterPDF(Formatter):
         elif not outputDirectoryPath.is_dir():
             return False
 
-        elif not converterFilePath.is_file():
-            return False
-
         call(
             [
-                Stringify(converterFilePath),
-                "--headless",
-                "--convert-to",
-                "pdf",
+                "ebook-convert",
                 Stringify(sourceFilePath),
-                "--outdir",
-                Stringify(outputDirectoryPath),
+                Stringify(outputDirectoryPath / (sourceFilePath.stem + ".mobi")),
             ],
             stdout = DEVNULL
         )
