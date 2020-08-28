@@ -112,13 +112,19 @@ class Application:
 
         # Find out whether external components are available.
 
-        if not FindEbookConvert():
+        calibreNotFound = not FindEbookConvert()
+        libreOfficeNotFound = not self._arguments.LibreOffice.is_file()
+
+        if calibreNotFound or libreOfficeNotFound:
+            self._interface.EmptyLine()
+
+        if calibreNotFound:
             self._interface.Notice(
                 "Notice: Calibre doesn't seem to be installed on this machine. MOBI output files "
                 "will not be generated."
             )
 
-        if not self._arguments.LibreOffice.is_file():
+        if libreOfficeNotFound:
             self._interface.Notice(
                 "Notice: LibreOffice doesn't seem to be installed on this machine. PDF output "
                 "files will not be generated."

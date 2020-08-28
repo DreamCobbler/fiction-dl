@@ -163,7 +163,7 @@ class Interface:
         #
         ##
 
-        self.Text("! " + text, section, clearLine, end, color = "red")
+        self.Text("! " + text, section, clearLine, end, color = "green")
 
     def EmptyLine(self) -> None:
 
