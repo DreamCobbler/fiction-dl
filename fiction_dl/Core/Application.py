@@ -131,7 +131,18 @@ class Application:
             self._interface.LineBreak()
             self._interface.Text(f'{index}/{len(URLs)}: "{URL}".', section = True, bold = True)
 
-            if not self._ProcessURL(URL):
+            successfullyProcessedURL = False
+
+            try:
+
+                successfullyProcessedURL = self._ProcessURL(URL)
+
+            except:
+
+                self._interface.Error("An exception has been thrown while processing given URL.")
+                successfullyProcessedURL = False
+
+            if not successfullyProcessedURL:
                 skippedURLs.append(URL)
 
         self._interface.LineBreak()
