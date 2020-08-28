@@ -36,7 +36,6 @@ from fiction_dl.Utilities.Filesystem import GetPackageDirectory, ReadTextFile
 
 from base64 import b64encode
 from pathlib import Path
-from typing import AbstractSet, Optional
 
 # Non-standard packages.
 

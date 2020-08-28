@@ -36,7 +36,6 @@ from fiction_dl.Utilities.General import Stringify
 
 from pathlib import Path
 from subprocess import call, DEVNULL
-from typing import AbstractSet, Optional
 
 #
 #
