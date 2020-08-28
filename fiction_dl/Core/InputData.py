@@ -34,6 +34,7 @@ import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
+import random
 from typing import List
 
 #
@@ -125,3 +126,14 @@ class InputData:
 
         while 0 != expandedArgumentsCount:
             expandedArgumentsCount = self.Expand()
+
+    def Shuffle(self) -> None:
+
+        ##
+        #
+        # Randomly reorders the list of expanded arguments.
+        #
+        #
+        ##
+
+        random.shuffle(self._expandedArguments)

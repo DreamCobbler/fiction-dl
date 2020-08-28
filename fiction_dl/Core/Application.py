@@ -111,6 +111,7 @@ class Application:
 
         inputData = InputData(self._arguments.Input)
         inputData.ExpandRecursively()
+        inputData.Shuffle()
 
         URLs = inputData.Access()
 
