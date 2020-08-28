@@ -101,7 +101,7 @@ class ExtractorAdultFanfiction(Extractor):
 
         # Extract chapter URLs.
 
-        normalizedURL = self._GetNormalizedURL(self.Story.Metadata.URL)
+        normalizedURL = self._GetNormalizedStoryURL(self.Story.Metadata.URL)
         siteURL = GetSiteURL(normalizedURL)
 
         for linkElement in soup.select("div.dropdown-content > a"):

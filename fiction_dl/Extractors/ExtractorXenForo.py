@@ -112,6 +112,47 @@ class ExtractorXenForo(Extractor):
 
         return True
 
+    def ExtractChapter(self, index: int) -> Optional[Chapter]:
+
+        ##
+        #
+        # Extracts specific chapter.
+        #
+        # @param index The index of the chapter to be extracted.
+        #
+        # @return **True** if the chapter is extracted correctly, **False** otherwise.
+        #
+        ##
+
+        if index > len(self._chapterURLs):
+            logging.error(
+                f"Trying to extract chapter {index}. "
+                f"Only {len(self._chapterURLs)} chapter(s) located. "
+                f"The story supposedly has {self.Story.Metadata.ChapterCount} chapter(s)."
+            )
+            return None
+
+        chapterURL = self._chapterURLs[index - 1]
+
+        soup = DownloadSoup(chapterURL, self._session)
+        if not soup:
+            logging.error(f'Failed to download page: "{chapterURL}".')
+            return None
+
+        postID = chapterURL[chapterURL.find("#") + 1:]
+
+        postElement = soup.find("article", {"data-content": postID})
+        if not postElement:
+            logging.error("Post element not found.")
+            return None
+
+        bodyElement = postElement.find("div", {"class": "bbWrapper"})
+        if not bodyElement:
+            logging.error("Message body element not found.")
+            return None
+
+        return Chapter(content = Stringify(bodyElement.encode_contents()))
+
     def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
 
         ##
@@ -181,32 +222,6 @@ class ExtractorXenForo(Extractor):
         # Return.
 
         return True
-
-    def _InternallyExtractChapter(self, soup) -> Optional[Chapter]:
-
-        ##
-        #
-        # Extracts specific chapter.
-        #
-        # @param soup The tag soup of the page containing the chapter.
-        #
-        # @return **True** if the chapter is extracted correctly, **False** otherwise.
-        #
-        ##
-
-        postID = chapterURL[chapterURL.find("#") + 1:]
-
-        postElement = soup.find("article", {"data-content": postID})
-        if not postElement:
-            logging.error("Post element not found.")
-            return None
-
-        bodyElement = postElement.find("div", {"class": "bbWrapper"})
-        if not bodyElement:
-            logging.error("Message body element not found.")
-            return None
-
-        return Chapter(content = Stringify(bodyElement.encode_contents()))
 
     def _GetThreadmarksURL(self, URL: str) -> Optional[str]:
 
