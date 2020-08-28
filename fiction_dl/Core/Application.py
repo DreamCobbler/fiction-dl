@@ -42,7 +42,7 @@ from fiction_dl.Formatters.FormatterPDF import FormatterPDF
 from fiction_dl.Processors.SanitizerProcessor import SanitizerProcessor
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
 from fiction_dl.Utilities.Extractors import CreateExtractor
-from fiction_dl.Utilities.Filesystem import SanitizeFileName, WriteTextFile
+from fiction_dl.Utilities.Filesystem import FindEbookConvert, SanitizeFileName, WriteTextFile
 from fiction_dl.Utilities.General import RemoveDuplicates, RenderPageToBytes, Stringify
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
 from fiction_dl.Utilities.Text import Truncate
@@ -109,6 +109,20 @@ class Application:
         if self._arguments.ClearCache:
             logging.info("Deleting the cache...")
             self._cache.Clear()
+
+        # Find out whether external components are available.
+
+        if not FindEbookConvert():
+            self._interface.Notice(
+                "Notice: Calibre doesn't seem to be installed on this machine. MOBI output files "
+                "will not be generated."
+            )
+
+        if not self._arguments.LibreOffice.is_file():
+            self._interface.Notice(
+                "Notice: LibreOffice doesn't seem to be installed on this machine. PDF output "
+                "files will not be generated."
+            )
 
         # Process the input arguments.
 
@@ -453,22 +467,14 @@ class Application:
 
         coverImageData = None
 
-        if not outputFilePaths["PDF"].is_file():
+        if (not outputFilePaths["PDF"].is_file()) and self._arguments.LibreOffice.is_file():
 
-            if not self._arguments.LibreOffice.is_file():
-
-                self._interface.Error(
-                    "Failed to locate the LibreOffice executable: can't create a PDF file."
-                )
-
-            else:
-
-                if not FormatterPDF(self._arguments.Images).ConvertFromODT(
-                    outputFilePaths["ODT"],
-                    outputFilePaths["PDF"].parent,
-                    self._arguments.LibreOffice
-                ):
-                    logging.error("Failed to format the story as PDF.")
+            if not FormatterPDF(self._arguments.Images).ConvertFromODT(
+                outputFilePaths["ODT"],
+                outputFilePaths["PDF"].parent,
+                self._arguments.LibreOffice
+            ):
+                logging.error("Failed to format the story as PDF.")
 
         if outputFilePaths["PDF"].is_file():
             coverImageData = RenderPageToBytes(outputFilePaths["PDF"], 0)
@@ -485,7 +491,7 @@ class Application:
 
         # Format and save the story to MOBI.
 
-        if not outputFilePaths["MOBI"].is_file():
+        if (not outputFilePaths["MOBI"].is_file()) and FindEbookConvert():
 
             if not FormatterMOBI(self._arguments.Images).ConvertFromEPUB(
                 outputFilePaths["ODT"],

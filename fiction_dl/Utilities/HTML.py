@@ -131,6 +131,32 @@ def MakeURLAbsolute(URL: str, baseURL: str) -> Optional[str]:
 
     return f"{baseURL}{URL}"
 
+def ReformatHTMLToXHTML(code: str) -> Optional[str]:
+
+    ##
+    #
+    # Reformats given HTML code as valid XHTML.
+    #
+    # @param code Input HTML code.
+    #
+    # @return Output XHTML code.
+    #
+    ##
+
+    if not code:
+        return None
+
+    soup = BeautifulSoup(code, parser = "html5lib")
+    code = soup.Prettify()
+
+    soup = BeautifulSoup(code, parser = "html.parser")
+    code = soup.Prettify()
+
+    soup = BeautifulSoup(code, parser = "xml")
+    code = soup.Prettify()
+
+    return code
+
 def StripEmptyTags(
     code: str,
     validEmptyTags: List[str] = [],

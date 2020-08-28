@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory, ReadTextFile
+from fiction_dl.Utilities.HTML import ReformatHTMLToXHTML
 
 # Standard packages.
 
@@ -173,6 +174,7 @@ class FormatterEPUB(Formatter):
             # Prepare chapter content.
 
             content = Prefixer(index, chapter.Title) + chapter.Content
+            content = ReformatHTMLToXHTML(content)
 
             if self.CoverImageData and (len(story.Chapters) == index):
                 content += f'<img src = "{self._CoverImageName}"/>'

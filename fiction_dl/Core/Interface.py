@@ -147,6 +147,24 @@ class Interface:
 
         self.Text("! " + text, section, clearLine, end, color = "red")
 
+    def Notice(
+        self,
+        text: str,
+        section: bool = False,
+        clearLine: bool = False,
+        end: str = "\n"
+    ) -> None:
+
+        ##
+        #
+        # Prints a process.
+        #
+        # @param text The content.
+        #
+        ##
+
+        self.Text("! " + text, section, clearLine, end, color = "red")
+
     def EmptyLine(self) -> None:
 
         ##

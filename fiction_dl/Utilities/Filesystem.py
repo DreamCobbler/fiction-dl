@@ -59,6 +59,13 @@ def AddToPATH(path: Path) -> None:
 
     sys.path.insert(0, str(path))
 
+def FindEbookConvert() -> bool:
+
+    if not which("ebook-convert"):
+        return False
+
+    return True
+
 def GetLibreOfficeExecutableFilePath() -> Optional[Path]:
 
     ##
