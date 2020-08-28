@@ -45,14 +45,14 @@ It is also capable of reading stories saved in text files. You can put the HTML-
 
 ### Formatting stories
 
-Downloaded stories are auto-formatted and saved in following file formats:
+Downloaded stories are auto-formatted and saved in a few file formats.
 
-- [HTML](https://en.wikipedia.org/wiki/HTML) (.html).
-- [EPUB](https://en.wikipedia.org/wiki/EPUB) (.epub).
-- [OpenDocument](https://en.wikipedia.org/wiki/OpenDocument) (.odt).
-- [Portable Document Format](https://en.wikipedia.org/wiki/PDF) (.pdf).
-
-(Creating PDF output files requires [LibreOffice](https://www.libreoffice.org/) installed on the machine.)
+| File Format                                                          | Requirements                                                          |
+|----------------------------------------------------------------------|-----------------------------------------------------------------------|
+| [HTML](https://en.wikipedia.org/wiki/HTML) (.html)                   | *None.*                                                               |
+| [EPUB](https://en.wikipedia.org/wiki/EPUB) (.epub)                   | *None.*                                                               |
+| [OpenDocument](https://en.wikipedia.org/wiki/OpenDocument) (.odt)    | *None.*                                                               |
+| [Portable Document Format](https://en.wikipedia.org/wiki/PDF) (.pdf) | [LibreOffice](https://www.libreoffice.org/) installed on the machine. |
 
 ### Embedding images
 
