@@ -494,9 +494,12 @@ class Application:
         #
         ##
 
-        sanitizedStoryTitle = SanitizeFileName(story.Metadata.GetPrettified().Title)
+        storyMetadata = story.Metadata.GetPrettified()
 
-        return Path(expandvars(outputDirectoryPath)) / sanitizedStoryTitle
+        sanitizedStoryTitle = SanitizeFileName(storyMetadata.Title)
+        sanitizedAuthor = SanitizeFileName(storyMetadata.Author)
+
+        return Path(expandvars(outputDirectoryPath)) / sanitizedAuthor / sanitizedStoryTitle
 
     def _GetOutputFilePaths(self, outputDirectoryPath: str, story: Story) -> Dict:
 
