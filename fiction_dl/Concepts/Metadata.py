@@ -31,11 +31,13 @@ from __future__ import annotations
 # Application.
 
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
+from fiction_dl.Utilities.HTML import Unescape
 from fiction_dl.Utilities.Text import GetTitleProper, PrettifyDate, PrettifyNumber, Truncate
 
 # Standard packages.
 
 from copy import deepcopy
+import html
 from typing import Optional
 
 # Non-standard packages.
@@ -80,7 +82,7 @@ class Metadata:
         self.ChapterCount = None
         self.WordCount = None
 
-    def GetPrettified(self) -> Metadata:
+    def GetPrettified(self, escapeHTMLEntities: bool = False) -> Metadata:
 
         ##
         #
@@ -100,6 +102,19 @@ class Metadata:
         metadata.ChapterCount = PrettifyNumber(self.ChapterCount)
         metadata.WordCount = PrettifyNumber(self.WordCount)
 
+        if escapeHTMLEntities:
+
+            metadata.Title = html.escape(metadata.Title)
+            metadata.Author = html.escape(metadata.Author)
+            metadata.Summary = html.escape(metadata.Summary)
+
+            metadata.DatePublished = html.escape(metadata.DatePublished)
+            metadata.DateUpdated = html.escape(metadata.DateUpdated)
+            metadata.DateExtracted = html.escape(metadata.DateExtracted)
+
+            metadata.ChapterCount = html.escape(metadata.ChapterCount)
+            metadata.WordCount = html.escape(metadata.WordCount)
+
         return metadata
 
     def Process(self, summaryLength: Optional[int] = 250) -> None:
@@ -113,6 +128,8 @@ class Metadata:
         typographyProcessor = TypographyProcessor()
 
         self.Title = titlecase(typographyProcessor.Process(GetTitleProper(self.Title)).strip())
+        self.Title = Unescape(self.Title)
+
         self.Summary = typographyProcessor.Process(self.Summary).strip()
 
         if summaryLength:

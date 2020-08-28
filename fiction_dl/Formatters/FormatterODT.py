@@ -36,6 +36,7 @@ from fiction_dl.Utilities.HTML import StripEmptyTags
 
 # Standard packages.
 
+import html
 from pathlib import Path
 import re
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
@@ -134,7 +135,7 @@ class FormatterODT(Formatter):
 
         metadata = story.Metadata.GetPrettified()
 
-        contentDocument = story.FillTemplate(contentDocument)
+        contentDocument = story.FillTemplate(contentDocument, escapeHTMLEntities = True)
         contentDocument = contentDocument.replace("http://link.link/", metadata.URL)
 
         EOF = contentDocument.find("</office:text>")
@@ -147,21 +148,21 @@ class FormatterODT(Formatter):
         metadataDocument = self._SetTagContent(
             metadataDocument,
             "dc:title",
-            metadata.Title,
+            html.escape(metadata.Title),
             EOF
         )
 
         metadataDocument = self._SetTagContent(
             metadataDocument,
             "meta:initial-creator",
-            metadata.Author,
+            html.escape(metadata.Author),
             EOF
         )
 
         metadataDocument = self._SetTagContent(
             metadataDocument,
             "dc:creator",
-            metadata.Author,
+            html.escape(metadata.Author),
             EOF
         )
 

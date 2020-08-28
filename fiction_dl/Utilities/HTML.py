@@ -33,7 +33,8 @@ from fiction_dl.Utilities.Text import IsStringTrulyEmpty
 
 # Standard packages.
 
-from html import unescape
+import html
+import re
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
 
@@ -67,7 +68,7 @@ def CleanHTML(code: str) -> Optional[str]:
 
     # Unescape entities and remove non-breaking spaces.
 
-    code = unescape(code)
+    code = Unescape(code)
     code = code.replace(u"\u00A0", " ")
 
     # Return.
@@ -88,7 +89,7 @@ def FindImagesInCode(code: str) -> List[Image]:
 
     soup = BeautifulSoup(code, features = "html.parser")
 
-    return [Image(unescape(tag["src"])) for tag in soup.find_all("img")]
+    return [Image(Unescape(tag["src"])) for tag in soup.find_all("img")]
 
 def IsURLAbsolute(URL: str) -> bool:
 
@@ -105,7 +106,7 @@ def IsURLAbsolute(URL: str) -> bool:
     if not URL:
         return True
 
-    return bool(urlparse(unescape(URL)).netloc)
+    return bool(urlparse(Unescape(URL)).netloc)
 
 def MakeURLAbsolute(URL: str, baseURL: str) -> Optional[str]:
 
@@ -230,3 +231,23 @@ def StripTags(code: str, validTags: List[str] = []) -> Optional[str]:
         tags = validTags,
         strip = True
     )
+
+def Unescape(code: str) -> Optional[str]:
+
+    ##
+    #
+    # Properly unescapes HTML entities.
+    #
+    # @param code The input code.
+    #
+    # @return The processed code.
+    #
+    ##
+
+    if not code:
+        return None
+
+    for entity in re.findall("&.+?;", code):
+        code = code.replace(entity, entity.lower())
+
+    return html.unescape(code)

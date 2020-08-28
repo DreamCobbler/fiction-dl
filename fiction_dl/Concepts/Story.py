@@ -75,7 +75,7 @@ class Story:
         self.Chapters = []
         self.Images = []
 
-    def FillTemplate(self, template: str) -> str:
+    def FillTemplate(self, template: str, escapeHTMLEntities: bool = False) -> str:
 
         ##
         #
@@ -88,7 +88,7 @@ class Story:
         ##
 
         template = FillTemplate(fiction_dl.Configuration, template)
-        template = FillTemplate(self.Metadata.GetPrettified(), template)
+        template = FillTemplate(self.Metadata.GetPrettified(escapeHTMLEntities), template)
 
         return template
 
@@ -147,7 +147,7 @@ class Story:
 
         ##
         #
-        # Processes the story and all its chapters. To be used before generating output files.
+        # Processes the story metadata. To be used before generating output files.
         #
         ##
 

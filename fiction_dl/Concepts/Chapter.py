@@ -26,6 +26,10 @@
 #
 #
 
+# Application.
+
+from fiction_dl.Utilities.HTML import Unescape
+
 # Standard packages.
 
 import re
@@ -83,6 +87,7 @@ class Chapter:
             )
 
             self.Title = titlecase(self.Title)
+            self.Title = Unescape(self.Title)
 
             if not self.Title:
                 self.Title = None
