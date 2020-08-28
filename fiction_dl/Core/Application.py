@@ -60,6 +60,10 @@ from time import sleep
 from typing import Dict, List
 from urllib3.exceptions import ProtocolError
 
+# Non-standard packages.
+
+import termtables
+
 #
 #
 #
@@ -496,12 +500,21 @@ class Application:
 
         prettifiedMetadata = story.Metadata.GetPrettified()
 
-        self._interface.Comment(f"Title: {prettifiedMetadata.Title}")
-        self._interface.Comment(f"Author: {prettifiedMetadata.Author}")
-        self._interface.Comment(f"Date published: {prettifiedMetadata.DatePublished}")
-        self._interface.Comment(f"Date updated: {prettifiedMetadata.DateUpdated}")
-        self._interface.Comment(f"Chapter count: {prettifiedMetadata.ChapterCount}")
-        self._interface.Comment(f"Word count: {prettifiedMetadata.WordCount}")
+        data = [
+            ["Title:", prettifiedMetadata.Title],
+            ["Author:", prettifiedMetadata.Author],
+            ["Date published:", prettifiedMetadata.DatePublished],
+            ["Date updated:", prettifiedMetadata.DateUpdated],
+            ["Chapter count:", prettifiedMetadata.ChapterCount],
+            ["Word count:", prettifiedMetadata.WordCount],
+        ]
+
+        termtables.print(
+            data,
+            style = termtables.styles.thin,
+            padding = (0, 1),
+            alignment = "rl"
+        )
 
     def _GetStoryOutputDirectoryPath(self, outputDirectoryPath: str, story: Story) -> Dict:
 

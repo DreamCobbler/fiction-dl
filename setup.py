@@ -81,7 +81,8 @@ setup(
         "ebooklib",
 
         "colorama",
-        "termcolor"
+        "termcolor",
+        "termtables"
 
     ],
 
