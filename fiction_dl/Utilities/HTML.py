@@ -146,14 +146,11 @@ def ReformatHTMLToXHTML(code: str) -> Optional[str]:
     if not code:
         return None
 
-    soup = BeautifulSoup(code, "html5lib")
-    code = soup.Prettify()
-
     soup = BeautifulSoup(code, "html.parser")
-    code = soup.Prettify()
+    code = str(soup)
 
     soup = BeautifulSoup(code, "lxml")
-    code = soup.Prettify()
+    code = str(soup)
 
     return code
 
