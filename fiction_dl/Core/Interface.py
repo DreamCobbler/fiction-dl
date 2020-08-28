@@ -170,3 +170,39 @@ class Interface:
             section = True,
             color = "cyan"
         )
+
+    def ProgressBar(
+        self,
+        progress: int,
+        total: int,
+        length: int,
+        description: str,
+        clearLine: bool
+    ) -> None:
+
+        ##
+        #
+        # Prints a progress bar.
+        #
+        # @param progress    Current progress.
+        # @param total       The maximum value of progress.
+        # @param length      The length of the progress bar.
+        # @param description The description.
+        # @param clearLine   Should we clear the line before printing?
+        #
+        ##
+
+        if clearLine:
+            print("\r", end = "")
+
+        proportion = float(progress) / float(total)
+
+        filledPart = int(proportion * length)
+        remainingPart = length - filledPart
+
+        bar = (filledPart * "█") + (remainingPart * "-")
+
+        print(
+            f"{description}: |{bar}|",
+            end = ""
+        )

@@ -61,8 +61,10 @@ OutputDirectoryPath = Path(f"{ApplicationName} Downloads")
 SkippedURLsFilePath = Path(f"{ApplicationName} Skipped URLs.txt")
 
 # A simple line-break.
-
 LineBreak = 79 * "-"
+
+# The length of a progress bar.
+ProgressBarLength = 45
 
 # The welcoming message, printed when the application starts.
 WelcomingMessage = f"{ApplicationName} {ApplicationVersion}, by {CreatorName} <{CreatorContact}>"

@@ -263,10 +263,13 @@ class Application:
 
             # Notify the user, then sleep for a while.
 
-            self._interface.Comment(
-                f"Downloaded chapter {index}/{extractor.Story.Metadata.ChapterCount}.",
-                clearLine = True,
-                end = ""
+            progressComment = f"# Extracted chapter {index}/{extractor.Story.Metadata.ChapterCount}"
+            self._interface.ProgressBar(
+                index,
+                extractor.Story.Metadata.ChapterCount,
+                Configuration.ProgressBarLength,
+                progressComment,
+                True
             )
 
             if extractor.Story.Metadata.ChapterCount == index:
@@ -324,10 +327,13 @@ class Application:
                                 image.Data
                             )
 
-                        self._interface.Comment(
-                            f"Downloaded image {index}/{imageCount}.",
-                            clearLine = True,
-                            end = ""
+                        progressComment = f"# Downloaded image {index}/{imageCount}"
+                        self._interface.ProgressBar(
+                            index,
+                            imageCount,
+                            Configuration.ProgressBarLength,
+                            progressComment,
+                            True
                         )
 
                         if imageCount == index:
