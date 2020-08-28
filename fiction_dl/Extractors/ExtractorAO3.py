@@ -40,6 +40,10 @@ import logging
 import re
 from typing import List, Optional
 
+# Non-standard packages.
+
+from bs4 import BeautifulSoup
+
 #
 #
 #
@@ -146,27 +150,18 @@ class ExtractorAO3(Extractor):
         storyURLs = [f"https://archiveofourown.org/works/{ID}" for ID in workIDs]
         return storyURLs
 
-    def ScanStory(self) -> bool:
+    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
 
         ##
         #
         # Scans the story: generates the list of chapter URLs and retrieves the
         # metadata.
         #
+        # @param soup The tag soup.
+        #
         # @return **False** when the scan fails, **True** when it doesn't fail.
         #
         ##
-
-        if not self.Story:
-            logging.error("The extractor isn't initialized.")
-            return False
-
-        # Download the page.
-
-        soup = DownloadSoup(self._GetAdultView(self.Story.Metadata.URL))
-        if not soup:
-            logging.error(f'Failed to download page: "{self.Story.Metadata.URL}".')
-            return False
 
         # Extract metadata.
 
@@ -294,7 +289,7 @@ class ExtractorAO3(Extractor):
 
         storyID = self._GetStoryID(URL)
 
-        return f"{ExtractorAO3._baseWorkURL}/{storyID}"
+        return self._GetAdultView(f"{ExtractorAO3._baseWorkURL}/{storyID}")
 
     def _GetAdultView(self, URL: str) -> Optional[str]:
 

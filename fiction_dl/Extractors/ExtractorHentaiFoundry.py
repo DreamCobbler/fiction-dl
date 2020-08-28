@@ -42,6 +42,10 @@ from math import ceil
 import re
 from typing import List, Optional
 
+# Non-standard packages.
+
+from bs4 import BeautifulSoup
+
 #
 #
 #
@@ -152,27 +156,17 @@ class ExtractorHentaiFoundry(Extractor):
 
         return storyURLs
 
-    def ScanStory(self) -> bool:
+    def _InternallyExtractChapter(self, soup) -> Optional[Chapter]:
 
         ##
         #
-        # Scans the story: generates the list of chapter URLs and retrieves the
-        # metadata.
+        # Extracts specific chapter.
         #
-        # @return **False** when the scan fails, **True** when it doesn't fail.
+        # @param soup The tag soup of the page containing the chapter.
+        #
+        # @return **True** if the chapter is extracted correctly, **False** otherwise.
         #
         ##
-
-        if not self.Story:
-            logging.error("The extractor isn't initialized.")
-            return False
-
-        # Download the page.
-
-        soup = DownloadSoup(self._GetAdultView(self.Story.Metadata.URL), self._session)
-        if not soup:
-            logging.error(f'Failed to download page: "{self.Story.Metadata.URL}".')
-            return False
 
         # Locate metadata.
 
@@ -295,7 +289,7 @@ class ExtractorHentaiFoundry(Extractor):
         #
         ##
 
-        return URL
+        return self._GetAdultView(URL)
 
     @staticmethod
     def _GetAdultView(URL: str) -> Optional[str]:

@@ -153,7 +153,17 @@ class Extractor:
         #
         ##
 
-        raise NotImplementedError()
+        if not self.Story:
+            logging.error("The extractor isn't initialized.")
+            return False
+
+        normalizedURL = self._GetNormalizedStoryURL(self.Story.Metadata.URL)
+        soup = DownloadSoup(normalizedURL, self._session)
+        if not soup:
+            logging.error(f'Failed to download page: "{normalizedURL}".')
+            return False
+
+        return self._InternallyScanStory(soup)
 
     def ExtractChapter(self, index: int) -> Optional[Chapter]:
 
@@ -199,11 +209,26 @@ class Extractor:
         if not URL:
             return None
 
-        response = requests.get(URL, stream = True)
+        response = self._session.get(URL, stream = True)
         if not response.content:
             return None
 
         return response.content
+
+    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
+
+        ##
+        #
+        # Scans the story: generates the list of chapter URLs and retrieves the
+        # metadata.
+        #
+        # @param soup The tag soup.
+        #
+        # @return **False** when the scan fails, **True** when it doesn't fail.
+        #
+        ##
+
+        raise NotImplementedError()
 
     def _InternallyExtractChapter(self, soup: BeautifulSoup) -> Optional[Chapter]:
 

@@ -42,6 +42,10 @@ import requests
 from typing import List, Optional
 from urllib.parse import urlparse
 
+# Non-standard packages.
+
+from bs4 import BeautifulSoup
+
 #
 #
 #
@@ -82,31 +86,23 @@ class ExtractorAdultFanfiction(Extractor):
             "adult-fanfiction.org"
         ]
 
-    def ScanStory(self) -> bool:
+    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
 
         ##
         #
         # Scans the story: generates the list of chapter URLs and retrieves the
         # metadata.
         #
+        # @param soup The tag soup.
+        #
         # @return **False** when the scan fails, **True** when it doesn't fail.
         #
         ##
 
-        if not self.Story:
-            logging.error("The extractor isn't initialized.")
-            return False
-
-        # Download the page.
-
-        soup = DownloadSoup(self.Story.Metadata.URL)
-        if not soup:
-            logging.error(f'Failed to download page: "{self.Story.Metadata.URL}".')
-            return False
-
         # Extract chapter URLs.
 
-        siteURL = GetSiteURL(self.Story.Metadata.URL)
+        normalizedURL = self._GetNormalizedURL(self.Story.Metadata.URL)
+        siteURL = GetSiteURL(normalizedURL)
 
         for linkElement in soup.select("div.dropdown-content > a"):
             self._chapterURLs.append(MakeURLAbsolute(linkElement["href"], siteURL))

@@ -41,6 +41,10 @@ import logging
 import re
 from typing import List, Optional
 
+# Non-standard packages.
+
+from bs4 import BeautifulSoup
+
 #
 #
 #
@@ -108,20 +112,18 @@ class ExtractorXenForo(Extractor):
 
         return True
 
-    def ScanStory(self) -> bool:
+    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
 
         ##
         #
         # Scans the story: generates the list of chapter URLs and retrieves the
         # metadata.
         #
+        # @param soup The tag soup.
+        #
         # @return **False** when the scan fails, **True** when it doesn't fail.
         #
         ##
-
-        if not self.Story:
-            logging.error("The extractor isn't initialized.")
-            return False
 
         # Generate the threadmarks URL.
 
@@ -179,27 +181,6 @@ class ExtractorXenForo(Extractor):
         # Return.
 
         return True
-
-    def ExtractMedia(self, URL: str) -> Optional[bytes]:
-
-        ##
-        #
-        # Extracts binary media (an image, for example).
-        #
-        # @param URL The URL to be extracted.
-        #
-        # @return The data extracted, as bytes.
-        #
-        ##
-
-        if not URL:
-            return None
-
-        response = self._session.get(URL, stream = True)
-        if not response.content:
-            return None
-
-        return response.content
 
     def _InternallyExtractChapter(self, soup) -> Optional[Chapter]:
 
