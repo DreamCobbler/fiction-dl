@@ -156,15 +156,16 @@ class ExtractorHentaiFoundry(Extractor):
 
         return storyURLs
 
-    def _InternallyExtractChapter(self, soup) -> Optional[Chapter]:
+    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
 
         ##
         #
-        # Extracts specific chapter.
+        # Scans the story: generates the list of chapter URLs and retrieves the
+        # metadata.
         #
-        # @param soup The tag soup of the page containing the chapter.
+        # @param soup The tag soup.
         #
-        # @return **True** if the chapter is extracted correctly, **False** otherwise.
+        # @return **False** when the scan fails, **True** when it doesn't fail.
         #
         ##
 
