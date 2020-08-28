@@ -87,7 +87,7 @@ class FormatterHTML(Formatter):
         # Load the template and fill it with the story.
 
         templateFilePath = GetPackageDirectory() / "Templates/FormatterHTML.html"
-        content = story.FillTemplate(ReadTextFile(templateFilePath))
+        content = story.FillTemplate(ReadTextFile(templateFilePath), escapeHTMLEntities = True)
 
         def Prefixer(index: int, title: str) -> str:
             return "<h2>" + f"Chapter {index}" + (f": {title}" if title else "") + "</h2>"
