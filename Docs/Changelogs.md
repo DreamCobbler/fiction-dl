@@ -1,4 +1,4 @@
-### 1.4.0
+# 1.4.0
 
 **Extractors**:
 
@@ -19,7 +19,7 @@
 - Updated the readme: mentioned some libraries that might need to be installed on Linux systems.
 - Fixed some typos.
 
-### 1.3.0
+# 1.3.0
 
 **Processing:**
 
@@ -30,7 +30,7 @@
 - Fixed a bug in the ODT formatter.
 - Fixed a bug in the FF.net extractor.
 
-### 1.2.0
+# 1.2.0
 
 **General:**
 
@@ -50,13 +50,13 @@
 - Reformatted *Style Guidelines* as Markdown.
 - Reformatted changelogs as Markdown.
 
-### 1.1.1
+# 1.1.1
 
 **Stuff:**
 
 - Fixed a mistake in the readme.
 
-### 1.1.0
+# 1.1.0
 
 **General**:
 
