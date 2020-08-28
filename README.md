@@ -40,6 +40,7 @@ I've created it mostly as an exercise in Python - the good old [FanFicFare](http
 | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                   | ✗ no            |
 | erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✓ **yes**       |
 | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                 | ✗ no                   | ✓ **yes**       |
+| erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)       | ✗ no                   | ✗ no            |
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
 

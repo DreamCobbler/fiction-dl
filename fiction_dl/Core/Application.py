@@ -302,6 +302,8 @@ class Application:
                 imageCount = len(extractor.Story.Images)
                 downloadedImageCount = 0
 
+                previousImageFailedToDownlod = False
+
                 for index, image in enumerate(extractor.Story.Images, start = 1):
 
                     retrievedFromCache = False
@@ -340,13 +342,16 @@ class Application:
                             print()
 
                         downloadedImageCount += 1
+                        previousImageFailedToDownload = False
 
                     else:
 
-                        if index > 1:
+                        if (index > 1) and (not previousImageFailedToDownload):
                             print()
 
                         self._interface.Error(f'Failed to download image {index}/{imageCount}: "{image.URL}".')
+
+                        previousImageFailedToDownload = True
 
                 self._interface.Comment(f"Successfully downloaded {downloadedImageCount}/{imageCount} image(s).")
 

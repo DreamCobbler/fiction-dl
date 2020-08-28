@@ -72,6 +72,8 @@ class Extractor:
         self._session = requests.session()
         self._chapterURLs = []
 
+        self._chapterParserName = "html.parser"
+
     def GetSupportedHostnames(self) -> List[str]:
 
         ##
@@ -187,7 +189,7 @@ class Extractor:
 
         chapterURL = self._chapterURLs[index - 1]
 
-        soup = DownloadSoup(chapterURL, self._session)
+        soup = DownloadSoup(chapterURL, self._session, parser = self._chapterParserName)
         if not soup:
             logging.error(f'Failed to download page: "{chapterURL}".')
             return None

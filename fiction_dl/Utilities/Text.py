@@ -143,9 +143,73 @@ def GetTitleProper(title: str) -> Optional[str]:
     titleProper = re.sub("\[?\(?Part(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
     titleProper = re.sub("\[?\(?Update(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
 
+    semicolonOccurence = titleProper.find(":")
+    if -1 != semicolonOccurence:
+        titleProper = titleProper[:semicolonOccurence]
+
+    words = titleProper.split()
+    if IsRomanNumeral(words[-1]):
+        titleProper = " ".join(words[:-1])
+
     titleProper = titleProper.strip()
 
     return titleProper.strip()
+
+def GetSubtitle(title: str) -> Optional[str]:
+
+    ##
+    #
+    # Retrieves the proper subtitle of the story ("aaa: bbbbb" will return "bbbbb").
+    #
+    # @param title The title as it was retrieved from the web.
+    #
+    # @return The subtitle.
+    #
+    ##
+
+    if not title:
+        return None
+
+    subtitle = title
+
+    semicolonOccurence = subtitle.find(":")
+    if -1 != semicolonOccurence:
+        subtitle = subtitle[semicolonOccurence + 1:]
+
+    subtitle = subtitle.strip()
+
+    return subtitle
+
+def IsRomanNumeral(text: str) -> bool:
+
+    ##
+    #
+    # Checks if given string is a Roman numeral.
+    #
+    # @param text The input string.
+    #
+    # @return **True** if the string is a Roman numeral, **False** otherwise.
+    #
+    ##
+
+    AllowedCharacters = [
+        "I",
+        "V",
+        "X",
+        "L",
+        "C",
+        "D",
+        "M",
+    ]
+
+    text = text.strip()
+
+    for character in text:
+
+        if character not in AllowedCharacters:
+            return False
+
+    return True
 
 def IsStringTrulyEmpty(text: str) -> bool:
 
