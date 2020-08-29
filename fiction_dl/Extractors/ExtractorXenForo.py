@@ -142,17 +142,31 @@ class ExtractorXenForo(Extractor):
             logging.error(f'Failed to download page: "{chapterURL}".')
             return None
 
-        postID = chapterURL[chapterURL.find("#") + 1:]
+        if -1 != (postIDLocation := chapterURL.find("#")):
 
-        postElement = soup.find("article", {"data-content": postID})
-        if not postElement:
-            logging.error("Post element not found.")
-            return None
+            postID = chapterURL[postIDLocation + 1:]
 
-        bodyElement = postElement.find("div", {"class": "bbWrapper"})
-        if not bodyElement:
-            logging.error("Message body element not found.")
-            return None
+            postElement = soup.find("article", {"data-content": postID}) or soup.select_one(f"#{postID}")
+            if not postElement:
+                logging.error("Post element not found.")
+                return None
+
+            bodyElement = postElement.select_one("div.bbWrapper") or postElement.select_one("div.messageContent")
+            if not bodyElement:
+                logging.error("Message body element not found.")
+                return None
+
+        else:
+
+            postElement = soup.select_one("li.message")
+            if not postElement:
+                logging.error("Post element not found.")
+                return None
+
+            bodyElement = postElement.select_one("div.messageContent")
+            if not bodyElement:
+                logging.error("Message body element not found.")
+                return None
 
         return Chapter(content = Stringify(bodyElement.encode_contents()))
 
@@ -183,7 +197,7 @@ class ExtractorXenForo(Extractor):
             logging.error(f'Failed to download page: "{threadmarksURL}".')
             return False
 
-        titleElement = soup.find("h1", {"class": "p-title-value"})
+        titleElement = soup.select_one("h1.p-title-value") or soup.select_one(".titleBar > h1")
         if not titleElement:
             logging.error("Title element not found.")
             return False
@@ -200,7 +214,16 @@ class ExtractorXenForo(Extractor):
         datePublished = int(authorElements[0]["data-content-date"].strip())
         dateUpdated = int(authorElements[-1]["data-content-date"].strip())
 
-        self.Story.Metadata.Title = titleElement.get_text().strip()[:-14] # Cut "- Threadmarks".
+        self.Story.Metadata.Title = titleElement.get_text().strip()
+        if self.Story.Metadata.Title.endswith("- Threadmarks"):
+            self.Story.Metadata.Title = self.Story.Metadata.Title[:-14]
+        elif self.Story.Metadata.Title.startswith("Threadmarks for:"):
+            self.Story.Metadata.Title = self.Story.Metadata.Title[17:]
+
+        titleProperMatch = re.search("(.+) \(.+\)", self.Story.Metadata.Title)
+        if titleProperMatch:
+            self.Story.Metadata.Title = titleProperMatch.group(1)
+
         self.Story.Metadata.Author = authorElements[0]["data-content-author"].strip()
         self.Story.Metadata.Summary = "No summary."
 
@@ -213,13 +236,21 @@ class ExtractorXenForo(Extractor):
         # Retrieve chapter URLs.
 
         chapterLinkElements = soup.select("div.structItem-title a")
-        self._chapterURLs = [
-            (self._baseURL + linkElement["href"])
-            for linkElement in chapterLinkElements
-        ]
+        if not chapterLinkElements:
+            chapterLinkElements = soup.select(".threadmarkList > ol > li > a")
+
+        for element in chapterLinkElements:
+
+            chapterRelativeURL = element["href"]
+            if not chapterRelativeURL.startswith("/"):
+                chapterRelativeURL = "/" + chapterRelativeURL
+
+            chapterURL = self._baseURL + chapterRelativeURL
+
+            self._chapterURLs.append(chapterURL)
 
         if not self._chapterURLs:
-            logging.error("Failed to retrieve chapter URL.s")
+            logging.error("Failed to retrieve chapter URLs.")
             return False
 
         # Return.

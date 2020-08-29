@@ -165,9 +165,13 @@ class Application:
 
                 exit()
 
-            except BaseException as unknownException:
+            except ConnectionError as caughtException:
 
-                self._interface.Error(f"An exception has been thrown: {unknownException}")
+                self._interface.Error(f"The website has refused connection: {caughtException}")
+
+            except BaseException as caughtException:
+
+                self._interface.Error(f"An exception has been thrown: {caughtException}")
 
             except:
 

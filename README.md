@@ -20,20 +20,21 @@ The application supports a dozen websites, generates output files in up to five 
 
 **fiction-dl** can download stories from a multitude of sites - in some cases it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*).
 
-| Category         | Site                                                              | Authentication support | Channel support |
-|------------------|-------------------------------------------------------------------|------------------------|-----------------|
-| fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                | ✗ no                   | ✓ **yes**       |
-| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                     | ✗ no                   | ✓ **yes**       |
-| fanfiction       | [FicWad.com](https://ficwad.com/)                                 | ✗ no                   | ✓ **yes**       |
-| fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)              | ✓ **yes**              | ✗ no            |
-| fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)  | ✓ **yes**              | ✗ no            |
-| fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)   | ✓ **yes**              | ✗ no            |
-| original fiction | [Fiction Press](https://www.fictionpress.com/)                    | ✗ no                   | ✓ **yes**       |
-| original fiction | [Reddit](https://www.reddit.com/)                                 | ✓ **yes**              | ✗ no            |
-| erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php) | ✗ no                   | ✗ no            |
-| erotica          | [Literotica](https://www.literotica.com/)                         | ✗ no                   | ✓ **yes**       |
-| erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                 | ✗ no                   | ✓ **yes**       |
-| erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)       | ✗ no                   | ✗ no            |
+| Category         | Site                                                                | Authentication support | Channel support |
+|------------------|---------------------------------------------------------------------|------------------------|-----------------|
+| fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                  | ✗ no                   | ✓ **yes**       |
+| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                       | ✗ no                   | ✓ **yes**       |
+| fanfiction       | [FicWad.com](https://ficwad.com/)                                   | ✗ no                   | ✓ **yes**       |
+| fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)                | ✓ **yes**              | ✗ no            |
+| fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)    | ✓ **yes**              | ✗ no            |
+| fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)     | ✓ **yes**              | ✗ no            |
+| fanfiction       | [QuestionableQuesting.com](https://forum.questionablequesting.com/) | ✗ no                   | ✗ no            |
+| original fiction | [Fiction Press](https://www.fictionpress.com/)                      | ✗ no                   | ✓ **yes**       |
+| original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no            |
+| erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✗ no            |
+| erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**       |
+| erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**       |
+| erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no            |
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
 
