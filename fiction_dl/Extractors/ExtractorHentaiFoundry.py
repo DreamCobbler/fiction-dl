@@ -246,12 +246,17 @@ class ExtractorHentaiFoundry(Extractor):
 
         return True
 
-    def _InternallyExtractChapter(self, soup) -> Optional[Chapter]:
+    def _InternallyExtractChapter(
+        self,
+        URL: str,
+        soup: Optional[BeautifulSoup]
+    ) -> Optional[Chapter]:
 
         ##
         #
         # Extracts specific chapter.
         #
+        # @param URL  The URL of the page containing the chapter.
         # @param soup The tag soup of the page containing the chapter.
         #
         # @return **True** if the chapter is extracted correctly, **False** otherwise.

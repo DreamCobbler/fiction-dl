@@ -72,6 +72,7 @@ class Extractor:
         self._session = requests.session()
         self._chapterURLs = []
 
+        self._downloadChapterSoupWhenExtracting = True
         self._chapterParserName = "html.parser"
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -189,12 +190,16 @@ class Extractor:
 
         chapterURL = self._chapterURLs[index - 1]
 
-        soup = DownloadSoup(chapterURL, self._session, parser = self._chapterParserName)
-        if not soup:
-            logging.error(f'Failed to download page: "{chapterURL}".')
-            return None
+        soup = None
 
-        return self._InternallyExtractChapter(soup)
+        if self._downloadChapterSoupWhenExtracting:
+
+            soup = DownloadSoup(chapterURL, self._session, parser = self._chapterParserName)
+            if not soup:
+                logging.error(f'Failed to download page: "{chapterURL}".')
+                return None
+
+        return self._InternallyExtractChapter(chapterURL, soup)
 
     def ExtractMedia(self, URL: str) -> Optional[bytes]:
 
@@ -232,12 +237,17 @@ class Extractor:
 
         raise NotImplementedError()
 
-    def _InternallyExtractChapter(self, soup: BeautifulSoup) -> Optional[Chapter]:
+    def _InternallyExtractChapter(
+        self,
+        URL: str,
+        soup: Optional[BeautifulSoup]
+    ) -> Optional[Chapter]:
 
         ##
         #
         # Extracts specific chapter.
         #
+        # @param URL  The URL of the page containing the chapter.
         # @param soup The tag soup of the page containing the chapter.
         #
         # @return **True** if the chapter is extracted correctly, **False** otherwise.

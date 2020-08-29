@@ -45,6 +45,7 @@ from typing import List, Optional
 
 # Non-standard packages.
 
+from bs4 import BeautifulSoup
 from markdown import markdown
 from praw import Reddit
 from praw.exceptions import InvalidURL
@@ -72,6 +73,8 @@ class ExtractorReddit(Extractor):
         ##
 
         super().__init__()
+
+        self._downloadChapterSoupWhenExtracting = False
 
         if not ExtractorReddit._RefreshToken:
             self._redditInstance = Reddit(
@@ -319,27 +322,24 @@ class ExtractorReddit(Extractor):
             logging.error("PRAW says: Forbidden.")
             return False
 
-    def ExtractChapter(self, index: int) -> Optional[Chapter]:
+    def _InternallyExtractChapter(
+        self,
+        URL: str,
+        soup: Optional[BeautifulSoup]
+    ) -> Optional[Chapter]:
 
         ##
         #
         # Extracts specific chapter.
         #
-        # @param index The index of the chapter to be extracted.
+        # @param URL  The URL of the page containing the chapter.
+        # @param soup The tag soup of the page containing the chapter.
         #
         # @return **True** if the chapter is extracted correctly, **False** otherwise.
         #
         ##
 
-        if index > len(self._chapterURLs):
-            logging.error(
-                f"Trying to extract chapter {index}. "
-                f"Only {len(self._chapterURLs)} chapter(s) located. "
-                f"The story supposedly has {self.Story.Metadata.ChapterCount} chapter(s)."
-            )
-            return None
-
-        submission = Submission(self._redditInstance, url = self._chapterURLs[index - 1])
+        submission = Submission(self._redditInstance, url = URL)
 
         return Chapter(content = markdown(submission.selftext))
 
