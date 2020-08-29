@@ -20,6 +20,11 @@
 				font-family: "Source Serif Pro", Cambria, Georgia, "Times New Roman", serif;
 				text-align: center;
 
+				<!-- Background comes from https://www.svgbackgrounds.com/#alternating-arrowhead -->
+
+				background-color: #ffffff;
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 200 200'%3E%3Cpolygon fill='%23DCEFFA' points='100 0 0 100 100 100 100 200 200 100 200 0'/%3E%3C/svg%3E");
+
 			}
 
 			body > header
@@ -31,8 +36,7 @@
 				color: #fff;
 				font-family: Calibri, Arial, sans-serif;
 
-				background: #0acffb;
-				background: linear-gradient(350deg, #0acffb 0%, #000 100%);
+				background: #699fbe;
 
 			}
 
@@ -52,13 +56,24 @@
 
 			}
 
+			main
+			{
+
+				padding: 1em 0;
+
+				background: #fff;
+				border-top: .25em solid #699fbe;
+				border-bottom: .25em solid #699fbe;
+
+			}
+
 		</style>
 
 	</head>
 
 	<body>
 
-		<header><h1>@@@ApplicationName@@@</h1></header>
+		<header><h1>@@@ApplicationName@@@ @@@ApplicationVersion@@@</h1></header>
 
 		<main>@@@Content@@@</main>
 

@@ -166,6 +166,7 @@ class ExtractorReddit(Extractor):
             data = client.recv(1024).decode("utf-8")
             responseTemplate = ReadTextFile(GetPackageDirectory() / "Resources" / "PrettyHTMLText.html")
             responseTemplate = responseTemplate.replace("@@@ApplicationName@@@", Configuration.ApplicationName)
+            responseTemplate = responseTemplate.replace("@@@ApplicationVersion@@@", Configuration.ApplicationVersion)
 
             if (" " not in data) or ("?" not in data) or ("&" not in data):
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", "Error: invalid response."))
