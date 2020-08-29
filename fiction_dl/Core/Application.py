@@ -501,8 +501,8 @@ class Application:
         if (not outputFilePaths["MOBI"].is_file()) and FindEbookConvert():
 
             if not FormatterMOBI(self._arguments.Images).ConvertFromEPUB(
-                outputFilePaths["ODT"],
-                outputFilePaths["PDF"].parent
+                outputFilePaths["EPUB"],
+                outputFilePaths["MOBI"].parent
             ):
                 logging.error("Failed to format the story as MOBI.")
 

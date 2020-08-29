@@ -1,12 +1,10 @@
-https://archiveofourown.org/works/17643755
-
 ##
 #
 # Local text file
 #
 ##
 
-#Integration Test Text Sample.txt
+Integration Test Text Sample.txt
 
 ##
 #
@@ -14,4 +12,4 @@ https://archiveofourown.org/works/17643755
 #
 ##
 
-#Integration Test Dataset 2.txt
+Integration Test Dataset 2.txt

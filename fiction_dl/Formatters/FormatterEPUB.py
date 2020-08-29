@@ -130,7 +130,7 @@ class FormatterEPUB(Formatter):
 
         metadataChapter = epub.EpubHtml(
             file_name = "Metadata.xhtml",
-            content = story.FillTemplate(metadataTemplate),
+            content = story.FillTemplate(metadataTemplate, escapeHTMLEntities = True),
             title = "Metadata",
             lang = "en"
         )
