@@ -62,7 +62,7 @@ logging.basicConfig(level = logging.INFO)
 #
 
 arguments = Namespace(
-    Authenticate = False,
+    Authenticate = True,
     ClearCache = True,
     Verbose = True,
     Force = True,
