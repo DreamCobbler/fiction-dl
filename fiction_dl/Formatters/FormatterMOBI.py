@@ -115,7 +115,8 @@ class FormatterMOBI(Formatter):
                 Stringify(sourceFilePath),
                 Stringify(outputDirectoryPath / (sourceFilePath.stem + ".mobi")),
             ],
-            stdout = DEVNULL
+            stdout = DEVNULL,
+            stderr = DEVNULL
         )
 
         return True
