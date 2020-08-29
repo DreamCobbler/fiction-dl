@@ -60,6 +60,18 @@ class ExtractorQuestionableQuesting(ExtractorXenForo):
 
         super().__init__("https://forum.questionablequesting.com/")
 
+    def SupportsAuthentication(self) -> bool:
+
+        ##
+        #
+        # Checks whether the extractor supports user authentication.
+        #
+        # @return **True** if the site *does* support authentication, **False** otherwise.
+        #
+        ##
+
+        return False
+
     def GetSupportedHostnames(self) -> List[str]:
 
         ##
