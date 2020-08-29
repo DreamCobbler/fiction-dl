@@ -66,6 +66,7 @@ setup(
 
         "babel",
         "titlecase",
+        "pykakasi",
 
         "opencv-python",
         "numpy",

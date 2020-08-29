@@ -45,7 +45,7 @@ from fiction_dl.Utilities.Extractors import CreateExtractor
 from fiction_dl.Utilities.Filesystem import FindEbookConvert, SanitizeFileName, WriteTextFile
 from fiction_dl.Utilities.General import RemoveDuplicates, RenderPageToBytes, Stringify
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
-from fiction_dl.Utilities.Text import Truncate
+from fiction_dl.Utilities.Text import Transliterate, Truncate
 from fiction_dl.Utilities.Web import GetSiteURL
 import fiction_dl. Configuration as Configuration
 
@@ -55,6 +55,7 @@ from argparse import Namespace
 import logging
 from os.path import expandvars, isfile
 from pathlib import Path
+import re
 from requests.exceptions import ConnectionError
 from time import sleep
 from typing import Dict, List
@@ -166,7 +167,7 @@ class Application:
 
             except BaseException as unknownException:
 
-                self._interface.Error("An exception has been thrown: {unknownException}.")
+                self._interface.Error(f"An exception has been thrown: {unknownException}")
 
             except:
 
@@ -524,7 +525,7 @@ class Application:
         prettifiedMetadata = story.Metadata.GetPrettified()
 
         data = [
-            ["Title:", prettifiedMetadata.Title],
+            ["Title:", self._GetPrintableStoryTitle(story)],
             ["Author:", prettifiedMetadata.Author],
             ["Date published:", prettifiedMetadata.DatePublished],
             ["Date updated:", prettifiedMetadata.DateUpdated],
@@ -554,7 +555,7 @@ class Application:
 
         prettifiedMetadata = story.Metadata.GetPrettified()
 
-        sanitizedStoryTitle = SanitizeFileName(prettifiedMetadata.Title)
+        sanitizedStoryTitle = self._GetPrintableStoryTitle(story)
         sanitizedAuthor = SanitizeFileName(prettifiedMetadata.Author)
 
         outputDirectoryPath = \
@@ -568,3 +569,13 @@ class Application:
             "EPUB": outputDirectoryPath / (sanitizedStoryTitle + ".epub"),
             "MOBI": outputDirectoryPath / (sanitizedStoryTitle + ".mobi"),
         }
+
+    def _GetPrintableStoryTitle(self, story: Story) -> str:
+
+        prettifiedMetadata = story.Metadata.GetPrettified()
+
+        title = Transliterate(prettifiedMetadata.Title)
+        title = SanitizeFileName(title)
+        title = re.sub("\s+", " ", title)
+
+        return title

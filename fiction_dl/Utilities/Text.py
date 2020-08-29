@@ -41,6 +41,7 @@ from typing import Any, Optional
 from babel.dates import format_date
 from babel.numbers import format_number
 import numpy
+import pykakasi
 
 #
 #
@@ -267,6 +268,33 @@ def PrettifyNumber(number: int) -> str:
         return "?"
 
     return format_number(number, locale = "en")
+
+def Transliterate(string: str) -> str:
+
+    ##
+    #
+    # Transliterates given string to ASCII.
+    #
+    # @param string The input string.
+    #
+    # @return The transliterated input string.
+    #
+    ##
+
+    if not string:
+        return string
+
+    kakasi = pykakasi.kakasi()
+    kakasi.setMode("H", "a")
+    kakasi.setMode("K", "a")
+    kakasi.setMode("J", "a")
+    kakasi.setMode("r", "Hepburn")
+    kakasi.setMode("s", True)
+    kakasi.setMode("C", True)
+
+    string = kakasi.getConverter().do(string)
+
+    return string
 
 def Truncate(string: str, length: int) -> str:
 
