@@ -44,6 +44,7 @@ from argparse import Namespace
 import logging
 from pathlib import Path
 
+
 #
 #
 #
@@ -57,11 +58,11 @@ from pathlib import Path
 logging.basicConfig(level = logging.INFO)
 
 #
-# Run the test.
+# Run the integration test.
 #
 
 arguments = Namespace(
-    Authenticate = True,
+    Authenticate = False,
     ClearCache = True,
     Verbose = True,
     Force = True,

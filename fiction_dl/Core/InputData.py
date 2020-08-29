@@ -114,11 +114,12 @@ class InputData:
         self._expandedArguments = newExpandedData
         return expandedArgumentsCount
 
-    def ExpandRecursively(self) -> None:
+    def ExpandAndShuffle(self) -> None:
 
         ##
         #
-        # Expands every input argument that can be expanded, recursively.
+        # Expands every input argument that can be expanded, recursively, then randomly reorders
+        # the list.
         #
         ##
 
@@ -126,14 +127,5 @@ class InputData:
 
         while 0 != expandedArgumentsCount:
             expandedArgumentsCount = self.Expand()
-
-    def Shuffle(self) -> None:
-
-        ##
-        #
-        # Randomly reorders the list of expanded arguments.
-        #
-        #
-        ##
 
         random.shuffle(self._expandedArguments)

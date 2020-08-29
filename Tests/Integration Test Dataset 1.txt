@@ -4,7 +4,7 @@
 #
 ##
 
-Text Extractor Example.txt
+Integration Test Text Sample.txt
 
 ##
 #

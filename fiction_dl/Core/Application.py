@@ -91,6 +91,7 @@ class Application:
         ##
 
         self._arguments = arguments
+
         self._cache = Cache(cacheDirectoryPath)
         self._interface = Interface()
 
@@ -120,14 +121,14 @@ class Application:
 
         if calibreNotFound:
             self._interface.Notice(
-                "Calibre doesn't seem to be installed on this machine. MOBI output files "
-                "will not be generated."
+                "Calibre doesn't seem to be installed on this machine. MOBI output files will not "
+                "be generated."
             )
 
         if libreOfficeNotFound:
             self._interface.Notice(
-                "LibreOffice doesn't seem to be installed on this machine. PDF output "
-                "files will not be generated."
+                "LibreOffice doesn't seem to be installed on this machine. PDF output files will "
+                "not be generated."
             )
 
         # Process the input arguments.
@@ -135,8 +136,7 @@ class Application:
         self._interface.Process("Processing input arguments...", section = True)
 
         inputData = InputData(self._arguments.Input)
-        inputData.ExpandRecursively()
-        inputData.Shuffle()
+        inputData.ExpandAndShuffle()
 
         URLs = inputData.Access()
 
@@ -166,15 +166,11 @@ class Application:
 
             except BaseException as unknownException:
 
-                self._interface.Error(
-                    "An exception has been thrown while processing given URL: {unknownException}."
-                )
-                successfullyProcessedURL = False
+                self._interface.Error("An exception has been thrown: {unknownException}.")
 
             except:
 
-                self._interface.Error("An exception has been thrown while processing given URL.")
-                successfullyProcessedURL = False
+                self._interface.Error("An exception has been thrown.")
 
             if not successfullyProcessedURL:
                 skippedURLs.append(URL)
@@ -188,16 +184,15 @@ class Application:
             print()
 
             for URL in skippedURLs:
-                self._interface.Error(f'Failed to download a story from URL: "{URL}".')
+                self._interface.Error(f'Failed to download a story: "{URL}".')
 
             WriteTextFile(Configuration.SkippedURLsFilePath, "\n".join(skippedURLs))
 
         # Print some final information.
 
-        self._interface.Comment(
-            f"Successfully retrieved {len(URLs) - len(skippedURLs)}/{len(URLs)} stories.",
-            section = True
-        )
+        successCount = len(URLs) - len(skippedURLs)
+
+        self._interface.Comment(f"Downloaded {successCount}/{len(URLs)} stories.", section = True)
 
         # Clear the cache.
 
@@ -230,23 +225,15 @@ class Application:
 
         # Authenticate the user (if supported by the extractor).
 
-        if self._arguments.Authenticate:
+        if self._arguments.Authenticate and extractor.SupportsAuthentication():
 
-            if not extractor.SupportsAuthentication():
-                self._interface.Comment("This specific extractor does NOT support authentication.")
-
-            elif not extractor.Authenticate():
-                logging.error("Failed attempt to authenticate.")
-                return False
+            if not extractor.Authenticate():
+                self._interface.Error("Failed to authenticate.")
 
             else:
                 self._interface.Comment("Authenticated successfully.")
 
-        # Process the story.
-
-        return self._ProcessStoryUsingExtractor(extractor)
-
-    def _ProcessStoryUsingExtractor(self, extractor) -> bool:
+        # Scan the story.
 
         self._interface.Process("Scanning the story...", section = True)
 
@@ -261,10 +248,7 @@ class Application:
         outputFilePaths = self._GetOutputFilePaths(self._arguments.Output, extractor.Story)
 
         if (not self._arguments.Force) and all(x.is_file() for x in outputFilePaths.values()):
-            self._interface.Comment(
-                "Output files already exist; no need to recreate them.",
-                section = True
-            )
+            self._interface.Comment("This story has been downloaded already.", section = True)
             return True
 
         elif self._arguments.Force:
@@ -313,12 +297,11 @@ class Application:
 
             # Notify the user, then sleep for a while.
 
-            progressComment = f"# Extracted chapter {index}/{extractor.Story.Metadata.ChapterCount}"
             self._interface.ProgressBar(
                 index,
                 extractor.Story.Metadata.ChapterCount,
                 Configuration.ProgressBarLength,
-                progressComment,
+                f"# Extracted chapter {index}/{extractor.Story.Metadata.ChapterCount}",
                 True
             )
 
@@ -379,12 +362,11 @@ class Application:
                                 image.Data
                             )
 
-                        progressComment = f"# Downloaded image {index}/{imageCount}"
                         self._interface.ProgressBar(
                             index,
                             imageCount,
                             Configuration.ProgressBarLength,
-                            progressComment,
+                            f"# Downloaded image {index}/{imageCount}",
                             True
                         )
 
@@ -399,11 +381,15 @@ class Application:
                         if (index > 1) and (not previousImageFailedToDownload):
                             print()
 
-                        self._interface.Error(f'Failed to download image {index}/{imageCount}: "{image.URL}".')
+                        self._interface.Error(
+                            f'Failed to download image {index}/{imageCount}: "{image.URL}".'
+                        )
 
                         previousImageFailedToDownload = True
 
-                self._interface.Comment(f"Successfully downloaded {downloadedImageCount}/{imageCount} image(s).")
+                self._interface.Comment(
+                    f"Successfully downloaded {downloadedImageCount}/{imageCount} image(s)."
+                )
 
         # Process content.
 
@@ -456,12 +442,12 @@ class Application:
 
         # Create the output directory.
 
-        outputDirectoryPath = self._GetStoryOutputDirectoryPath(
+        outputFilePaths = self._GetOutputFilePaths(
             self._arguments.Output,
             extractor.Story
         )
 
-        outputDirectoryPath.mkdir(parents = True, exist_ok = True)
+        outputFilePaths["Directory"].mkdir(parents = True, exist_ok = True)
 
         # Format and save the story to HTML.
 
@@ -529,7 +515,7 @@ class Application:
 
         ##
         #
-        # Prints story's metadata.
+        # Prints a story's metadata.
         #
         # @param story The story.
         #
@@ -553,43 +539,29 @@ class Application:
             alignment = "rl"
         )
 
-    def _GetStoryOutputDirectoryPath(self, outputDirectoryPath: str, story: Story) -> Dict:
+    def _GetOutputFilePaths(self, outputPath: str, story: Story) -> Dict:
 
         ##
         #
-        # Generates the output directory path for a specific story.
+        # Generates file paths for output files.
         #
-        # @param outputDirectoryPath Directory in which all the application's output is placed.
-        # @param story               The story.
+        # @param outputPath Directory in which all the application's output is placed.
+        # @param story      The story.
         #
-        # @return The output directory path.
-        #
-        ##
-
-        storyMetadata = story.Metadata.GetPrettified()
-
-        sanitizedStoryTitle = SanitizeFileName(storyMetadata.Title)
-        sanitizedAuthor = SanitizeFileName(storyMetadata.Author)
-
-        return Path(expandvars(outputDirectoryPath)) / sanitizedAuthor / sanitizedStoryTitle
-
-    def _GetOutputFilePaths(self, outputDirectoryPath: str, story: Story) -> Dict:
-
-        ##
-        #
-        # Generates file names for output files.
-        #
-        # @param outputDirectoryPath Directory in which all the application's output is placed.
-        # @param story               The story.
-        #
-        # @return A dictionary; keys correspond to formats, values to file paths.
+        # @return A dictionary: keys correspond to formats, values to file paths.
         #
         ##
 
-        outputDirectoryPath = self._GetStoryOutputDirectoryPath(outputDirectoryPath, story)
-        sanitizedStoryTitle = SanitizeFileName(story.Metadata.GetPrettified().Title)
+        prettifiedMetadata = story.Metadata.GetPrettified()
+
+        sanitizedStoryTitle = SanitizeFileName(prettifiedMetadata.Title)
+        sanitizedAuthor = SanitizeFileName(prettifiedMetadata.Author)
+
+        outputDirectoryPath = \
+            Path(expandvars(outputPath)) / sanitizedAuthor / sanitizedStoryTitle
 
         return {
+            "Directory": outputDirectoryPath,
             "HTML": outputDirectoryPath / (sanitizedStoryTitle + ".html"),
             "ODT" : outputDirectoryPath / (sanitizedStoryTitle + ".odt" ),
             "PDF" : outputDirectoryPath / (sanitizedStoryTitle + ".pdf" ),
