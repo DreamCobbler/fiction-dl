@@ -112,25 +112,14 @@ class Application:
             logging.info("Deleting the cache...")
             self._cache.Clear()
 
-        # Find out whether external components are available.
+        # Print notices.
 
-        calibreNotFound = not FindEbookConvert()
-        libreOfficeNotFound = not self._arguments.LibreOffice.is_file()
+        if (notices := self._GenerateNotices()):
 
-        if calibreNotFound or libreOfficeNotFound:
             self._interface.EmptyLine()
 
-        if calibreNotFound:
-            self._interface.Notice(
-                "Calibre doesn't seem to be installed on this machine. MOBI output files will not "
-                "be generated."
-            )
-
-        if libreOfficeNotFound:
-            self._interface.Notice(
-                "LibreOffice doesn't seem to be installed on this machine. PDF output files will "
-                "not be generated."
-            )
+            for notice in notices:
+                self._interface.Notice(notice)
 
         # Process the input arguments.
 
@@ -583,3 +572,21 @@ class Application:
         title = re.sub("\s+", " ", title)
 
         return title
+
+    def _GenerateNotices(self) -> List[str]:
+
+        notices = []
+
+        if not FindEbookConvert():
+            notices.append(
+                "Calibre doesn't seem to be installed on this machine. MOBI output files will not "
+                "be generated."
+            )
+
+        if not self._arguments.LibreOffice.is_file():
+            notices.append(
+                "LibreOffice doesn't seem to be installed on this machine. PDF output files will "
+                "not be generated."
+            )
+
+        return notices
