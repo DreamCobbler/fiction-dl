@@ -29,6 +29,7 @@
 # Application.
 
 from fiction_dl.Utilities.General import Stringify
+from fiction_dl.Utilities.HTML import Unescape
 
 # Standard packages.
 
@@ -42,6 +43,7 @@ from babel.dates import format_date
 from babel.numbers import format_number
 import numpy
 import pykakasi
+from titlecase import titlecase
 
 #
 #
@@ -268,6 +270,42 @@ def PrettifyNumber(number: int) -> str:
         return "?"
 
     return format_number(number, locale = "en")
+
+def PrettifyTitle(
+    title: str,
+    removeContext: bool,
+    unescape: bool
+) -> str:
+
+    ##
+    #
+    # Returns a prettified title.
+    #
+    # @param title         The input title.
+    # @param removeContext Should we remove the context? (Like "Chapter 3: ".)
+    # @param unescape      Should we resolve escaped HTML entities?
+    #
+    # @return Prettified input title.
+    #
+    ##
+
+    if not title:
+        return title
+
+    if removeContext:
+        title = re.sub(
+            "\[?\(?Chapter \d+\:?\)?\]?\s*\.?-?\s*",
+            "",
+            title,
+            flags = re.IGNORECASE
+        )
+
+    title = titlecase(title)
+
+    if unescape:
+        title = Unescape(title)
+
+    return title
 
 def Transliterate(string: str) -> str:
 

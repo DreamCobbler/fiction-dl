@@ -28,16 +28,11 @@
 
 # Application.
 
-from fiction_dl.Utilities.HTML import Unescape
+from fiction_dl.Utilities.Text import PrettifyTitle
 
 # Standard packages.
 
-import re
 from typing import Optional
-
-# Non-standard packages.
-
-from titlecase import titlecase
 
 #
 #
@@ -77,20 +72,14 @@ class Chapter:
         #
         ##
 
-        if self.Title:
+        self.Title = PrettifyTitle(
+            self.Title,
+            removeContext = True,
+            unescape = True
+        )
 
-            self.Title = re.sub(
-                "\[?\(?Chapter \d+\:?\)?\]?\s*\.?-?\s*",
-                "",
-                self.Title,
-                flags = re.IGNORECASE
-            )
-
-            self.Title = titlecase(self.Title)
-            self.Title = Unescape(self.Title)
-
-            if not self.Title:
-                self.Title = None
+        if not self.Title:
+            self.Title = None
 
     def __bool__(self) -> bool:
 

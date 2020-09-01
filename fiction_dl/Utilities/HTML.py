@@ -29,7 +29,6 @@
 # Application.
 
 from fiction_dl.Concepts.Image import Image
-from fiction_dl.Utilities.Text import IsStringTrulyEmpty
 
 # Standard packages.
 
@@ -63,7 +62,7 @@ def CleanHTML(code: str) -> Optional[str]:
     #
     ##
 
-    if IsStringTrulyEmpty(code):
+    if not code:
         return None
 
     # Unescape entities and remove non-breaking spaces.
