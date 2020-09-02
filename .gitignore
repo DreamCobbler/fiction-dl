@@ -23,6 +23,7 @@ wheels/
 share/python-wheels/
 Tests/fiction-dl Downloads/
 Tests/fiction-dl Debug Data/
+Docs/To Do.txt
 *.egg-info/
 .installed.cfg
 *.egg
