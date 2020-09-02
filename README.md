@@ -3,9 +3,9 @@
 ![Screenshot (Windows 10)](/Stuff/Screenshot%20(Windows%2010).png?raw=true)
 ![Screenshot (Linux Mint 20)](/Stuff/Screenshot%20(Linux%20Mint%2020).png?raw=true)
 
-**fiction-dl** is a command-line utility made for downloading works of fiction from the web, formatting them and storing them in a few common file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
+**fiction-dl** is a command-line utility made for downloading works of fiction from the web, capable of auto-formatting and saving them in a few common file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
 
-The application supports a dozen websites, generates output files in up to five different file formats (HTML, EPUB, MOBI, ODT, PDF), applies typographic corrections to the extracted content and is capable of embedding downloaded images within it.
+The application supports more than a dozen websites, generates HTML, EPUB, MOBI, ODT and PDF output files, applies typographic corrections to the extracted content and is able to embed downloaded images within it.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ The application supports a dozen websites, generates output files in up to five 
 
 ### Downloading stories
 
-**fiction-dl** can download stories from a multitude of sites - in some cases it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*).
+**fiction-dl** can download stories from a multitude of sites - in some cases, it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*).
 
 | Category         | Site                                                                | Authentication support | Channel support |
 |------------------|---------------------------------------------------------------------|------------------------|-----------------|
@@ -37,11 +37,11 @@ The application supports a dozen websites, generates output files in up to five 
 | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**       |
 | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no            |
 
-It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to auto-format it as ODT, PDF etc.
+It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to some more civilized format.
 
 ### Formatting stories
 
-Downloaded stories are auto-formatted and saved in a few file formats.
+Downloaded stories are auto-formatted and saved in a few file formats:
 
 | File Format                                                          | Requirements                                                          |
 |----------------------------------------------------------------------|-----------------------------------------------------------------------|
@@ -57,7 +57,7 @@ The application can download images found in story content and embed them in out
 
 ### Typographic corrections
 
-**fiction-dl** automatically applies basic typographic corrections to the content of downloaded stories. For example:
+**fiction-dl** automatically applies basic typographic corrections to the content of downloaded stories.
 
 | Source Text                  | Corrected Text           |
 |------------------------------|--------------------------|
@@ -72,11 +72,11 @@ The application can download images found in story content and embed them in out
 
 You can install **fiction-dl** using *pip*:
 
-    pip install --upgrade fiction-dl
+    python3 -m pip install --upgrade fiction-dl
 
-If the package's already installed, this command will also update it.
+(If the package's already installed, this command will also update it.)
 
-If you're running a Debian-derived Linux distribution, you might also want to install the following packages:
+If you're running a Debian-derived Linux distribution, you might also need to install the following packages:
 
     apt-get install libgl1-mesa-glx libglib2.0-0 libmupdf-dev
 
@@ -92,11 +92,23 @@ In order to download multiple stories, create a text file and place the URLs in 
 
     fiction-dl YourFilesName
 
-**fiction-dl** offers a few options - you can view them using the following command:
+### Options
 
-    fiction-dl -h
+| Option            | Result                                                               |
+|-------------------|----------------------------------------------------------------------|
+| -h                | shows the overview of command-line options                           |
+| -a                | authenticates the user to supported sites using interactive mode     |
+| -c                | clears the cache before launching the application                    |
+| -v                | enables the (more) verbose mode                                      |
+| -f                | overwrites output files (in case they already exist)                 |
+| -d                | enables debug mode (saves some data useful for debugging)            |
+| -no-images        | disables downloading images found in story content                   |
+| -persistent-cache | preserves the cache after the application quits                      |
+| -lo               | used to specify the path to the LibreOffice executable (soffice.exe) |
+| -o                | used to specify the output directory path                            |
 
-### Using the Text File Extractor
+
+### Text File Extractor
 
 Create a text file meant to contain the story. In its first lines type:
 
@@ -130,7 +142,7 @@ You can generate code documentation using [**Doxygen**](https://www.doxygen.nl/i
 
 Launching the **Integration Test** can be done by entering the *Tests* directory and executing the following code:
 
-    python "Integration Test"
+    python "Integration Test.py"
 
 In order to launch **unit tests**, enter the *Tests* directory and execute:
 
