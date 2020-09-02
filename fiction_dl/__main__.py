@@ -121,42 +121,42 @@ def ReadCommandLineArguments() -> Namespace:
         "-a",
         dest = "Authenticate",
         action = "store_true",
-        help = "authenticates to supported sites using interactive mode"
+        help = "authenticates the user to supported sites using interactive mode"
     )
 
     argumentParser.add_argument(
         "-c",
         dest = "ClearCache",
         action = "store_true",
-        help = "clears cache before launching the application"
+        help = "clears the cache before launching the application"
     )
 
     argumentParser.add_argument(
         "-v",
         dest = "Verbose",
         action = "store_true",
-        help = "enables verbose mode"
+        help = "enables the (more) verbose mode"
     )
 
     argumentParser.add_argument(
         "-f",
         dest = "Force",
         action = "store_true",
-        help = "overwrites output files (if they already exist)"
+        help = "overwrites output files (in case they already exist)"
     )
 
     argumentParser.add_argument(
         "-d",
         dest = "Debug",
         action = "store_true",
-        help = "enables debug mode (stores processed chapter content)"
+        help = "enables debug mode (saves some data useful for debugging)"
     )
 
     argumentParser.add_argument(
         "-no-images",
         dest = "Images",
         action = "store_false",
-        help = "doesn't download and embed any images"
+        help = "disables downloading images found in story content"
     )
 
     argumentParser.add_argument(
