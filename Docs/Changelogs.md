@@ -1,3 +1,31 @@
+# 1.5.0
+
+**Extractors**:
+
+- Introduced the concept of a *channel*; added channel support to a few extractors.
+- Added an extractor for Questionable Questing.
+- Added an extractor for FicWad.
+- Added an extractor for Hentai Foundry.
+- Added an extractor for Najlepsza Erotyka.
+
+**Formatters**:
+
+- Added a MOBI formatter.
+
+**Processing:**
+
+- Japanese story titles are now transliterated when put in file names.
+
+**Bugfixes**:
+
+- Fixed a few bugs in the extracters.
+- Fixed a few bugs in the formatters.
+
+**Stuff**:
+
+- Significantly improved the user interface.
+- Input arguments are now randomly re-ordered for processing.
+
 # 1.4.0
 
 **Extractors**:
