@@ -93,7 +93,7 @@ class ExtractorAO3(Extractor):
 
         usernameMatch = re.search("/users/([a-zA-Z0-9_]+)", URL)
         if not usernameMatch:
-            return None
+            return self._ScanCollection(URL)
 
         username = usernameMatch.group(1)
 
@@ -142,6 +142,81 @@ class ExtractorAO3(Extractor):
                 storyIDMatch = re.search("/works/(\d+)", linkElement["href"])
                 if not storyIDMatch:
                     logging.error("Failed to retrieve story ID from its URL.")
+                    continue
+
+                storyID = storyIDMatch.group(1)
+                workIDs.append(storyID)
+
+        storyURLs = [f"https://archiveofourown.org/works/{ID}" for ID in workIDs]
+        return storyURLs
+
+    def _ScanCollection(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the collection: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
+            return None
+
+        collectionNameMatch = re.search("/collections/([a-zA-Z0-9_]+)", URL)
+        if not collectionNameMatch:
+            return None
+
+        collectionName = collectionNameMatch.group(1)
+
+        worksURL = f"https://archiveofourown.org/collections/{collectionName}/works"
+        worksSoup = DownloadSoup(worksURL)
+        if not worksSoup:
+            return None
+
+        worksPagesURLs = []
+        worksPageButtonElements = \
+            worksSoup.select("ol.pagination:not(.next):not(.previous) > li")
+
+        if not worksPageButtonElements:
+
+            worksPagesURLs.append(worksURL)
+
+        else:
+
+            worksPageCount = len(worksPageButtonElements)
+
+            if worksPageCount < 1:
+                logging.error("Invalid number of pages on the Works webpage.")
+                return None
+
+            for index in range(1, worksPageCount + 1):
+                worksPagesURLs.append(worksURL + f"?page={index}")
+
+        worksPagesURLs = [self._GetAdultView(x) for x in worksPagesURLs]
+        workIDs = []
+
+        for pageURL in worksPagesURLs:
+
+            pageSoup = DownloadSoup(pageURL)
+            if not pageSoup:
+                logging.error("Failed to download a page of the Works webpage.")
+                continue
+
+            workElements = pageSoup.select("li.work h4.heading")
+
+            for workElement in workElements:
+
+                linkElement = workElement.select_one("a")
+                if not linkElement:
+                    logging.error("Failed to find the link element in the story header.")
+                    continue
+
+                storyURL = linkElement["href"]
+                storyIDMatch = re.search("/works/(\d+)", storyURL)
+
+                if not storyIDMatch:
+                    logging.error(f"Failed to retrieve story ID from its URL: \"{storyURL}\".")
                     continue
 
                 storyID = storyIDMatch.group(1)
@@ -296,7 +371,8 @@ class ExtractorAO3(Extractor):
 
         return self._GetAdultView(f"{ExtractorAO3._baseWorkURL}/{storyID}")
 
-    def _GetAdultView(self, URL: str) -> Optional[str]:
+    @staticmethod
+    def _GetAdultView(URL: str) -> Optional[str]:
 
         ##
         #
