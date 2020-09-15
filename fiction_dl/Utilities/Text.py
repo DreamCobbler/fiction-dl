@@ -305,6 +305,9 @@ def PrettifyTitle(
     if unescape:
         title = Unescape(title)
 
+    if IsStringTrulyEmpty(title):
+        title = None
+
     return title
 
 def Transliterate(string: str) -> str:

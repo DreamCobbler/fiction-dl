@@ -78,9 +78,6 @@ class Chapter:
             unescape = True
         )
 
-        if not self.Title:
-            self.Title = None
-
     def __bool__(self) -> bool:
 
         ##
