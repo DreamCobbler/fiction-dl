@@ -30,8 +30,7 @@
 
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.Filesystem import GetPackageDirectory, ReadTextFile
-from fiction_dl.Utilities.General import GetDimensionsToFit, Stringify
+from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 from fiction_dl.Utilities.HTML import StripEmptyTags
 
 # Standard packages.
@@ -44,6 +43,9 @@ from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Filesystem import ReadTextFile
+from dreamy_utilities.Mathematics import GetDimensionsToFit
+from dreamy_utilities.Text import Stringify
 
 #
 #

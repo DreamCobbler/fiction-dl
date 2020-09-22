@@ -26,10 +26,6 @@
 #
 #
 
-# Application.
-
-from fiction_dl.Utilities.General import Stringify
-
 # Standard packages.
 
 from requests import get, Session
@@ -39,6 +35,7 @@ from urllib.parse import urlparse
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Text import Stringify
 import tldextract
 
 #

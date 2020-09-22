@@ -26,11 +26,6 @@
 #
 #
 
-# Application.
-
-from fiction_dl.Utilities.Filesystem import GetUniqueFileName, ReadTextFile, WriteTextFile
-from fiction_dl.Utilities.General import Bytify
-
 # Standard packages.
 
 from pathlib import Path
@@ -40,6 +35,8 @@ from typing import Any
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Filesystem import GetUniqueFileName, ReadTextFile, WriteTextFile
+from dreamy_utilities.Text import Bytify
 
 #
 #

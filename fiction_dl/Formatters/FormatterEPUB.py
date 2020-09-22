@@ -30,7 +30,7 @@
 
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.Filesystem import GetPackageDirectory, ReadTextFile
+from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 from fiction_dl.Utilities.HTML import ReformatHTMLToXHTML
 
 # Standard packages.
@@ -41,6 +41,7 @@ from typing import Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Filesystem import ReadTextFile
 from ebooklib import epub
 
 #

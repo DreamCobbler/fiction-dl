@@ -30,7 +30,7 @@
 
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.Filesystem import GetPackageDirectory, ReadTextFile
+from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 
 # Standard packages.
 
@@ -40,6 +40,7 @@ from pathlib import Path
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Filesystem import ReadTextFile
 
 #
 #

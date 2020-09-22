@@ -32,7 +32,7 @@ from __future__ import annotations
 
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
 from fiction_dl.Utilities.HTML import Unescape
-from fiction_dl.Utilities.Text import GetTitleProper, PrettifyDate, PrettifyNumber, Truncate
+from fiction_dl.Utilities.Text import GetTitleProper
 
 # Standard packages.
 
@@ -42,6 +42,7 @@ from typing import Optional
 
 # Non-standard packages.
 
+from dreamy_utilities.Text import PrettifyDate, PrettifyNumber, Truncate
 from titlecase import titlecase
 
 #

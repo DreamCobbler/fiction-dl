@@ -29,13 +29,16 @@
 # Application.
 
 from fiction_dl.Utilities.Extractors import CreateExtractor
-from fiction_dl.Utilities.General import RemoveDuplicates
 import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
 import random
 from typing import List
+
+# Non-standard packages.
+
+from dreamy_utilities.Containers import RemoveDuplicates
 
 #
 #

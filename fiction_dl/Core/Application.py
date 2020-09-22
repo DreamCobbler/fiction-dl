@@ -32,7 +32,6 @@ from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Core.Cache import Cache
 from fiction_dl.Core.InputData import InputData
-from fiction_dl.Core.Interface import Interface
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
 from fiction_dl.Formatters.FormatterEPUB import FormatterEPUB
 from fiction_dl.Formatters.FormatterHTML import FormatterHTML
@@ -42,10 +41,10 @@ from fiction_dl.Formatters.FormatterPDF import FormatterPDF
 from fiction_dl.Processors.SanitizerProcessor import SanitizerProcessor
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
 from fiction_dl.Utilities.Extractors import CreateExtractor
-from fiction_dl.Utilities.Filesystem import FindEbookConvert, SanitizeFileName, WriteTextFile
-from fiction_dl.Utilities.General import RemoveDuplicates, RenderPageToBytes, Stringify
+from fiction_dl.Utilities.Filesystem import FindEbookConvert
+from fiction_dl.Utilities.General import RenderPageToBytes
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
-from fiction_dl.Utilities.Text import Transliterate, Truncate
+from fiction_dl.Utilities.Text import Transliterate
 from fiction_dl.Utilities.Web import GetSiteURL
 import fiction_dl. Configuration as Configuration
 
@@ -63,6 +62,10 @@ from urllib3.exceptions import ProtocolError
 
 # Non-standard packages.
 
+from dreamy_utilities.Containers import RemoveDuplicates
+from dreamy_utilities.Filesystem import GetSanitizedFileName, WriteTextFile
+from dreamy_utilities.Interface import Interface
+from dreamy_utilities.Text import Stringify, Truncate
 import termtables
 
 #
@@ -397,8 +400,8 @@ class Application:
 
             if self._arguments.Debug:
 
-                fileName = SanitizeFileName(f"{index} - Original.html")
-                fileSubdirectoryName = SanitizeFileName(extractor.Story.Metadata.Title)
+                fileName = GetSanitizedFileName(f"{index} - Original.html")
+                fileSubdirectoryName = GetSanitizedFileName(extractor.Story.Metadata.Title)
 
                 WriteTextFile(
                     Configuration.DebugDirectoryPath / fileSubdirectoryName / fileName,
@@ -417,8 +420,8 @@ class Application:
 
             if self._arguments.Debug:
 
-                fileName = SanitizeFileName(f"{index} - Processed.html")
-                fileSubdirectoryName = SanitizeFileName(extractor.Story.Metadata.Title)
+                fileName = GetSanitizedFileName(f"{index} - Processed.html")
+                fileSubdirectoryName = GetSanitizedFileName(extractor.Story.Metadata.Title)
 
                 WriteTextFile(
                     Configuration.DebugDirectoryPath / fileSubdirectoryName / fileName,
@@ -549,7 +552,7 @@ class Application:
         prettifiedMetadata = story.Metadata.GetPrettified()
 
         sanitizedStoryTitle = self._GetPrintableStoryTitle(story)
-        sanitizedAuthor = SanitizeFileName(prettifiedMetadata.Author)
+        sanitizedAuthor = GetSanitizedFileName(prettifiedMetadata.Author)
 
         outputDirectoryPath = \
             Path(expandvars(outputPath)) / sanitizedAuthor / sanitizedStoryTitle
@@ -568,7 +571,7 @@ class Application:
         prettifiedMetadata = story.Metadata.GetPrettified()
 
         title = Transliterate(prettifiedMetadata.Title)
-        title = SanitizeFileName(title)
+        title = GetSanitizedFileName(title)
         title = re.sub("\s+", " ", title)
 
         return title

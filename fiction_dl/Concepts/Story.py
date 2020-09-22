@@ -30,13 +30,12 @@
 
 from fiction_dl.Concepts.Image import Image
 from fiction_dl.Concepts.Metadata import Metadata
-from fiction_dl.Utilities.General import GetCurrentDate
 from fiction_dl.Utilities.HTML import StripHTML
-from fiction_dl.Utilities.Text import FillTemplate
 import fiction_dl.Configuration
 
 # Standard packages.
 
+from dreamy_utilities.Text import FillTemplate, GetCurrentDate
 from typing import Callable
 
 #

@@ -30,12 +30,15 @@
 
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.General import Stringify
 
 # Standard packages.
 
 from pathlib import Path
 from subprocess import call, DEVNULL
+
+# Non-standard packages.
+
+from dreamy_utilities.Text import Stringify
 
 #
 #

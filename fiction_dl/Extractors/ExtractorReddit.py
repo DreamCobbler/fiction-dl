@@ -30,9 +30,8 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
-from fiction_dl.Utilities.Filesystem import GetPackageDirectory, ReadTextFile
-from fiction_dl.Utilities.General import GetDateFromTimestamp
-from fiction_dl.Utilities.Text import GetLevenshteinDistance, GetTitleProper
+from fiction_dl.Utilities.Filesystem import GetPackageDirectory
+from fiction_dl.Utilities.Text import GetTitleProper
 import fiction_dl.Configuration as Configuration
 
 # Standard packages.
@@ -46,6 +45,8 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Filesystem import ReadTextFile
+from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance
 from markdown import markdown
 from praw import Reddit
 from praw.exceptions import InvalidURL

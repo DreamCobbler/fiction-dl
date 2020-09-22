@@ -31,9 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.General import Stringify
 from fiction_dl.Utilities.HTML import StripHTML
-from fiction_dl.Utilities.Text import IsStringTrulyEmpty
 from fiction_dl.Utilities.Web import DownloadSoup, GetHostname
 
 # Standard packages.
@@ -47,6 +45,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Text import IsStringEmpty, Stringify
 
 ###
 #
@@ -293,7 +292,7 @@ class ExtractorLiterotica(Extractor):
         #
         ##
 
-        if IsStringTrulyEmpty(date):
+        if IsStringEmpty(date):
             return None
 
         return datetime.strptime(date, "%m/%d/%y").strftime("%Y-%m-%d")
