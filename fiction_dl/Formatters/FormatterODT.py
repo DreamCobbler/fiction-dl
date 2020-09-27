@@ -340,7 +340,10 @@ class FormatterODT(Formatter):
 
                 maximumWidth = 17 # cm
                 maximumHeight = 17 # cm
-                width, height = GetDimensionsToFit(image.W, image.H, maximumWidth, maximumHeight)
+                width, height = GetDimensionsToFit(
+                    (image.W, image.H),
+                    (maximumWidth, maximumHeight)
+                )
 
                 drawFrameTag = soup.new_tag("draw:frame")
                 drawFrameTag["draw:style-name"] = "Imported_Image"

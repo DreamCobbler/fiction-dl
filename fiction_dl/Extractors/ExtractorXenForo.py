@@ -31,7 +31,6 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.Terminal import ReadString
-from fiction_dl.Utilities.Web import DownloadSoup, GetSiteURL
 
 # Standard packages.
 
@@ -44,6 +43,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import GetDateFromTimestamp, Stringify
+from dreamy_utilities.Web import DownloadSoup, GetSiteURL
 
 #
 #

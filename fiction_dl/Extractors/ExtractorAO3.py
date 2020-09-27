@@ -31,7 +31,6 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.HTML import StripHTML
-from fiction_dl.Utilities.Web import DownloadSoup, GetHostname
 
 # Standard packages.
 
@@ -43,6 +42,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import Stringify
+from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 #
 #

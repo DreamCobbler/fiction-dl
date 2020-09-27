@@ -45,7 +45,6 @@ from fiction_dl.Utilities.Filesystem import FindEbookConvert
 from fiction_dl.Utilities.General import RenderPageToBytes
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
 from fiction_dl.Utilities.Text import Transliterate
-from fiction_dl.Utilities.Web import GetSiteURL
 import fiction_dl. Configuration as Configuration
 
 # Standard packages.
@@ -66,6 +65,7 @@ from dreamy_utilities.Containers import RemoveDuplicates
 from dreamy_utilities.Filesystem import GetSanitizedFileName, WriteTextFile
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import Stringify, Truncate
+from dreamy_utilities.Web import GetSiteURL
 import termtables
 
 #

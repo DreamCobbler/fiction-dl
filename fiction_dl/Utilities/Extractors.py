@@ -29,7 +29,6 @@
 # Application.
 
 from fiction_dl.Concepts.Extractor import Extractor
-
 from fiction_dl.Extractors.ExtractorAdultFanfiction import ExtractorAdultFanfiction
 from fiction_dl.Extractors.ExtractorAH import ExtractorAH
 from fiction_dl.Extractors.ExtractorAO3 import ExtractorAO3
@@ -46,7 +45,7 @@ from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
 
 # Standard packages.
 
-from typing import List, Optional
+from typing import Optional
 
 #
 #
@@ -60,11 +59,11 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
 
     ##
     #
-    # Creates an appropriate extractor for a given URL.
+    # Creates the appropriate extractor for any given URL.
     #
     # @param URL The URL.
     #
-    # @return An initialized extractor object or None (if no valid extractor has been found).
+    # @return An initialized extractor object, or **None** if no valid extractor has been found.
     #
     ##
 
@@ -84,8 +83,9 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
         ExtractorTextFile(),
     ]
 
-    validExtractors = [x for x in availableExtractors if x.Initialize(URL)]
-    if not validExtractors:
-        return None
+    for extractor in availableExtractors:
 
-    return validExtractors[0]
+        if extractor.Initialize(URL):
+            return extractor
+
+    return None
