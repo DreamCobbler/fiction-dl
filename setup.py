@@ -28,12 +28,15 @@
 
 # Application.
 
-from fiction_dl.Utilities.Filesystem import ReadTextFile
 import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
 from setuptools import find_packages, setup
+
+# Non-standard packages.
+
+from dreamy_utilities.Filesystem import ReadTextFile
 
 ###
 #
