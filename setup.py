@@ -64,7 +64,6 @@ setup(
         "html5lib",
         "lxml",
 
-        "babel",
         "titlecase",
         "pykakasi",
 
@@ -81,8 +80,6 @@ setup(
 
         "ebooklib",
 
-        "colorama",
-        "termcolor",
         "termtables"
 
     ],
