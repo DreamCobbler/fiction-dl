@@ -74,9 +74,9 @@ def GetTitleProper(title: str) -> Optional[str]:
     titleProper = re.sub("\[?\(?Part(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
     titleProper = re.sub("\[?\(?Update(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
 
-    semicolonOccurence = titleProper.find(":")
-    if -1 != semicolonOccurence:
-        titleProper = titleProper[:semicolonOccurence]
+    # semicolonOccurence = titleProper.find(":")
+    # if -1 != semicolonOccurence:
+        # titleProper = titleProper[:semicolonOccurence]
 
     words = titleProper.split()
     if IsRomanNumeral(words[-1]):
