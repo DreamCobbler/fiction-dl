@@ -66,7 +66,6 @@ from dreamy_utilities.Filesystem import GetSanitizedFileName, WriteTextFile
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import Stringify, Truncate
 from dreamy_utilities.Web import GetSiteURL
-import termtables
 
 #
 #
@@ -520,21 +519,14 @@ class Application:
 
         prettifiedMetadata = story.Metadata.GetPrettified()
 
-        data = [
+        self._interface.Table([
             ["Title:", self._GetPrintableStoryTitle(story)],
             ["Author:", prettifiedMetadata.Author],
             ["Date published:", prettifiedMetadata.DatePublished],
             ["Date updated:", prettifiedMetadata.DateUpdated],
             ["Chapter count:", prettifiedMetadata.ChapterCount],
             ["Word count:", prettifiedMetadata.WordCount],
-        ]
-
-        termtables.print(
-            data,
-            style = termtables.styles.thin,
-            padding = (0, 1),
-            alignment = "rl"
-        )
+        ])
 
     def _GetOutputFilePaths(self, outputPath: str, story: Story) -> Dict:
 

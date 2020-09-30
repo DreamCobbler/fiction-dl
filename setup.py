@@ -80,8 +80,6 @@ setup(
 
         "ebooklib",
 
-        "termtables"
-
     ],
 
     packages = find_packages(),
