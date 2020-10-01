@@ -31,13 +31,12 @@ from __future__ import annotations
 # Application.
 
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
-from fiction_dl.Utilities.HTML import Unescape
+from fiction_dl.Utilities.HTML import EscapeHTML, Unescape
 from fiction_dl.Utilities.Text import GetTitleProper
 
 # Standard packages.
 
 from copy import deepcopy
-import html
 from typing import Optional
 
 # Non-standard packages.
@@ -105,16 +104,17 @@ class Metadata:
 
         if escapeHTMLEntities:
 
-            metadata.Title = html.escape(metadata.Title)
-            metadata.Author = html.escape(metadata.Author)
-            metadata.Summary = html.escape(metadata.Summary)
+            metadata.URL = EscapeHTML(metadata.URL)
+            metadata.Title = EscapeHTML(metadata.Title)
+            metadata.Author = EscapeHTML(metadata.Author)
+            metadata.Summary = EscapeHTML(metadata.Summary)
 
-            metadata.DatePublished = html.escape(metadata.DatePublished)
-            metadata.DateUpdated = html.escape(metadata.DateUpdated)
-            metadata.DateExtracted = html.escape(metadata.DateExtracted)
+            metadata.DatePublished = EscapeHTML(metadata.DatePublished)
+            metadata.DateUpdated = EscapeHTML(metadata.DateUpdated)
+            metadata.DateExtracted = EscapeHTML(metadata.DateExtracted)
 
-            metadata.ChapterCount = html.escape(metadata.ChapterCount)
-            metadata.WordCount = html.escape(metadata.WordCount)
+            metadata.ChapterCount = EscapeHTML(metadata.ChapterCount)
+            metadata.WordCount = EscapeHTML(metadata.WordCount)
 
         return metadata
 

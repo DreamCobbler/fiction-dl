@@ -31,7 +31,7 @@
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory
-from fiction_dl.Utilities.HTML import StripEmptyTags
+from fiction_dl.Utilities.HTML import EscapeHTML, StripEmptyTags
 
 # Standard packages.
 
@@ -135,7 +135,7 @@ class FormatterODT(Formatter):
 
         # Modify the content.
 
-        metadata = story.Metadata.GetPrettified()
+        metadata = story.Metadata.GetPrettified(escapeHTMLEntities = True)
 
         contentDocument = story.FillTemplate(contentDocument, escapeHTMLEntities = True)
         contentDocument = contentDocument.replace("http://link.link/", metadata.URL)
@@ -170,7 +170,7 @@ class FormatterODT(Formatter):
 
         # Modify the styles.
 
-        stylesDocument = story.FillTemplate(stylesDocument)
+        stylesDocument = story.FillTemplate(stylesDocument, escapeHTMLEntities = True)
 
         # Modify the manifest.
 
@@ -273,6 +273,8 @@ class FormatterODT(Formatter):
         # @return ODT code.
         #
         ##
+
+        # Process the content.
 
         soup = BeautifulSoup(code, features = "html.parser")
 

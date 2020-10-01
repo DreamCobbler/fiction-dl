@@ -74,6 +74,29 @@ def CleanHTML(code: str) -> Optional[str]:
 
     return code
 
+def EscapeHTML(code: str) -> str:
+
+    ##
+    #
+    # Escapes HTML entities in code.
+    #
+    # @param code The input code.
+    #
+    # @return The input code with HTML entities escaped.
+    #
+    ##
+
+    if not code:
+        return code
+
+    code = code.replace("&", "&amp;")
+    code = code.replace("<", "&lt;")
+    code = code.replace(">", "&gt;")
+    code = code.replace("'", "&#39;")
+    code = code.replace('"', "&quot;")
+
+    return html.escape(code)
+
 def FindImagesInCode(code: str) -> List[Image]:
 
     ##
