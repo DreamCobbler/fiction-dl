@@ -80,20 +80,6 @@ class SanitizerProcessor(Processor):
 
         content = self._FixLineBreaks(content)
 
-        # Replace "div"s with paragraphs.
-
-        # soup = BeautifulSoup(content, features = "html.parser")
-
-        # while True:
-
-            # element = soup.find("div")
-            # if not element:
-                # break
-
-            # element.name = "p"
-
-        # content = str(soup)
-
         # Clean the code a bit and make sure it contains only allowed tags.
 
         content = CleanHTML(content)

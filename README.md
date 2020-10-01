@@ -37,6 +37,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**       |
 | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**       |
 | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no            |
+| erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no            |
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to some more civilized format.
 

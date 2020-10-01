@@ -292,7 +292,7 @@ def Unescape(code: str) -> Optional[str]:
     if not code:
         return None
 
-    for entity in re.findall("&.+?;", code):
+    for entity in re.findall("&[a-z]+?;", code):
         code = code.replace(entity, entity.lower())
 
     return html.unescape(code)

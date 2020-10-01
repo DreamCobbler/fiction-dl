@@ -1,10 +1,13 @@
+https://www.nifty.org/nifty/gay/beginnings/kasey-with-a-k/
+#https://www.nifty.org/nifty/lesbian/adult-friends/sofie
+
 ##
 #
 # Local text file
 #
 ##
 
-Integration Test Text Sample.txt
+#Integration Test Text Sample.txt
 
 ##
 #
@@ -12,4 +15,4 @@ Integration Test Text Sample.txt
 #
 ##
 
-Integration Test Dataset 2.txt
+#Integration Test Dataset 2.txt
