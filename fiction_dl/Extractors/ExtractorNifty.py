@@ -37,7 +37,7 @@ from datetime import datetime
 import logging
 import re
 import requests
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # Non-standard packages.
 
@@ -158,14 +158,10 @@ class ExtractorNifty(Extractor):
                 logging.error("Failed to download the first chapter.")
                 return False
 
-            firstChapterText = firstChapterText.splitlines()
-            if len(firstChapterText) < 3:
-                logging.error("The first chapter doesn't contain metadata.")
+            firstChapterMetadata = self._ReadChapterMetadata(firstChapterText)
+            if not firstChapterMetadata:
+                logging.error("Failed to read metadata from the first chapter of the story.")
                 return False
-
-            firstChapterDateString = firstChapterText[0]
-            firstChapterAuthorString = firstChapterText[1]
-            firstChapterTitleString = firstChapterText[2]
 
             # Read the last chapter.
 
@@ -174,48 +170,25 @@ class ExtractorNifty(Extractor):
                 logging.error("Failed to download the last chapter.")
                 return False
 
-            lastChapterText = lastChapterText.splitlines()
-            if len(lastChapterText) < 1:
-                logging.error("The last chapter doesn't contain metadata.")
+            lastChapterMetadata = self._ReadChapterMetadata(lastChapterText)
+            if not lastChapterMetadata:
+                logging.error("Failed to read metadata from the last chapter of the story.")
                 return False
 
-            lastChapterDateString = lastChapterText[0]
+            # Prepare the metadata.
 
-            # Process read metadata strings.
-
-            firstChapterDateMatch = re.match("Date: (.+)", firstChapterDateString)
-            if not firstChapterDateMatch:
-                logging.error("Couldn't read the first date from chapter metadata.")
-                return False
-
-            authorMatch = re.match("From: ([^<]+) <", firstChapterAuthorString)
-            if not authorMatch:
-                logging.error("Couldn't read the author from chapter metadata.")
-                return False
-
-            titleMatch = re.match("Subject: (.+)", firstChapterTitleString)
-            if not titleMatch:
-                logging.error("Couldn't read the title from chapter metadata.")
-                return False
-
-            lastChapterDateMatch = re.match("Date: (.+)", lastChapterDateString)
-            if not lastChapterDateMatch:
-                logging.error("Couldn't read the last date from chapter metadata.")
-                return False
+            title = firstChapterMetadata[0]
+            author = firstChapterMetadata[1]
+            publicationDate = firstChapterMetadata[2]
+            updateDate = lastChapterMetadata[2]
 
             # Set the metadata.
 
-            self.Story.Metadata.Title = titleMatch.group(1).strip()
-            self.Story.Metadata.Author = authorMatch.group(1).strip()
+            self.Story.Metadata.Title = title
+            self.Story.Metadata.Author = author
 
-            self.Story.Metadata.DatePublished = datetime.strptime(
-                firstChapterDateMatch.group(1).strip(),
-                "%a, %d %b %Y %H:%M:%S %z"
-            ).strftime("%Y-%m-%d")
-            self.Story.Metadata.DateUpdated = datetime.strptime(
-                lastChapterDateMatch.group(1).strip(),
-                "%a, %d %b %Y %H:%M:%S %z"
-            ).strftime("%Y-%m-%d")
+            self.Story.Metadata.DatePublished = publicationDate
+            self.Story.Metadata.DateUpdated = updateDate
 
             self.Story.Metadata.ChapterCount = len(self._chapterURLs)
             self.Story.Metadata.WordCount = 0
@@ -226,41 +199,19 @@ class ExtractorNifty(Extractor):
 
         else:
 
-            # Process chapter text.
+            # Read chapter metadata.
 
-            pageCode = pageCode.splitlines()
-            if len(pageCode) < 3:
-                logging.error("The chapter doesn't contain metadata.")
-                return False
-
-            dateString = pageCode[0]
-            authorString = pageCode[1]
-            titleString = pageCode[2]
-
-            dateMatch = re.match("Date: (.+)", dateString)
-            if not dateMatch:
-                logging.error("Couldn't read the date from chapter metadata.")
-                return False
-
-            authorMatch = re.match("From: ([^<]+) <", authorString)
-            if not authorMatch:
-                logging.error("Couldn't read the author from chapter metadata.")
-                return False
-
-            titleMatch = re.match("Subject: (.+)", titleString)
-            if not titleMatch:
-                logging.error("Couldn't read the title from chapter metadata.")
+            chapterMetadata =  self._ReadChapterMetadata(pageCode)
+            if not chapterMetadata:
+                logging.error("Failed to read metadata from the only chapter of the story.")
                 return False
 
             # Set the metadata.
 
-            self.Story.Metadata.Title = titleMatch.group(1).strip()
-            self.Story.Metadata.Author = authorMatch.group(1).strip()
+            self.Story.Metadata.Title = chapterMetadata[0]
+            self.Story.Metadata.Author = chapterMetadata[1]
 
-            self.Story.Metadata.DatePublished = datetime.strptime(
-                dateMatch.group(1).strip(),
-                "%a, %d %b %Y %H:%M:%S %z"
-            ).strftime("%Y-%m-%d")
+            self.Story.Metadata.DatePublished = chapterMetadata[2]
             self.Story.Metadata.DateUpdated = self.Story.Metadata.DatePublished
 
             self.Story.Metadata.ChapterCount = 1
@@ -326,3 +277,58 @@ class ExtractorNifty(Extractor):
         # Return.
 
         return Chapter(content = chapterCode)
+
+    @classmethod
+    def _ReadChapterMetadata(cls, text: str) -> Optional[Tuple[str, str, str]]:
+
+        ##
+        #
+        # Reads chapter metadata from its content.
+        #
+        # @param text Chapter text.
+        #
+        # @return A tuple consisting of three values: story title, story author, chapter publication
+        #         date; optionally **None**.
+        #
+        ##
+
+        if not text:
+            return None
+
+        # Split the chapter text into lines.
+
+        text = text.splitlines()
+        if len(text) < 3:
+            return None
+
+        # Retrieve lines containing relevant metadata.
+
+        dateString = text[0]
+        authorString = text[1]
+        titleString = text[2]
+
+        # Retrieve metadata from appropriate lines.
+
+        dateMatch = re.match("Date: (.+)", dateString)
+        if not dateMatch:
+            return None
+
+        authorMatch = re.match("From: ([^<]+) <", authorString)
+        if not authorMatch:
+            return None
+
+        titleMatch = re.match("Subject: (.+)", titleString)
+        if not titleMatch:
+            return None
+
+        # Process and return the metadata.
+
+        date = datetime.strptime(dateMatch.group(1), cls._DATE_FORMAT).strftime("%Y-%m-%d")
+        author = authorMatch.group(1).strip()
+        title = titleMatch.group(1).strip()
+
+        return (title, author, date)
+
+    # Class constants.
+
+    _DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %z"
