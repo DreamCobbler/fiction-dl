@@ -72,7 +72,9 @@ class Extractor:
         self._session = requests.session()
         self._chapterURLs = []
 
+        self._downloadStorySoupWhenScanning = True
         self._downloadChapterSoupWhenExtracting = True
+
         self._chapterParserName = "html.parser"
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -161,12 +163,17 @@ class Extractor:
             return False
 
         normalizedURL = self._GetNormalizedStoryURL(self.Story.Metadata.URL)
-        soup = DownloadSoup(normalizedURL, self._session)
-        if not soup:
-            logging.error(f'Failed to download page: "{normalizedURL}".')
-            return False
 
-        return self._InternallyScanStory(soup)
+        soup = None
+
+        if self._downloadStorySoupWhenScanning:
+
+            soup = DownloadSoup(normalizedURL, self._session)
+            if not soup:
+                logging.error(f'Failed to download page: "{normalizedURL}".')
+                return False
+
+        return self._InternallyScanStory(normalizedURL, soup)
 
     def ExtractChapter(self, index: int) -> Optional[Chapter]:
 
@@ -222,13 +229,18 @@ class Extractor:
 
         return response.content
 
-    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
+    def _InternallyScanStory(
+        self,
+        URL: str,
+        soup: Optional[BeautifulSoup]
+    ) -> bool:
 
         ##
         #
         # Scans the story: generates the list of chapter URLs and retrieves the
         # metadata.
         #
+        # @param URL  The URL of the story.
         # @param soup The tag soup.
         #
         # @return **False** when the scan fails, **True** when it doesn't fail.

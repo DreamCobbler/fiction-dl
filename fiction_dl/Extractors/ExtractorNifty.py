@@ -71,6 +71,7 @@ class ExtractorNifty(Extractor):
 
         super().__init__()
 
+        self._downloadStorySoupWhenScanning = False
         self._downloadChapterSoupWhenExtracting = False
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -87,117 +88,189 @@ class ExtractorNifty(Extractor):
             "nifty.org",
         ]
 
-    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
+    def _InternallyScanStory(
+        self,
+        URL: str,
+        soup: Optional[BeautifulSoup]
+    ) -> bool:
 
         ##
         #
         # Scans the story: generates the list of chapter URLs and retrieves the
         # metadata.
         #
+        # @param URL  The URL of the story.
         # @param soup The tag soup.
         #
         # @return **False** when the scan fails, **True** when it doesn't fail.
         #
         ##
 
-        # Create a list of chapters.
+        # Is it a single chapter story?
 
-        chapterElements = soup.select("table.table.table-xtra-condensed > tr")
-        if not chapterElements:
-            logging.error("List of chapters not found.")
+        pageCode = requests.get(URL).content.decode("ansi")
+        if not pageCode:
+            logging.error("Failed to download story page when scanning.")
             return False
 
-        chapterElements = chapterElements[1:]
+        isHTMLCode = (-1 != pageCode.find("<html>"))
 
-        # Process chapters.
+        # Process a multi-chapter story.
 
-        for rowElement in chapterElements:
+        if isHTMLCode:
 
-            cellElements = rowElement.select("td")
-            if (not cellElements) or (len(cellElements) < 3):
-                continue
+            # Create tag soup.
 
-            anchorElement = cellElements[2].select_one("a")
-            if (not anchorElement) or (not anchorElement.has_attr("href")):
-                continue
+            soup = DownloadSoup(URL)
 
-            self._chapterURLs.append(self.Story.Metadata.URL + anchorElement["href"])
+            # Create a list of chapters.
 
-        if not self._chapterURLs:
-            return False
+            chapterElements = soup.select("table.table.table-xtra-condensed > tr")
+            if not chapterElements:
+                logging.error("List of chapters not found.")
+                return False
 
-        self._chapterURLs.reverse()
+            chapterElements = chapterElements[1:]
 
-        # Read the first chapter.
+            # Process chapters.
 
-        firstChapterText = str(requests.get(self._chapterURLs[0]).content.decode("ansi"))
-        if not soup:
-            logging.error("Failed to download the first chapter.")
-            return False
+            for rowElement in chapterElements:
 
-        firstChapterText = firstChapterText.splitlines()
-        if len(firstChapterText) < 3:
-            logging.error("The first chapter doesn't contain metadata.")
-            return False
+                cellElements = rowElement.select("td")
+                if (not cellElements) or (len(cellElements) < 3):
+                    continue
 
-        firstChapterDateString = firstChapterText[0]
-        firstChapterAuthorString = firstChapterText[1]
-        firstChapterTitleString = firstChapterText[2]
+                anchorElement = cellElements[2].select_one("a")
+                if (not anchorElement) or (not anchorElement.has_attr("href")):
+                    continue
 
-        # Read the last chapter.
+                self._chapterURLs.append(self.Story.Metadata.URL + anchorElement["href"])
 
-        lastChapterText = str(requests.get(self._chapterURLs[-1]).content.decode("ansi"))
-        if not soup:
-            logging.error("Failed to download the last chapter.")
-            return False
+            if not self._chapterURLs:
+                return False
 
-        lastChapterText = lastChapterText.splitlines()
-        if len(lastChapterText) < 1:
-            logging.error("The last chapter doesn't contain metadata.")
-            return False
+            self._chapterURLs.reverse()
 
-        lastChapterDateString = lastChapterText[0]
+            # Read the first chapter.
 
-        # Process read metadata strings.
+            firstChapterText = str(requests.get(self._chapterURLs[0]).content.decode("ansi"))
+            if not soup:
+                logging.error("Failed to download the first chapter.")
+                return False
 
-        firstChapterDateMatch = re.match("Date: (.+)", firstChapterDateString)
-        if not firstChapterDateMatch:
-            logging.error("Couldn't read the first date from chapter metadata.")
-            return False
+            firstChapterText = firstChapterText.splitlines()
+            if len(firstChapterText) < 3:
+                logging.error("The first chapter doesn't contain metadata.")
+                return False
 
-        authorMatch = re.match("From: ([^<]+) <", firstChapterAuthorString)
-        if not authorMatch:
-            logging.error("Couldn't read the author from chapter metadata.")
-            return False
+            firstChapterDateString = firstChapterText[0]
+            firstChapterAuthorString = firstChapterText[1]
+            firstChapterTitleString = firstChapterText[2]
 
-        titleMatch = re.match("Subject: (.+)", firstChapterTitleString)
-        if not titleMatch:
-            logging.error("Couldn't read the title from chapter metadata.")
-            return False
+            # Read the last chapter.
 
-        lastChapterDateMatch = re.match("Date: (.+)", lastChapterDateString)
-        if not lastChapterDateMatch:
-            logging.error("Couldn't read the last date from chapter metadata.")
-            return False
+            lastChapterText = str(requests.get(self._chapterURLs[-1]).content.decode("ansi"))
+            if not soup:
+                logging.error("Failed to download the last chapter.")
+                return False
 
-        # Set the metadata.
+            lastChapterText = lastChapterText.splitlines()
+            if len(lastChapterText) < 1:
+                logging.error("The last chapter doesn't contain metadata.")
+                return False
 
-        self.Story.Metadata.Title = titleMatch.group(1).strip()
-        self.Story.Metadata.Author = authorMatch.group(1).strip()
+            lastChapterDateString = lastChapterText[0]
 
-        self.Story.Metadata.DatePublished = datetime.strptime(
-            firstChapterDateMatch.group(1).strip(),
-            "%a, %d %b %Y %H:%M:%S %z"
-        ).strftime("%Y-%m-%d")
-        self.Story.Metadata.DateUpdated = datetime.strptime(
-            lastChapterDateMatch.group(1).strip(),
-            "%a, %d %b %Y %H:%M:%S %z"
-        ).strftime("%Y-%m-%d")
+            # Process read metadata strings.
 
-        self.Story.Metadata.ChapterCount = len(self._chapterURLs)
-        self.Story.Metadata.WordCount = 0
+            firstChapterDateMatch = re.match("Date: (.+)", firstChapterDateString)
+            if not firstChapterDateMatch:
+                logging.error("Couldn't read the first date from chapter metadata.")
+                return False
 
-        self.Story.Metadata.Summary = "No summary."
+            authorMatch = re.match("From: ([^<]+) <", firstChapterAuthorString)
+            if not authorMatch:
+                logging.error("Couldn't read the author from chapter metadata.")
+                return False
+
+            titleMatch = re.match("Subject: (.+)", firstChapterTitleString)
+            if not titleMatch:
+                logging.error("Couldn't read the title from chapter metadata.")
+                return False
+
+            lastChapterDateMatch = re.match("Date: (.+)", lastChapterDateString)
+            if not lastChapterDateMatch:
+                logging.error("Couldn't read the last date from chapter metadata.")
+                return False
+
+            # Set the metadata.
+
+            self.Story.Metadata.Title = titleMatch.group(1).strip()
+            self.Story.Metadata.Author = authorMatch.group(1).strip()
+
+            self.Story.Metadata.DatePublished = datetime.strptime(
+                firstChapterDateMatch.group(1).strip(),
+                "%a, %d %b %Y %H:%M:%S %z"
+            ).strftime("%Y-%m-%d")
+            self.Story.Metadata.DateUpdated = datetime.strptime(
+                lastChapterDateMatch.group(1).strip(),
+                "%a, %d %b %Y %H:%M:%S %z"
+            ).strftime("%Y-%m-%d")
+
+            self.Story.Metadata.ChapterCount = len(self._chapterURLs)
+            self.Story.Metadata.WordCount = 0
+
+            self.Story.Metadata.Summary = "No summary."
+
+        # Process a single-chapter story.
+
+        else:
+
+            # Process chapter text.
+
+            pageCode = pageCode.splitlines()
+            if len(pageCode) < 3:
+                logging.error("The chapter doesn't contain metadata.")
+                return False
+
+            dateString = pageCode[0]
+            authorString = pageCode[1]
+            titleString = pageCode[2]
+
+            dateMatch = re.match("Date: (.+)", dateString)
+            if not dateMatch:
+                logging.error("Couldn't read the date from chapter metadata.")
+                return False
+
+            authorMatch = re.match("From: ([^<]+) <", authorString)
+            if not authorMatch:
+                logging.error("Couldn't read the author from chapter metadata.")
+                return False
+
+            titleMatch = re.match("Subject: (.+)", titleString)
+            if not titleMatch:
+                logging.error("Couldn't read the title from chapter metadata.")
+                return False
+
+            # Set the metadata.
+
+            self.Story.Metadata.Title = titleMatch.group(1).strip()
+            self.Story.Metadata.Author = authorMatch.group(1).strip()
+
+            self.Story.Metadata.DatePublished = datetime.strptime(
+                dateMatch.group(1).strip(),
+                "%a, %d %b %Y %H:%M:%S %z"
+            ).strftime("%Y-%m-%d")
+            self.Story.Metadata.DateUpdated = self.Story.Metadata.DatePublished
+
+            self.Story.Metadata.ChapterCount = 1
+            self.Story.Metadata.WordCount = 0
+
+            self.Story.Metadata.Summary = "No summary."
+
+            # Create a list of chapter URLs.
+
+            self._chapterURLs = [URL]
 
         # Return.
 

@@ -86,13 +86,18 @@ class ExtractorAdultFanfiction(Extractor):
             "adult-fanfiction.org"
         ]
 
-    def _InternallyScanStory(self, soup: BeautifulSoup) -> bool:
+    def _InternallyScanStory(
+        self,
+        URL: str,
+        soup: Optional[BeautifulSoup]
+    ) -> bool:
 
         ##
         #
         # Scans the story: generates the list of chapter URLs and retrieves the
         # metadata.
         #
+        # @param URL  The URL of the story.
         # @param soup The tag soup.
         #
         # @return **False** when the scan fails, **True** when it doesn't fail.
