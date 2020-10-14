@@ -223,6 +223,8 @@ class Application:
 
         if self._arguments.Authenticate and extractor.SupportsAuthentication():
 
+            self._interface.GrabUserAttention()
+
             if not extractor.Authenticate():
                 self._interface.Error("Failed to authenticate.")
 
