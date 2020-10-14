@@ -141,54 +141,28 @@ class ExtractorAO3(Extractor):
 
         self._storySoup = soup
 
-        # Extract metadata.
+        # Extract the metadata.
 
-        try:
+        self.Story.Metadata.Title = ReadElementText(self._storySoup, "h2.title")
+        self.Story.Metadata.Author = ReadElementText(self._storySoup, "a[rel~=author]") or "Anonymous"
 
-            title = ReadElementText(self._storySoup, "h2.title")
-            if not title:
-                raise RuntimeError("title.")
+        self.Story.Metadata.DatePublished = ReadElementText(self._storySoup, "dd.published")
+        self.Story.Metadata.DateUpdated = ReadElementText(self._storySoup, "dd.status")
 
-            author = ReadElementText(self._storySoup, "a[rel~=author]")
-            # Author is optional.
+        chapterCount = DeprettifyAmount(ReadElementText(self._storySoup, "dd.chapters"))[0]
 
-            datePublished = ReadElementText(self._storySoup, "dd.published")
-            if not datePublished:
-                raise RuntimeError("date of publication.")
+        self.Story.Metadata.ChapterCount = DeprettifyAmount(ReadElementText(self._storySoup, "dd.chapters"))[0]
+        self.Story.Metadata.WordCount = DeprettifyNumber(ReadElementText(self._storySoup, "dd.words"))
 
-            dateUpdated = ReadElementText(self._storySoup, "dd.published")
-            if not dateUpdated:
-                raise RuntimeError("date of most recent update.")
+        self.Story.Metadata.Summary = ReadElementText(self._storySoup, "blockquote.userstuff") or "No summary."
 
-            chapterAmount = ReadElementText(self._storySoup, "dd.chapters")
-            if not chapterAmount:
-                raise RuntimeError("chapter count.")
+        # Validate story metadata.
 
-            wordCount = ReadElementText(self._storySoup, "dd.words")
-            if not wordCount:
-                raise RuntimeError("word count.")
+        if (missingMetadata := self.Story.Metadata.AreValuesMissing()):
 
-            summary = ReadElementText(self._storySoup, "blockquote.userstuff")
-            # Summary is optional.
-
-        except RuntimeError as exception:
-
-            logging.error("Failed to read metadata: {exception}.")
+            logging.error(f"Failed to read following story metadata: {', '.join(missingMetadata)}.")
 
             return False
-
-        # Set the metadata.
-
-        self.Story.Metadata.Title = title
-        self.Story.Metadata.Author = author or "Anonymous"
-
-        self.Story.Metadata.DatePublished = datePublished
-        self.Story.Metadata.DateUpdated = dateUpdated
-
-        self.Story.Metadata.ChapterCount = DeprettifyAmount(chapterAmount)[0]
-        self.Story.Metadata.WordCount = DeprettifyNumber(wordCount)
-
-        self.Story.Metadata.Summary = summary or "No summary."
 
         # Return.
 

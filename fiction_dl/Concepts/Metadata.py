@@ -37,7 +37,7 @@ from fiction_dl.Utilities.Text import GetTitleProper
 # Standard packages.
 
 from copy import deepcopy
-from typing import Optional
+from typing import List, Optional
 
 # Non-standard packages.
 
@@ -81,6 +81,41 @@ class Metadata:
 
         self.ChapterCount = None
         self.WordCount = None
+
+    def AreValuesMissing(self) -> List[str]:
+
+        ##
+        #
+        # Checks whether the object contains all the information it's meant to contain.
+        #
+        # @return A list of missing values.
+        #
+        ##
+
+        missingValues = []
+
+        if not self.URL:
+            missingValues.append("URL")
+
+        if not self.Title:
+            missingValues.append("Title")
+
+        if not self.Author:
+            missingValues.append("Author")
+
+        if not self.DatePublished:
+            missingValues.append("DatePublished")
+
+        if not self.DateUpdated:
+            missingValues.append("DateUpdated")
+
+        if not self.DateExtracted:
+            missingValues.append("DateExtracted")
+
+        if not self.ChapterCount:
+            missingValues.append("ChapterCount")
+
+        return missingValues
 
     def GetPrettified(self, escapeHTMLEntities: bool = False) -> Metadata:
 
