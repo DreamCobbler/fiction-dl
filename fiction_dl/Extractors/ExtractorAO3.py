@@ -30,7 +30,6 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
-from fiction_dl.Utilities.HTML import StripHTML
 
 # Standard packages.
 
@@ -41,6 +40,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.HTML import ReadElementText
 from dreamy_utilities.Text import DeprettifyAmount, DeprettifyNumber, Stringify
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
@@ -91,139 +91,19 @@ class ExtractorAO3(Extractor):
         if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
             return None
 
+        seriesMatch = re.search("/series/([a-zA-Z0-9_]+)", URL)
+        if seriesMatch:
+            return self._ScanWorks(f"{self._BASE_SERIES_URL}/{seriesMatch.group(1)}")
+
+        collectionMatch = re.search("/collections/([a-zA-Z0-9_]+)", URL)
+        if collectionMatch:
+            return self._ScanWorks(f"{self._BASE_COLLECTION_URL}/{collectionMatch.group(1)}/works")
+
         usernameMatch = re.search("/users/([a-zA-Z0-9_]+)", URL)
-        if not usernameMatch:
-            return self._ScanCollection(URL)
+        if usernameMatch:
+            return self._ScanWorks(f"{self._BASE_USER_URL}/{usernameMatch.group(1)}/works")
 
-        username = usernameMatch.group(1)
-
-        normalizedURL = f"https://archiveofourown.org/users/{username}/"
-        worksURL = normalizedURL + "works"
-
-        worksSoup = DownloadSoup(worksURL)
-        if not worksSoup:
-            return None
-
-        worksPagesURLs = []
-
-        if not (worksPaginationElement := worksSoup.find("ol", {"title": "pagination"})):
-
-            worksPagesURLs.append(worksURL)
-
-        else:
-
-            worksPageButtonElements = worksPaginationElement.find_all("li")
-            worksPageCount = len(worksPageButtonElements) - 2
-            if worksPageCount < 1:
-                logging.error("Invalid number of pages on the Works webpage.")
-                return None
-
-            for index in range(1, worksPageCount + 1):
-                worksPagesURLs.append(worksURL + f"?page={index}")
-
-        workIDs = []
-
-        for pageURL in worksPagesURLs:
-
-            pageSoup = DownloadSoup(pageURL)
-            if not pageSoup:
-                logging.error("Failed to download a page of the Works webpage.")
-                continue
-
-            workElements = pageSoup.find_all("li", {"class": "work"})
-
-            for workElement in workElements:
-
-                linkElement = workElement.find("a")
-                if (not linkElement) or (not linkElement.has_attr("href")):
-                    logging.error("Failed to retrieve story URL from the Works webpage.")
-                    continue
-
-                storyIDMatch = re.search("/works/(\d+)", linkElement["href"])
-                if not storyIDMatch:
-                    logging.error("Failed to retrieve story ID from its URL.")
-                    continue
-
-                storyID = storyIDMatch.group(1)
-                workIDs.append(storyID)
-
-        storyURLs = [f"https://archiveofourown.org/works/{ID}" for ID in workIDs]
-        return storyURLs
-
-    def _ScanCollection(self, URL: str) -> Optional[List[str]]:
-
-        ##
-        #
-        # Scans the collection: generates the list of story URLs.
-        #
-        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
-        #
-        ##
-
-        if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
-            return None
-
-        collectionNameMatch = re.search("/collections/([a-zA-Z0-9_]+)", URL)
-        if not collectionNameMatch:
-            return None
-
-        collectionName = collectionNameMatch.group(1)
-
-        worksURL = f"https://archiveofourown.org/collections/{collectionName}/works"
-        worksSoup = DownloadSoup(worksURL)
-        if not worksSoup:
-            return None
-
-        worksPagesURLs = []
-        worksPageButtonElements = \
-            worksSoup.select("ol.pagination:not(.next):not(.previous) > li")
-
-        if not worksPageButtonElements:
-
-            worksPagesURLs.append(worksURL)
-
-        else:
-
-            worksPageCount = len(worksPageButtonElements)
-
-            if worksPageCount < 1:
-                logging.error("Invalid number of pages on the Works webpage.")
-                return None
-
-            for index in range(1, worksPageCount + 1):
-                worksPagesURLs.append(worksURL + f"?page={index}")
-
-        worksPagesURLs = [self._GetAdultView(x) for x in worksPagesURLs]
-        workIDs = []
-
-        for pageURL in worksPagesURLs:
-
-            pageSoup = DownloadSoup(pageURL)
-            if not pageSoup:
-                logging.error("Failed to download a page of the Works webpage.")
-                continue
-
-            workElements = pageSoup.select("li.work h4.heading")
-
-            for workElement in workElements:
-
-                linkElement = workElement.select_one("a")
-                if not linkElement:
-                    logging.error("Failed to find the link element in the story header.")
-                    continue
-
-                storyURL = linkElement["href"]
-                storyIDMatch = re.search("/works/(\d+)", storyURL)
-
-                if not storyIDMatch:
-                    logging.error(f"Failed to retrieve story ID from its URL: \"{storyURL}\".")
-                    continue
-
-                storyID = storyIDMatch.group(1)
-                workIDs.append(storyID)
-
-        storyURLs = [f"https://archiveofourown.org/works/{ID}" for ID in workIDs]
-        return storyURLs
+        return None
 
     def _InternallyScanStory(
         self,
@@ -245,55 +125,52 @@ class ExtractorAO3(Extractor):
 
         # Extract metadata.
 
-        titleElement = soup.find("h2", {"class": "title"})
-        if not titleElement:
-            logging.error("Title element not found.")
+        try:
+
+            title = ReadElementText(soup, "h2.title")
+            if not title:
+                raise RuntimeError("title.")
+
+            author = ReadElementText(soup, "a[rel~=author]")
+            # Author is optional.
+
+            datePublished = ReadElementText(soup, "dd.published")
+            if not datePublished:
+                raise RuntimeError("date of publication.")
+
+            dateUpdated = ReadElementText(soup, "dd.published")
+            if not dateUpdated:
+                raise RuntimeError("date of most recent update.")
+
+            chapterAmount = ReadElementText(soup, "dd.chapters")
+            if not chapterAmount:
+                raise RuntimeError("chapter count.")
+
+            wordCount = ReadElementText(soup, "dd.words")
+            if not wordCount:
+                raise RuntimeError("word count.")
+
+            summary = ReadElementText(soup, "blockquote.userstuff")
+            # Summary is optional.
+
+        except RuntimeError as exception:
+
+            logging.error("Failed to read metadata: {exception}.")
+
             return False
-
-        authorElement = soup.find("a", {"rel": "author"})
-        # The author might be anonymous, so no error here.
-
-        publishedElement = soup.find("dd", {"class": "published"})
-        if not publishedElement:
-            logging.error("Date published element not found.")
-            return False
-
-        updatedElement = soup.find("dd", {"class": "status"})
-        if not updatedElement:
-            updatedElement = publishedElement
-
-        chaptersElement = soup.find("dd", {"class": "chapters"})
-        if not chaptersElement:
-            logging.error("Chapter count element not found.")
-            return False
-
-        wordsElement = soup.find("dd", {"class": "words"})
-        if not wordsElement:
-            logging.error("Word count element not found.")
-            return False
-
-        summaryElement = soup.find("blockquote", {"class": "userstuff"})
 
         # Set the metadata.
 
-        self.Story.Metadata.Title = titleElement.get_text().strip()
-        self.Story.Metadata.Author = (
-            authorElement.get_text().strip()
-            if authorElement else
-            "Anonymous"
-        )
+        self.Story.Metadata.Title = title
+        self.Story.Metadata.Author = author or "Anonymous"
 
-        self.Story.Metadata.DatePublished = publishedElement.get_text().strip()
-        self.Story.Metadata.DateUpdated = updatedElement.get_text().strip()
+        self.Story.Metadata.DatePublished = datePublished
+        self.Story.Metadata.DateUpdated = dateUpdated
 
-        self.Story.Metadata.ChapterCount = DeprettifyAmount(chaptersElement.get_text())[0]
-        self.Story.Metadata.WordCount = DeprettifyNumber(wordsElement.get_text())
+        self.Story.Metadata.ChapterCount = DeprettifyAmount(chapterAmount)[0]
+        self.Story.Metadata.WordCount = DeprettifyNumber(wordCount)
 
-        self.Story.Metadata.Summary = (
-            StripHTML(summaryElement.get_text()).strip()
-            if summaryElement else
-            "No summary."
-        )
+        self.Story.Metadata.Summary = summary or "No summary."
 
         # Extract chapter URLs.
 
@@ -357,7 +234,81 @@ class ExtractorAO3(Extractor):
             content = Stringify(storyTextElement.encode_contents())
         )
 
-    def _GetNormalizedStoryURL(self, URL: str) -> Optional[str]:
+    @staticmethod
+    def _ScanWorks(URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans a list of works: generates the list of story URLs.
+        #
+        # @param URL The URL.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        # Check the arguments.
+
+        if not URL:
+            return None
+
+        # Download page soup.
+
+        soup = DownloadSoup(URL)
+        if not soup:
+            return None
+
+        # Locate all the pages of the list.
+
+        pageURLs = []
+
+        if not (paginationElement := soup.find("ol", {"title": "pagination"})):
+
+            pageURLs.append(URL)
+
+        else:
+
+            pageButtonElements = paginationElement.find_all("li")
+            pageCount = len(pageButtonElements) - 2
+
+            if pageCount < 1:
+                logging.error("Invalid number of pages on the Works webpage.")
+                return None
+
+            for index in range(1, pageCount + 1):
+                pageURLs.append(f"{URL}?page={index}")
+
+        # Read all the stories on all the pages.
+
+        storyURLs = []
+
+        for pageURL in pageURLs:
+
+            soup = DownloadSoup(pageURL)
+            if not soup:
+                logging.error("Failed to download a page of the Works webpage.")
+                continue
+
+            for storyElement in soup.select("li.work"):
+
+                linkElement = storyElement.find("a")
+                if (not linkElement) or (not linkElement.has_attr("href")):
+                    logging.error("Failed to retrieve story URL from the Works webpage.")
+                    continue
+
+                storyID = ExtractorAO3._GetStoryID(linkElement["href"])
+                if not storyID:
+                    logging.error("Failed to retrieve story ID from its URL.")
+                    continue
+
+                storyURLs.append(f"{ExtractorAO3._BASE_WORK_URL}/{storyID}")
+
+        # Return.
+
+        return storyURLs
+
+    @staticmethod
+    def _GetNormalizedStoryURL(URL: str) -> Optional[str]:
 
         ##
         #
@@ -372,8 +323,8 @@ class ExtractorAO3(Extractor):
         if not URL:
             return None
 
-        return self._GetAdultView(
-            f"{ExtractorAO3._BASE_WORK_URL}/{self._GetStoryID(URL)}"
+        return ExtractorAO3._GetAdultView(
+            f"{ExtractorAO3._BASE_WORK_URL}/{ExtractorAO3._GetStoryID(URL)}"
         )
 
     @staticmethod
@@ -417,3 +368,6 @@ class ExtractorAO3(Extractor):
         return storyIDMatch.group(1)
 
     _BASE_WORK_URL = "https://archiveofourown.org/works"
+    _BASE_USER_URL = "https://archiveofourown.org/users"
+    _BASE_SERIES_URL = "https://archiveofourown.org/series"
+    _BASE_COLLECTION_URL = "https://archiveofourown.org/collections"
