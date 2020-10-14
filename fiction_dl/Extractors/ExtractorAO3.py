@@ -41,7 +41,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Text import Stringify
+from dreamy_utilities.Text import DeprettifyAmount, DeprettifyNumber, Stringify
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 #
@@ -286,8 +286,8 @@ class ExtractorAO3(Extractor):
         self.Story.Metadata.DatePublished = publishedElement.get_text().strip()
         self.Story.Metadata.DateUpdated = updatedElement.get_text().strip()
 
-        self.Story.Metadata.ChapterCount = self._ReadChapterCount(chaptersElement.get_text())
-        self.Story.Metadata.WordCount = self._ReadWordCount(wordsElement.get_text())
+        self.Story.Metadata.ChapterCount = DeprettifyAmount(chaptersElement.get_text())[0]
+        self.Story.Metadata.WordCount = DeprettifyNumber(wordsElement.get_text())
 
         self.Story.Metadata.Summary = (
             StripHTML(summaryElement.get_text()).strip()
@@ -304,7 +304,7 @@ class ExtractorAO3(Extractor):
 
         chapterOptionElements = soup.select("select#selected_id > option")
         self._chapterURLs = [
-            self._GetAdultView(f'{self._baseWorkURL}/{storyID}/chapters/{x["value"]}')
+            self._GetAdultView(f'{self._BASE_WORK_URL}/{storyID}/chapters/{x["value"]}')
             for x in chapterOptionElements
             if x.has_attr("value")
         ]
@@ -372,9 +372,9 @@ class ExtractorAO3(Extractor):
         if not URL:
             return None
 
-        storyID = self._GetStoryID(URL)
-
-        return self._GetAdultView(f"{ExtractorAO3._baseWorkURL}/{storyID}")
+        return self._GetAdultView(
+            f"{ExtractorAO3._BASE_WORK_URL}/{self._GetStoryID(URL)}"
+        )
 
     @staticmethod
     def _GetAdultView(URL: str) -> Optional[str]:
@@ -416,64 +416,4 @@ class ExtractorAO3(Extractor):
 
         return storyIDMatch.group(1)
 
-    @staticmethod
-    def _ReadChapterCount(chaptersDescription: str) -> Optional[int]:
-
-        ##
-        #
-        # Reads chapter count value from AO3's "chapters" description.
-        #
-        # @param chaptersDescription Input chapters description.
-        #
-        # @return Chapter count.
-        #
-        ##
-
-        if not chaptersDescription:
-            return None
-
-        chapterCount = chaptersDescription.strip().split("/")[0]
-
-        try:
-
-            chapterCount = int(chapterCount)
-
-        except ValueError:
-
-            logging.error("Failed to convert chapter count.")
-
-            return None
-
-        return chapterCount
-
-    @staticmethod
-    def _ReadWordCount(wordsDescription: str) -> Optional[int]:
-
-        ##
-        #
-        # Reads word count value from AO3's "words" description.
-        #
-        # @param wordsDescription Input words description.
-        #
-        # @return Word count.
-        #
-        ##
-
-        if not wordsDescription:
-            return None
-
-        wordCount = wordsDescription.strip().replace(",", "")
-
-        try:
-
-            wordCount = int(wordCount)
-
-        except ValueError:
-
-            logging.error("Failed to convert word count.")
-
-            return None
-
-        return wordCount
-
-    _baseWorkURL = "https://archiveofourown.org/works"
+    _BASE_WORK_URL = "https://archiveofourown.org/works"
