@@ -311,6 +311,24 @@ class ExtractorAO3(Extractor):
         )
 
     @staticmethod
+    def _GetPrettyStoryURL(URL: str) -> Optional[str]:
+
+        ##
+        #
+        # Returns a "pretty" story URL, i.e. one that can be used for printing in story content.
+        #
+        # @param URL Input URL (given by the user).
+        #
+        # @return Pretty URL.
+        #
+        ##
+
+        if not URL:
+            return None
+
+        return f"{ExtractorAO3._BASE_WORK_URL}/{ExtractorAO3._GetStoryID(URL)}"
+
+    @staticmethod
     def _GetAdultFullStoryURL(URL: str) -> Optional[str]:
 
         ##

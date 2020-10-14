@@ -143,7 +143,7 @@ class Extractor:
         if GetHostname(URL) not in self.GetSupportedHostnames():
             return False
 
-        self.Story = Story(self._GetNormalizedStoryURL(URL))
+        self.Story = Story(self._GetPrettyStoryURL(URL))
 
         return True
 
@@ -280,7 +280,7 @@ class Extractor:
 
         raise NotImplementedError()
 
-    def _GetNormalizedStoryURL(self, URL: str) -> str:
+    def _GetNormalizedStoryURL(self, URL: str) -> Optional[str]:
 
         ##
         #
@@ -289,6 +289,20 @@ class Extractor:
         # @param URL Input URL (given by the user).
         #
         # @return Normalized URL.
+        #
+        ##
+
+        return URL
+
+    def _GetPrettyStoryURL(self, URL: str) -> Optional[str]:
+
+        ##
+        #
+        # Returns a "pretty" story URL, i.e. one that can be used for printing in story content.
+        #
+        # @param URL Input URL (given by the user).
+        #
+        # @return Pretty URL.
         #
         ##
 
