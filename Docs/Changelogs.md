@@ -1,3 +1,27 @@
+# 1.6.0
+
+**Extractors:**
+
+- Added an extractor for HarryPotterFanFiction.com.
+- Added an extractor for Nifty.org.
+
+- The AO3 extractor now supports downloading whole Collections.
+- The AO3 extractor now supports downloading whole Series.
+- The AO3 extractor is noticeably more optimized, reading data from the single-page story view instead of manually retrieving each chapter.
+
+**Processing:**
+
+- Improved story/chapter title processing.
+
+**Bugfixes:**
+
+- Fixed the problem with chapter titles on FF.net being combined. (I.e. "Chapter 1Chapter 2Chapter 3".)
+- Fixed the problem with HTML entities being improperly encoded in output files.
+
+**Stuff:**
+
+- Moved *a lot* of utilities to the [Dreamy Utilities](https://github.com/DreamCobbler/dreamy-utilities) package.
+
 # 1.5.0
 
 **Extractors**:
