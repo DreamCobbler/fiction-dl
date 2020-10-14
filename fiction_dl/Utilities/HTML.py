@@ -89,11 +89,7 @@ def EscapeHTML(code: str) -> str:
     if not code:
         return code
 
-    code = code.replace("&", "&amp;")
-    code = code.replace("<", "&lt;")
-    code = code.replace(">", "&gt;")
-    code = code.replace("'", "&#39;")
-    code = code.replace('"', "&quot;")
+    code = Unescape(code)
 
     return html.escape(code)
 
