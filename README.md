@@ -7,7 +7,7 @@
 
 The application supports more than a dozen websites, generates HTML, EPUB, MOBI, ODT and PDF output files, applies typographic corrections to the extracted content and is able to embed downloaded images within it.
 
-## Table of Contents
+## ✿ Table of Contents
 
 1. [Features](#features).
 2. [Installation](#installation).
@@ -15,7 +15,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 4. [License](#license).
 5. [Technical](#technical).
 
-## Features
+## ✿ Features
 
 ### Downloading stories
 
@@ -70,7 +70,7 @@ The application can download images found in story content and embed them in out
 | Lorem ipsum????? Dolor.      | Lorem ipsum? Dolor.      |
 | Lorem ipsum - dolor.         | Lorem ipsum — dolor.     |
 
-## Installation
+## ✿ Installation
 
 You can install **fiction-dl** using *pip*:
 
@@ -84,7 +84,7 @@ If you're running a Debian-derived Linux distribution, you might also need to in
 
 (**fiction-dl** uses OpenCV for processing downloaded images, which requires them to be installed. PyMuPDF requires libmupdf-dev when it's being built from the source.)
 
-## Usage
+## ✿ Usage
 
 To download a story from a URL, simply type:
 
@@ -126,11 +126,11 @@ Follow it by the story's content, wrapped in HTML tags. Then call:
 
 You can insert chapter-breaks in the story by typing "CHAPTER BREAK LINE" in an empty line.
 
-## License
+## ✿ License
 
 **GNU GPL 3**. The text of the license is provided in the *LICENSE* file.
 
-## Technical
+## ✿ Technical
 
 ### Changelogs
 

@@ -31,7 +31,6 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.Text import GetSubtitle, GetTitleProper
 
 # Standard packages.
 
@@ -43,7 +42,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Text import GetLevenshteinDistance, Stringify
+from dreamy_utilities.Text import GetLevenshteinDistance, PrettifyTitle, SeparateSubtitle, Stringify
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 #
@@ -132,7 +131,7 @@ class ExtractorNajlepszaErotyka(Extractor):
             return False
 
         title = self._CleanStoryTitle(titleElement.get_text().strip())
-        titleProper = GetTitleProper(title)
+        titleProper = PrettifyTitle(title, removeContext = True)
 
         # Find all other chapters of this story.
 
@@ -140,7 +139,7 @@ class ExtractorNajlepszaErotyka(Extractor):
 
         for story in self._FindAllStoriesByAuthor(authorNameMatch.group(1)):
 
-            distance = GetLevenshteinDistance(GetTitleProper(story[0]), titleProper)
+            distance = GetLevenshteinDistance(PrettifyTitle(story[0], removeContext = True), titleProper)
             if distance > 5:
                 continue
 
@@ -217,7 +216,7 @@ class ExtractorNajlepszaErotyka(Extractor):
             unwantedElement.replaceWith("")
 
         return Chapter(
-            title = GetSubtitle(self._CleanStoryTitle(titleElement.get_text().strip())),
+            title = SeparateSubtitle(self._CleanStoryTitle(titleElement.get_text().strip())),
             content = Stringify(contentElement.encode_contents())
         )
 

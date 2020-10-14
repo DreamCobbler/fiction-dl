@@ -26,10 +26,6 @@
 #
 #
 
-# Application.
-
-from fiction_dl.Utilities.HTML import Unescape
-
 # Standard packages.
 
 import re

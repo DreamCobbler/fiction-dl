@@ -39,6 +39,7 @@ from urllib.parse import urlparse
 
 import bleach
 from bs4 import BeautifulSoup
+from dreamy_utilities.HTML import UnescapeHTMLEntities
 
 #
 #
@@ -65,7 +66,7 @@ def CleanHTML(code: str) -> Optional[str]:
 
     # Unescape entities and remove non-breaking spaces.
 
-    code = Unescape(code)
+    code = UnescapeHTMLEntities(code)
     code = code.replace(u"\u00A0", " ")
 
     # Return.
@@ -86,7 +87,7 @@ def FindImagesInCode(code: str) -> List[Image]:
 
     soup = BeautifulSoup(code, features = "html.parser")
 
-    return [Image(Unescape(tag["src"])) for tag in soup.find_all("img")]
+    return [Image(UnescapeHTMLEntities(tag["src"])) for tag in soup.find_all("img")]
 
 def IsURLAbsolute(URL: str) -> bool:
 
@@ -103,7 +104,7 @@ def IsURLAbsolute(URL: str) -> bool:
     if not URL:
         return True
 
-    return bool(urlparse(Unescape(URL)).netloc)
+    return bool(urlparse(UnescapeHTMLEntities(URL)).netloc)
 
 def MakeURLAbsolute(URL: str, baseURL: str) -> Optional[str]:
 

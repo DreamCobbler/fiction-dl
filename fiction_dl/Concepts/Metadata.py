@@ -31,8 +31,6 @@ from __future__ import annotations
 # Application.
 
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
-from fiction_dl.Utilities.HTML import EscapeHTML, Unescape
-from fiction_dl.Utilities.Text import GetTitleProper
 
 # Standard packages.
 
@@ -41,8 +39,8 @@ from typing import List, Optional
 
 # Non-standard packages.
 
-from dreamy_utilities.Text import PrettifyDate, PrettifyNumber, Truncate
-from titlecase import titlecase
+from dreamy_utilities.HTML import EscapeHTMLEntities, UnescapeHTMLEntities
+from dreamy_utilities.Text import PrettifyDate, PrettifyNumber, PrettifyTitle, Truncate
 
 #
 #
@@ -139,17 +137,17 @@ class Metadata:
 
         if escapeHTMLEntities:
 
-            metadata.URL = EscapeHTML(metadata.URL)
-            metadata.Title = EscapeHTML(metadata.Title)
-            metadata.Author = EscapeHTML(metadata.Author)
-            metadata.Summary = EscapeHTML(metadata.Summary)
+            metadata.URL = EscapeHTMLEntities(metadata.URL)
+            metadata.Title = EscapeHTMLEntities(metadata.Title)
+            metadata.Author = EscapeHTMLEntities(metadata.Author)
+            metadata.Summary = EscapeHTMLEntities(metadata.Summary)
 
-            metadata.DatePublished = EscapeHTML(metadata.DatePublished)
-            metadata.DateUpdated = EscapeHTML(metadata.DateUpdated)
-            metadata.DateExtracted = EscapeHTML(metadata.DateExtracted)
+            metadata.DatePublished = EscapeHTMLEntities(metadata.DatePublished)
+            metadata.DateUpdated = EscapeHTMLEntities(metadata.DateUpdated)
+            metadata.DateExtracted = EscapeHTMLEntities(metadata.DateExtracted)
 
-            metadata.ChapterCount = EscapeHTML(metadata.ChapterCount)
-            metadata.WordCount = EscapeHTML(metadata.WordCount)
+            metadata.ChapterCount = EscapeHTMLEntities(metadata.ChapterCount)
+            metadata.WordCount = EscapeHTMLEntities(metadata.WordCount)
 
         return metadata
 
@@ -163,10 +161,11 @@ class Metadata:
 
         typographyProcessor = TypographyProcessor()
 
-        self.Title = titlecase(typographyProcessor.Process(GetTitleProper(self.Title)).strip())
-        self.Title = Unescape(self.Title)
+        self.Title = typographyProcessor.Process(PrettifyTitle(self.Title, removeContext = True)).strip()
+        self.Title = UnescapeHTMLEntities(self.Title)
 
         self.Summary = typographyProcessor.Process(self.Summary).strip()
+        self.Summary = UnescapeHTMLEntities(self.Summary)
 
         if summaryLength:
             self.Summary = Truncate(self.Summary, summaryLength)

@@ -26,13 +26,13 @@
 #
 #
 
-# Application.
-
-from fiction_dl.Utilities.Text import PrettifyTitle
-
 # Standard packages.
 
 from typing import Optional
+
+# Non-standard packages.
+
+from dreamy_utilities.Text import PrettifyTitle
 
 #
 #
@@ -72,11 +72,7 @@ class Chapter:
         #
         ##
 
-        self.Title = PrettifyTitle(
-            self.Title,
-            removeContext = True,
-            unescape = True
-        )
+        self.Title = PrettifyTitle(self.Title, removeContext = True)
 
     def __bool__(self) -> bool:
 

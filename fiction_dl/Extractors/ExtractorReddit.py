@@ -31,7 +31,6 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory
-from fiction_dl.Utilities.Text import GetTitleProper
 import fiction_dl.Configuration as Configuration
 
 # Standard packages.
@@ -46,7 +45,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
-from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance
+from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance, PrettifyTitle
 from markdown import markdown
 from praw import Reddit
 from praw.exceptions import InvalidURL
@@ -231,7 +230,7 @@ class ExtractorReddit(Extractor):
                 submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
                 subredditName = submission.subreddit.display_name
 
-                storyTitleProper = GetTitleProper(submission.title)
+                storyTitleProper = PrettifyTitle(submission.title, removeContext = True)
                 if not storyTitleProper:
                     logging.error("Failed to read story title.")
                     return False
@@ -262,7 +261,7 @@ class ExtractorReddit(Extractor):
                         if subredditName != nextSubmissionSubredditName:
                             continue
 
-                        titleProper = GetTitleProper(nextSubmission.title)
+                        titleProper = PrettifyTitle(nextSubmission.title, removeContext = True)
                         if not titleProper:
                             continue
 
@@ -286,7 +285,7 @@ class ExtractorReddit(Extractor):
             firstSubmission = Submission(self._redditInstance, url = self._chapterURLs[0])
             lastSubmission = Submission(self._redditInstance, url = self._chapterURLs[-1])
 
-            storyTitleProper = GetTitleProper(firstSubmission.title)
+            storyTitleProper = PrettifyTitle(firstSubmission.title, removeContext = True)
 
             self.Story.Metadata.Title = storyTitleProper
             self.Story.Metadata.Author = (

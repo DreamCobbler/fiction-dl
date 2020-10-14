@@ -31,7 +31,7 @@
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory
-from fiction_dl.Utilities.HTML import EscapeHTML, StripEmptyTags
+from fiction_dl.Utilities.HTML import StripEmptyTags
 
 # Standard packages.
 
