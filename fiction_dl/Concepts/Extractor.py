@@ -87,7 +87,7 @@ class Extractor:
         #
         ##
 
-        raise NotImplementedError()
+        return []
 
     def RequiresBreaksBetweenRequests(self) -> bool:
 

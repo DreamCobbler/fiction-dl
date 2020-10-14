@@ -36,8 +36,11 @@ import fiction_dl.Configuration as Configuration
 # Standard packages.
 
 from itertools import groupby
-import requests
 from typing import List, Optional
+
+# Non-standard packages.
+
+from dreamy_utilities.Filesystem import ReadTextFile
 
 #
 #
@@ -63,17 +66,17 @@ class ExtractorTextFile(Extractor):
         self._fileContent = None
         self._chapters = None
 
-    def GetSupportedHostnames(self) -> List[str]:
+    def RequiresBreaksBetweenRequests(self) -> bool:
 
         ##
         #
-        # Returns a list of hostnames supposed to be supported by the extractor.
+        # Does the extractor require the application to sleep between subsequent reqests?
         #
-        # @return A list of supported hostnames.
+        # @return **True** if it does, **False** otherwise.
         #
         ##
 
-        return []
+        return False
 
     def Initialize(self, filePath: str) -> bool:
 
@@ -87,18 +90,7 @@ class ExtractorTextFile(Extractor):
         #
         ##
 
-        try:
-
-            with open(filePath, "r", encoding = "utf-8") as file:
-
-                lines = file.readlines()
-
-                if not lines:
-
-                    return False
-
-        except OSError:
-
+        if not ReadTextFile(filePath, lines = True):
             return False
 
         self._filePath = filePath
@@ -116,22 +108,11 @@ class ExtractorTextFile(Extractor):
         #
         ##
 
-        try:
-
-            with open(URL, "r", encoding = "utf-8") as file:
-
-                lines = file.readlines()
-
-                if lines and lines[0].startswith(Configuration.TextSourceFileMagicText):
-                    return None
-
-                return self._ReadURLsFromLines(lines)
-
-        except OSError:
-
+        lines = ReadTextFile(self._filePath, lines = True)
+        if (not lines) or lines[0].startswith(Configuration.TextSourceFileMagicText):
             return None
 
-        return None
+        return self._ReadURLsFromLines(lines)
 
     def ScanStory(self) -> bool:
 
@@ -147,22 +128,21 @@ class ExtractorTextFile(Extractor):
         if not self._filePath:
             return False
 
-        try:
+        # Read the file.
 
-            with open(self._filePath, "r", encoding = "utf-8") as file:
-                self._fileContent = file.readlines()
-
-        except OSError:
-
+        self._fileContent = ReadTextFile(self._filePath, lines = True)
+        if (not self._fileContent) or len(self._fileContent) < 6:
             return False
 
-        if len(self._fileContent) < 6:
-            return False
+        # Calculate chapter count.
 
         chapterCount = 1
+
         for line in self._fileContent:
             if line.startswith(Configuration.TextSourceFileChapterBreak):
                 chapterCount += 1
+
+        # Set the metadata.
 
         self.Story.Metadata.URL = self._fileContent[1].strip()
         self.Story.Metadata.Title = self._fileContent[2].strip()
@@ -171,12 +151,16 @@ class ExtractorTextFile(Extractor):
         self.Story.Metadata.ChapterCount = chapterCount
         self.Story.Metadata.WordCount = 0
 
+        # Format chapter content.
+
         chapterGroups = groupby(
             self._fileContent[5:],
             lambda x: x.startswith(Configuration.TextSourceFileChapterBreak)
         )
 
         self._chapters = [list(group) for x, group in chapterGroups if not x]
+
+        # Return.
 
         return True
 
