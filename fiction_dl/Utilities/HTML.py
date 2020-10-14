@@ -32,8 +32,6 @@ from fiction_dl.Concepts.Image import Image
 
 # Standard packages.
 
-import html
-import re
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
 
@@ -73,25 +71,6 @@ def CleanHTML(code: str) -> Optional[str]:
     # Return.
 
     return code
-
-def EscapeHTML(code: str) -> str:
-
-    ##
-    #
-    # Escapes HTML entities in code.
-    #
-    # @param code The input code.
-    #
-    # @return The input code with HTML entities escaped.
-    #
-    ##
-
-    if not code:
-        return code
-
-    code = Unescape(code)
-
-    return html.escape(code)
 
 def FindImagesInCode(code: str) -> List[Image]:
 
@@ -272,23 +251,3 @@ def StripTags(code: str, validTags: List[str] = []) -> Optional[str]:
         tags = validTags,
         strip = True
     )
-
-def Unescape(code: str) -> Optional[str]:
-
-    ##
-    #
-    # Properly unescapes HTML entities.
-    #
-    # @param code The input code.
-    #
-    # @return The processed code.
-    #
-    ##
-
-    if not code:
-        return None
-
-    for entity in re.findall("&[a-z]+?;", code):
-        code = code.replace(entity, entity.lower())
-
-    return html.unescape(code)
