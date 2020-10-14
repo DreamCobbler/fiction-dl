@@ -147,7 +147,7 @@ class ExtractorAO3(Extractor):
         self.Story.Metadata.Author = ReadElementText(self._storySoup, "a[rel~=author]") or "Anonymous"
 
         self.Story.Metadata.DatePublished = ReadElementText(self._storySoup, "dd.published")
-        self.Story.Metadata.DateUpdated = ReadElementText(self._storySoup, "dd.status")
+        self.Story.Metadata.DateUpdated = ReadElementText(self._storySoup, "dd.status") or self.Story.Metadata.DatePublished
 
         chapterCount = DeprettifyAmount(ReadElementText(self._storySoup, "dd.chapters"))[0]
 
