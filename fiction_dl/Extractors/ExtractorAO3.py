@@ -64,6 +64,8 @@ class ExtractorAO3(Extractor):
 
         super().__init__()
 
+        self._storySoup = None
+
     def GetSupportedHostnames(self) -> List[str]:
 
         ##
@@ -77,6 +79,18 @@ class ExtractorAO3(Extractor):
         return [
             "archiveofourown.org"
         ]
+
+    def RequiresBreaksBetweenRequests(self) -> bool:
+
+        ##
+        #
+        # Does the extractor require the application to sleep between subsequent reqests?
+        #
+        # @return **True** if it does, **False** otherwise.
+        #
+        ##
+
+        return False
 
     def ScanChannel(self, URL: str) -> Optional[List[str]]:
 
@@ -123,34 +137,38 @@ class ExtractorAO3(Extractor):
         #
         ##
 
+        # Store the tag soup.
+
+        self._storySoup = soup
+
         # Extract metadata.
 
         try:
 
-            title = ReadElementText(soup, "h2.title")
+            title = ReadElementText(self._storySoup, "h2.title")
             if not title:
                 raise RuntimeError("title.")
 
-            author = ReadElementText(soup, "a[rel~=author]")
+            author = ReadElementText(self._storySoup, "a[rel~=author]")
             # Author is optional.
 
-            datePublished = ReadElementText(soup, "dd.published")
+            datePublished = ReadElementText(self._storySoup, "dd.published")
             if not datePublished:
                 raise RuntimeError("date of publication.")
 
-            dateUpdated = ReadElementText(soup, "dd.published")
+            dateUpdated = ReadElementText(self._storySoup, "dd.published")
             if not dateUpdated:
                 raise RuntimeError("date of most recent update.")
 
-            chapterAmount = ReadElementText(soup, "dd.chapters")
+            chapterAmount = ReadElementText(self._storySoup, "dd.chapters")
             if not chapterAmount:
                 raise RuntimeError("chapter count.")
 
-            wordCount = ReadElementText(soup, "dd.words")
+            wordCount = ReadElementText(self._storySoup, "dd.words")
             if not wordCount:
                 raise RuntimeError("word count.")
 
-            summary = ReadElementText(soup, "blockquote.userstuff")
+            summary = ReadElementText(self._storySoup, "blockquote.userstuff")
             # Summary is optional.
 
         except RuntimeError as exception:
@@ -172,67 +190,58 @@ class ExtractorAO3(Extractor):
 
         self.Story.Metadata.Summary = summary or "No summary."
 
-        # Extract chapter URLs.
-
-        storyID = self._GetStoryID(self.Story.Metadata.URL)
-        if not storyID:
-            logging.error("Couldn't retrieve the story's ID.")
-            return False
-
-        chapterOptionElements = soup.select("select#selected_id > option")
-        self._chapterURLs = [
-            self._GetAdultView(f'{self._BASE_WORK_URL}/{storyID}/chapters/{x["value"]}')
-            for x in chapterOptionElements
-            if x.has_attr("value")
-        ]
-
-        if not self._chapterURLs:
-            self._chapterURLs = [self.Story.Metadata.URL]
-
         # Return.
 
         return True
 
-    def _InternallyExtractChapter(
-        self,
-        URL: str,
-        soup: Optional[BeautifulSoup]
-    ) -> Optional[Chapter]:
+    def ExtractChapter(self, index: int) -> Optional[Chapter]:
 
         ##
         #
         # Extracts specific chapter.
         #
-        # @param URL  The URL of the page containing the chapter.
-        # @param soup The tag soup of the page containing the chapter.
+        # @param index The index of the chapter to be extracted.
         #
         # @return **True** if the chapter is extracted correctly, **False** otherwise.
         #
         ##
 
-        # Read the title.
+        if 1 == self.Story.Metadata.ChapterCount:
 
-        chapterTitle = None
+            titleElement = None
+            contentElement = self._storySoup.select_one("div#chapters > div.userstuff")
 
-        if (titleElement := soup.select_one("h3.title")):
+            if (landmarkElement := contentElement.select_one("h3#work")):
+                landmarkElement.decompose()
 
-            if (chapterTitleMatch := re.search("^.* \d+: (.*)", titleElement.get_text().strip())):
-                chapterTitle = chapterTitleMatch.group(1)
+            return Chapter(
+                title = titleElement.get_text().strip() if titleElement else None,
+                content = Stringify(contentElement.encode_contents())
+            )
 
-        # Read the content.
+        else:
 
-        storyTextElement = soup.select_one("div.userstuff")
-        if not storyTextElement:
-            logging.error("Story text element not found.")
-            return None
+            chapterElements = self._storySoup.select("div#chapters > div.chapter")
+            if index > len(chapterElements):
+                logging.error(
+                    f"Trying to extract chapter {index}. "
+                    f"Only {len(chapterElements)} chapter(s) located. "
+                    f"The story supposedly has {self.Story.Metadata.ChapterCount} chapter(s)."
+                )
+                return None
 
-        if (landmarkElement := storyTextElement.select_one("h3#work")):
-            landmarkElement.decompose()
+            currentChapterElement = chapterElements[index - 1]
 
-        return Chapter(
-            title = chapterTitle,
-            content = Stringify(storyTextElement.encode_contents())
-        )
+            titleElement = currentChapterElement.select_one("h3.title")
+            contentElement = currentChapterElement.select_one("div.userstuff")
+
+            if (landmarkElement := contentElement.select_one("h3#work")):
+                landmarkElement.decompose()
+
+            return Chapter(
+                title = titleElement.get_text().strip() if titleElement else None,
+                content = Stringify(contentElement.encode_contents())
+            )
 
     @staticmethod
     def _ScanWorks(URL: str) -> Optional[List[str]]:
@@ -323,27 +332,28 @@ class ExtractorAO3(Extractor):
         if not URL:
             return None
 
-        return ExtractorAO3._GetAdultView(
+        return ExtractorAO3._GetAdultFullStoryURL(
             f"{ExtractorAO3._BASE_WORK_URL}/{ExtractorAO3._GetStoryID(URL)}"
         )
 
     @staticmethod
-    def _GetAdultView(URL: str) -> Optional[str]:
+    def _GetAdultFullStoryURL(URL: str) -> Optional[str]:
 
         ##
         #
-        # Returns a URL with option allowing to view adult content set.
+        # Returns a URL leading to the page containg the whole story content, with adult-mode
+        # enabled.
         #
-        # @param URL Input URL.
+        # @param URL Story URL.
         #
-        # @return Adult content proofed URL.
+        # @return The code of the page containing the whole work.
         #
         ##
 
         if not URL:
             return None
 
-        return URL + "?view_adult=true"
+        return URL + "?view_adult=true&view_full_work=true"
 
     @staticmethod
     def _GetStoryID(URL: str) -> Optional[str]:

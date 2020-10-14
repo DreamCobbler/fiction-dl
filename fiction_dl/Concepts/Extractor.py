@@ -89,6 +89,18 @@ class Extractor:
 
         raise NotImplementedError()
 
+    def RequiresBreaksBetweenRequests(self) -> bool:
+
+        ##
+        #
+        # Does the extractor require the application to sleep between subsequent reqests?
+        #
+        # @return **True** if it does, **False** otherwise.
+        #
+        ##
+
+        return True
+
     def SupportsAuthentication(self) -> bool:
 
         ##

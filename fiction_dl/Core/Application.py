@@ -304,7 +304,7 @@ class Application:
             if extractor.Story.Metadata.ChapterCount == index:
                 self._interface.EmptyLine()
 
-            if not retrievedFromCache:
+            if not retrievedFromCache and extractor.RequiresBreaksBetweenRequests():
                 sleep(Configuration.PostChapterSleepTime)
 
         # Locate and download images.
