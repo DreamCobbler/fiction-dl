@@ -179,6 +179,7 @@ class ExtractorHPFF(Extractor):
             return False
 
         baseURL = GetSiteURL(self.Story.Metadata.URL)
+
         for rowElement in chapterRowElements:
 
             anchorElement = rowElement.select_one("td > a.h4")
