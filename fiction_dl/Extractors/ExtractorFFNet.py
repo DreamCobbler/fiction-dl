@@ -66,6 +66,8 @@ class ExtractorFFNet(Extractor):
 
         super().__init__()
 
+        self._chapterParserName = "html5lib"
+
     def GetSupportedHostnames(self) -> List[str]:
 
         ##
