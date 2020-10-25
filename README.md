@@ -151,7 +151,3 @@ You can generate code documentation using [**Doxygen**](https://www.doxygen.nl/i
 Launching the **Integration Test** can be done by entering the *Tests* directory and executing the following code:
 
     python "Integration Test.py"
-
-In order to launch **unit tests**, enter the *Tests* directory and execute:
-
-    python "Unit Tests.py"
