@@ -33,6 +33,7 @@ from fiction_dl.Concepts.Story import Story
 # Standard packages.
 
 from pathlib import Path
+from typing import List
 
 #
 #
@@ -61,6 +62,28 @@ class Formatter:
         ##
 
         self._embedImages = embedImages
+
+    def FormatAndSaveCombined(
+        self,
+        stories: List[Story],
+        title: str,
+        filePath: Path
+    ) -> bool:
+
+        ##
+        #
+        # Formats multiple stories and saves them in the output file.
+        #
+        # @param stories  The list of stories to be combined.
+        # @param title    The title of the created package of stories.
+        # @param filePath The path to the output file.
+        #
+        # @return **True** if the output file was generated and saved without problems, **False**
+        #         otherwise.
+        #
+        ##
+
+        raise NotImplementedError()
 
     def FormatAndSave(self, story: Story, filePath: Path) -> bool:
 

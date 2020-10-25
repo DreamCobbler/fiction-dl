@@ -56,7 +56,7 @@ from pathlib import Path
 import re
 from requests.exceptions import ConnectionError
 from time import sleep
-from typing import Dict, List
+from typing import Dict, List, Optional
 from urllib3.exceptions import ProtocolError
 
 # Non-standard packages.
@@ -64,7 +64,7 @@ from urllib3.exceptions import ProtocolError
 from dreamy_utilities.Containers import RemoveDuplicates
 from dreamy_utilities.Filesystem import GetSanitizedFileName, WriteTextFile
 from dreamy_utilities.Interface import Interface
-from dreamy_utilities.Text import Stringify, Truncate
+from dreamy_utilities.Text import GetCurrentDate, Stringify, Truncate
 from dreamy_utilities.Web import GetSiteURL
 
 #
@@ -128,7 +128,10 @@ class Application:
         self._interface.Process("Processing input arguments...", section = True)
 
         inputData = InputData(self._arguments.Input)
-        inputData.ExpandAndShuffle()
+        if not self._arguments.Combine:
+            inputData.ExpandAndShuffle()
+        else:
+            inputData.Expand()
 
         URLs = inputData.Access()
 
@@ -136,6 +139,7 @@ class Application:
 
         # Process the stories.
 
+        downloadedStories = []
         skippedURLs = []
 
         for index, URL in enumerate(URLs, start = 1):
@@ -143,11 +147,11 @@ class Application:
             self._interface.LineBreak()
             self._interface.Text(f'{index}/{len(URLs)}: "{URL}".', section = True, bold = True)
 
-            successfullyProcessedURL = False
+            newlyDownloadedStory = None
 
             try:
 
-                successfullyProcessedURL = self._ProcessURL(URL)
+                newlyDownloadedStory = self._ProcessURL(URL)
 
             except KeyboardInterrupt:
 
@@ -168,8 +172,13 @@ class Application:
 
                 self._interface.Error("An exception has been thrown.")
 
-            if not successfullyProcessedURL:
+            if not newlyDownloadedStory:
                 skippedURLs.append(URL)
+
+            if not self._arguments.Combine:
+                self._FormatAndSaveStory(story)
+            else:
+                downloadedStories.append(newlyDownloadedStory)
 
         self._interface.LineBreak()
 
@@ -190,13 +199,190 @@ class Application:
 
         self._interface.Comment(f"Downloaded {successCount}/{len(URLs)} stories.", section = True)
 
+        # Save downloaded stories.
+
+        if self._arguments.Combine:
+            self._FormatAndSaveMultipleStories(downloadedStories)
+
         # Clear the cache.
 
         if not self._arguments.PersistentCache:
             logging.info("Deleting the cache...")
             self._cache.Clear()
 
-    def _ProcessURL(self, URL: str) -> bool:
+    def _FormatAndSaveMultipleStories(self, stories: List[Story]) -> bool:
+
+        # Notify the user.
+
+        self._interface.Process("Formatting and saving all the downloaded stories...", section = True)
+
+        # Generate package name.
+
+        packageName = f"{Configuration.ApplicationName} {GetCurrentDate()}"
+        sanitizedPackageName = self._GetPrintableTitle(packageName)
+
+        # Generate output file paths.
+
+        outputDirectoryPath = Path(expandvars(self._arguments.Output))
+        outputFilePaths = {
+            "Directory": outputDirectoryPath,
+            "HTML": outputDirectoryPath / (sanitizedPackageName + ".html"),
+            "ODT" : outputDirectoryPath / (sanitizedPackageName + ".odt" ),
+            "PDF" : outputDirectoryPath / (sanitizedPackageName + ".pdf" ),
+            "EPUB": outputDirectoryPath / (sanitizedPackageName + ".epub"),
+            "MOBI": outputDirectoryPath / (sanitizedPackageName + ".mobi"),
+        }
+
+        # Create the output directory.
+
+        outputFilePaths["Directory"].mkdir(parents = True, exist_ok = True)
+
+        # Format and save the stories to HTML.
+
+        if not outputFilePaths["HTML"].is_file():
+
+            if not FormatterHTML(self._arguments.Images).FormatAndSaveCombined(
+                stories,
+                packageName,
+                outputFilePaths["HTML"]
+            ):
+                logging.error("Failed to format the stories as HTML.")
+
+        # Format and save the stories to ODT.
+
+        if not outputFilePaths["ODT"].is_file():
+
+            if not FormatterODT(self._arguments.Images, True).FormatAndSaveCombined(
+                stories,
+                packageName,
+                outputFilePaths["ODT"]
+            ):
+                logging.error("Failed to format the stories as ODT.")
+
+        # Format and save the stories to PDF.
+
+        coverImageData = None
+
+        if (not outputFilePaths["PDF"].is_file()) and self._arguments.LibreOffice.is_file():
+
+            if not FormatterPDF(self._arguments.Images).ConvertFromODT(
+                outputFilePaths["ODT"],
+                outputFilePaths["PDF"].parent,
+                self._arguments.LibreOffice
+            ):
+                logging.error("Failed to format the story as PDF.")
+
+        if outputFilePaths["PDF"].is_file():
+            coverImageData = RenderPageToBytes(outputFilePaths["PDF"], 0)
+
+        # Format and save the stories to EPUB.
+
+        if not outputFilePaths["EPUB"].is_file():
+
+            if not FormatterEPUB(self._arguments.Images, coverImageData).FormatAndSaveCombined(
+                stories,
+                packageName,
+                outputFilePaths["EPUB"]
+            ):
+                logging.error("Failed to format the stories as EPUB.")
+
+        # Format and save the story to MOBI.
+
+        if (not outputFilePaths["MOBI"].is_file()) and FindEbookConvert():
+
+            if not FormatterMOBI(self._arguments.Images).ConvertFromEPUB(
+                outputFilePaths["EPUB"],
+                outputFilePaths["MOBI"].parent
+            ):
+                logging.error("Failed to format the stories as MOBI.")
+
+        # Notify the user and return.
+
+        self._interface.Comment("Stories saved successfully!")
+
+        return True
+
+    def _FormatAndSaveStory(self, story: Story) -> bool:
+
+        # Notify the user.
+
+        self._interface.Process(
+            f'Formatting and saving a story: "{self._GetPrintableStoryTitle(story)}"...',
+            section = True
+        )
+
+        # Create the output directory.
+
+        outputFilePaths = self._GetOutputFilePaths(
+            self._arguments.Output,
+            story
+        )
+
+        outputFilePaths["Directory"].mkdir(parents = True, exist_ok = True)
+
+        # Format and save the story to HTML.
+
+        if not outputFilePaths["HTML"].is_file():
+
+            if not FormatterHTML(self._arguments.Images).FormatAndSave(
+                story,
+                outputFilePaths["HTML"]
+            ):
+                logging.error("Failed to format the story as HTML.")
+
+        # Format and save the story to ODT.
+
+        if not outputFilePaths["ODT"].is_file():
+
+            if not FormatterODT(self._arguments.Images).FormatAndSave(
+                story,
+                outputFilePaths["ODT"]
+            ):
+                logging.error("Failed to format the story as ODT.")
+
+        # Format and save the story to PDF.
+
+        coverImageData = None
+
+        if (not outputFilePaths["PDF"].is_file()) and self._arguments.LibreOffice.is_file():
+
+            if not FormatterPDF(self._arguments.Images).ConvertFromODT(
+                outputFilePaths["ODT"],
+                outputFilePaths["PDF"].parent,
+                self._arguments.LibreOffice
+            ):
+                logging.error("Failed to format the story as PDF.")
+
+        if outputFilePaths["PDF"].is_file():
+            coverImageData = RenderPageToBytes(outputFilePaths["PDF"], 0)
+
+        # Format and save the story to EPUB.
+
+        if not outputFilePaths["EPUB"].is_file():
+
+            if not FormatterEPUB(self._arguments.Images, coverImageData).FormatAndSave(
+                story,
+                outputFilePaths["EPUB"]
+            ):
+                logging.error("Failed to format the story as EPUB.")
+
+        # Format and save the story to MOBI.
+
+        if (not outputFilePaths["MOBI"].is_file()) and FindEbookConvert():
+
+            if not FormatterMOBI(self._arguments.Images).ConvertFromEPUB(
+                outputFilePaths["EPUB"],
+                outputFilePaths["MOBI"].parent
+            ):
+                logging.error("Failed to format the story as MOBI.")
+
+        # Notify the user and return.
+
+        self._interface.Comment("Story saved successfully!")
+
+        return True
+
+    def _ProcessURL(self, URL: str) -> Optional[Story]:
 
         ##
         #
@@ -204,7 +390,7 @@ class Application:
         #
         # @param URL The URL to be processed.
         #
-        # @return **True** if the URL has been processed successfully, **False** otherwise.
+        # @return The Story object if the URL has been processed successfully, **None** otherwise.
         #
         ##
 
@@ -215,7 +401,7 @@ class Application:
         extractor = CreateExtractor(URL)
         if not extractor:
             logging.error("No matching extractor found.")
-            return False
+            return None
 
         self._interface.Comment(f'Extractor created: "{type(extractor).__name__}".')
 
@@ -237,7 +423,7 @@ class Application:
 
         if not extractor.ScanStory():
             logging.error("Failed to scan the story.")
-            return False
+            return None
 
         self._PrintMetadata(extractor.Story)
 
@@ -283,7 +469,7 @@ class Application:
 
                 if not chapter:
                     logging.error("Failed to extract story content.")
-                    return False
+                    return None
 
             extractor.Story.Chapters.append(chapter)
 
@@ -434,80 +620,9 @@ class Application:
 
         self._interface.Comment("Content processed.")
 
-        # Format and save the story.
+        # Return.
 
-        self._interface.Process("Formatting and saving the story...", section = True)
-
-        # Create the output directory.
-
-        outputFilePaths = self._GetOutputFilePaths(
-            self._arguments.Output,
-            extractor.Story
-        )
-
-        outputFilePaths["Directory"].mkdir(parents = True, exist_ok = True)
-
-        # Format and save the story to HTML.
-
-        if not outputFilePaths["HTML"].is_file():
-
-            if not FormatterHTML(self._arguments.Images).FormatAndSave(
-                extractor.Story,
-                outputFilePaths["HTML"]
-            ):
-                logging.error("Failed to format the story as HTML.")
-
-        # Format and save the story to ODT.
-
-        if not outputFilePaths["ODT"].is_file():
-
-            if not FormatterODT(self._arguments.Images).FormatAndSave(
-                extractor.Story,
-                outputFilePaths["ODT"]
-            ):
-                logging.error("Failed to format the story as ODT.")
-
-        # Format and save the story to PDF.
-
-        coverImageData = None
-
-        if (not outputFilePaths["PDF"].is_file()) and self._arguments.LibreOffice.is_file():
-
-            if not FormatterPDF(self._arguments.Images).ConvertFromODT(
-                outputFilePaths["ODT"],
-                outputFilePaths["PDF"].parent,
-                self._arguments.LibreOffice
-            ):
-                logging.error("Failed to format the story as PDF.")
-
-        if outputFilePaths["PDF"].is_file():
-            coverImageData = RenderPageToBytes(outputFilePaths["PDF"], 0)
-
-        # Format and save the story to EPUB.
-
-        if not outputFilePaths["EPUB"].is_file():
-
-            if not FormatterEPUB(self._arguments.Images, coverImageData).FormatAndSave(
-                extractor.Story,
-                outputFilePaths["EPUB"]
-            ):
-                logging.error("Failed to format the story as EPUB.")
-
-        # Format and save the story to MOBI.
-
-        if (not outputFilePaths["MOBI"].is_file()) and FindEbookConvert():
-
-            if not FormatterMOBI(self._arguments.Images).ConvertFromEPUB(
-                outputFilePaths["EPUB"],
-                outputFilePaths["MOBI"].parent
-            ):
-                logging.error("Failed to format the story as MOBI.")
-
-        # Notify the user.
-
-        self._interface.Comment("Story saved successfully!")
-
-        return True
+        return extractor.Story
 
     def _PrintMetadata(self, story: Story) -> None:
 
@@ -564,7 +679,11 @@ class Application:
 
         prettifiedMetadata = story.Metadata.GetPrettified()
 
-        title = Transliterate(prettifiedMetadata.Title)
+        return self._GetPrintableTitle(prettifiedMetadata.Title)
+
+    def _GetPrintableTitle(self, title: str) -> str:
+
+        title = Transliterate(title)
         title = GetSanitizedFileName(title)
         title = re.sub("\s+", " ", title)
 

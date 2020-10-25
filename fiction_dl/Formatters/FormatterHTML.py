@@ -36,11 +36,13 @@ from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 
 from base64 import b64encode
 from pathlib import Path
+from typing import List
 
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
+from dreamy_utilities.Text import PrettifyNumber
 
 #
 #
@@ -69,6 +71,71 @@ class FormatterHTML(Formatter):
         ##
 
         super().__init__(embedImages)
+
+    def FormatAndSaveCombined(
+        self,
+        stories: List[Story],
+        title: str,
+        filePath: Path
+    ) -> bool:
+
+        ##
+        #
+        # Formats multiple stories and saves them in the output file.
+        #
+        # @param stories  The list of stories to be combined.
+        # @param title    The title of the created package of stories.
+        # @param filePath The path to the output file.
+        #
+        # @return **True** if the output file was generated and saved without problems, **False**
+        #         otherwise.
+        #
+        ##
+
+        # Combine all the stories provided.
+
+        combinedContent = ""
+
+        combinedChapterCount = 0
+        combinedWordCount = 0
+
+        for story in stories:
+
+            storyTitle = story.Metadata.GetPrettified().Title
+
+            def Prefixer(index: int, title: str) -> str:
+                return "<h3>" + f"{storyTitle} — Chapter {index}" + (f": {title}" if title else "") + "</h3>"
+
+            combinedContent += f"<h2>{storyTitle}</h2>" + story.Join(Prefixer)
+
+            combinedChapterCount += story.Metadata.ChapterCount
+            combinedWordCount += story.Metadata.WordCount
+
+        # Load the template and fill it with the story.
+
+        templateFilePath = GetPackageDirectory() / "Templates/FormatterHTML (Combined).html"
+
+        content = ReadTextFile(templateFilePath)
+        content = content.replace("@@@Title@@@", title)
+        content = content.replace("@@@ChapterCount@@@", PrettifyNumber(combinedChapterCount))
+        content = content.replace("@@@WordCount@@@", PrettifyNumber(combinedWordCount))
+        content = content.replace("@@@StoryCount@@@", PrettifyNumber(len(stories)))
+        content = content.replace("@@@Content@@@", combinedContent)
+
+        content = stories[0].FillTemplate(content, escapeHTMLEntities = True)
+
+        # Save the template to file.
+
+        try:
+
+            with open(filePath, "w", encoding = "utf-8") as outputFile:
+                outputFile.write(content)
+
+            return True
+
+        except OSError:
+
+            return False
 
     def FormatAndSave(self, story: Story, filePath: Path) -> bool:
 

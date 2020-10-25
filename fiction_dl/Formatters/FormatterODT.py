@@ -32,12 +32,14 @@ from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 from fiction_dl.Utilities.HTML import StripEmptyTags
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
 import html
 from pathlib import Path
 import re
+from typing import List
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 
 # Non-standard packages.
@@ -45,7 +47,7 @@ from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
 from dreamy_utilities.Mathematics import GetDimensionsToFit
-from dreamy_utilities.Text import Stringify
+from dreamy_utilities.Text import GetCurrentDate, PrettifyNumber, Stringify
 
 #
 #
@@ -63,13 +65,14 @@ from dreamy_utilities.Text import Stringify
 
 class FormatterODT(Formatter):
 
-    def __init__(self, embedImages: bool = True) -> None:
+    def __init__(self, embedImages: bool = True, combinedVersion: bool = False) -> None:
 
         ##
         #
         # The constructor.
         #
-        # @param embedImages Embed images in the output file.
+        # @param embedImages     Embed images in the output file.
+        # @param combinedVersion Use the template designed for multiple stories.
         #
         ##
 
@@ -77,7 +80,12 @@ class FormatterODT(Formatter):
 
         # Intialize member variables.
 
-        self._templateFilePath = GetPackageDirectory() / "Templates/FormatterODT/Template.odt"
+        templateFileName =                        \
+            "Templates/FormatterODT/Template.odt" \
+            if not combinedVersion else           \
+            "Templates/FormatterODT/Template (Combined).odt"
+
+        self._templateFilePath = GetPackageDirectory() / templateFileName
 
         self._manifestDocument = ""
         self._contentDocument = ""
@@ -99,6 +107,153 @@ class FormatterODT(Formatter):
 
         styles = ReadTextFile(GetPackageDirectory() / "Templates/FormatterODT/Styles.xml")
         self._stylesDocument = self._stylesDocument[:EOF] + styles + self._stylesDocument[EOF:]
+
+    def FormatAndSaveCombined(
+        self,
+        stories: List[Story],
+        title: str,
+        filePath: Path
+    ) -> bool:
+
+        ##
+        #
+        # Formats multiple stories and saves them in the output file.
+        #
+        # @param stories  The list of stories to be combined.
+        # @param title    The title of the created package of stories.
+        # @param filePath The path to the output file.
+        #
+        # @return **True** if the output file was generated and saved without problems, **False**
+        #         otherwise.
+        #
+        ##
+
+        # Combine all the stories provided.
+
+        combinedContent = ""
+
+        combinedChapterCount = 0
+        combinedWordCount = 0
+
+        for story in stories:
+
+            prettifiedTitle = story.Metadata.GetPrettified().Title
+
+            def Prefixer(index: int, title: str) -> str:
+                return "<h1>" + f"{prettifiedTitle} — Chapter {index}" + (f": {title}" if title else "") + "</h1>"
+
+            combinedContent += f"<h2>{prettifiedTitle}</h2>" + story.Join(Prefixer)
+
+            combinedChapterCount += story.Metadata.ChapterCount
+            combinedWordCount += story.Metadata.WordCount
+
+        firstStory = stories[0]
+
+        content = self._TranslateHTMLtoODT(combinedContent, firstStory)
+        content = StripEmptyTags(
+            content,
+            validEmptyTags = ["draw:frame", "draw:image"],
+            validEmptyTagAttributes = {"text:style-name": "Horizontal_20_Line"}
+        )
+
+        # Prepare the files.
+
+        manifestDocument = self._manifestDocument
+        contentDocument = self._contentDocument
+        metadataDocument = self._metadataDocument
+        stylesDocument = self._stylesDocument
+
+        # Modify the content.
+
+        metadata = firstStory.Metadata.GetPrettified(escapeHTMLEntities = True)
+
+        contentDocument = contentDocument.replace("@@@Title@@@", title)
+        contentDocument = contentDocument.replace("@@@ChapterCount@@@", PrettifyNumber(combinedChapterCount))
+        contentDocument = contentDocument.replace("@@@WordCount@@@", PrettifyNumber(combinedWordCount))
+        contentDocument = contentDocument.replace("@@@StoryCount@@@", PrettifyNumber(len(stories)))
+        contentDocument = contentDocument.replace("http://link.link/", metadata.URL)
+        contentDocument = firstStory.FillTemplate(contentDocument, escapeHTMLEntities = True)
+
+        EOF = contentDocument.find("</office:text>")
+        contentDocument = contentDocument[:EOF] + content + contentDocument[EOF:]
+
+        # Modify the metadata.
+
+        EOF = "</office:meta>"
+
+        metadataDocument = self._SetTagContent(
+            metadataDocument,
+            "dc:title",
+            html.escape(metadata.Title),
+            EOF
+        )
+
+        metadataDocument = self._SetTagContent(
+            metadataDocument,
+            "meta:initial-creator",
+            html.escape(metadata.Author),
+            EOF
+        )
+
+        metadataDocument = self._SetTagContent(
+            metadataDocument,
+            "dc:creator",
+            html.escape(metadata.Author),
+            EOF
+        )
+
+        # Modify the styles.
+
+        stylesDocument = story.FillTemplate(stylesDocument, escapeHTMLEntities = True)
+
+        # Modify the manifest.
+
+        # if self._embedImages:
+
+            # for index, image in enumerate(story.Images):
+
+                # if not image.Data:
+                    # continue
+
+                # EOF = manifestDocument.find("</manifest:manifest>")
+                # manifestDocument = manifestDocument[:EOF] + \
+                    # '<manifest:file-entry manifest:full-path="Pictures/{}.jpeg"' \
+                    # ' manifest:media-type="image/jpeg"/>'.format(index) + \
+                    # manifestDocument[EOF:]
+
+        # Save the output file.
+
+        ReplacedFilesNames = [
+            "META-INF/manifest.xml",
+            "content.xml",
+            "meta.xml",
+            "styles.xml"
+        ]
+
+        with ZipFile(filePath, mode = "a") as outputArchive:
+
+            with ZipFile(self._templateFilePath, "r") as archive:
+
+                for item in [x for x in archive.infolist() if x.filename not in ReplacedFilesNames]:
+                    outputArchive.writestr(item, archive.read(item.filename))
+
+            outputArchive.writestr("META-INF/manifest.xml", manifestDocument)
+            outputArchive.writestr("content.xml", contentDocument)
+            outputArchive.writestr("meta.xml", metadataDocument)
+            outputArchive.writestr("styles.xml", stylesDocument)
+
+            if self._embedImages:
+
+                for index, image in enumerate(story.Images):
+
+                    if not image:
+                        continue
+
+                    outputArchive.writestr(f"Pictures/{index}.jpeg", image.Data)
+
+        # Return.
+
+        return True
 
     def FormatAndSave(self, story: Story, filePath: Path) -> bool:
 

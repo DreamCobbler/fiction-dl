@@ -132,6 +132,13 @@ def ReadCommandLineArguments() -> Namespace:
     )
 
     argumentParser.add_argument(
+        "-combine",
+        dest = "Combine",
+        action = "store_true",
+        help = "store all downloaded stories inside one file"
+    )
+
+    argumentParser.add_argument(
         "-v",
         dest = "Verbose",
         action = "store_true",
