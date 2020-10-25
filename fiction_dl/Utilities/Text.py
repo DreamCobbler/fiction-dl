@@ -33,7 +33,7 @@ from typing import Optional
 
 # Non-standard packages.
 
-from dreamy_utilities.Text import IsRomanNumeral, IsStringEmpty
+from dreamy_utilities.Text import IsRomanNumeral, IsStringEmpty, PrettifyTitle
 import pykakasi
 from titlecase import titlecase
 
@@ -49,9 +49,9 @@ def GetTitleProper(title: str) -> Optional[str]:
 
     ##
     #
-    # Retrieves the proper title of the story (removing parts like "(Part 6)" or "[Chapter 2]").
+    # Retrieves the proper title of the story (removing things like parts after a semicolon).
     #
-    # @param title The title as it was retrieved from the web.
+    # @param title The full title.
     #
     # @return The title proper.
     #
@@ -60,25 +60,15 @@ def GetTitleProper(title: str) -> Optional[str]:
     if not title:
         return None
 
-    titleProper = title
+    titleProper = PrettifyTitle(title, removeContext = True)
 
-    titleProper = re.sub("\[?\(?Finale\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Final part\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Final update\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Final\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Chapter(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Part(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
-    titleProper = re.sub("\[?\(?Update(\\s*)?(\d+)?\)?\]?\.?", "", titleProper)
-
-    # semicolonOccurence = titleProper.find(":")
-    # if -1 != semicolonOccurence:
-        # titleProper = titleProper[:semicolonOccurence]
+    semicolonOccurence = titleProper.find(":")
+    if -1 != semicolonOccurence:
+        titleProper = titleProper[:semicolonOccurence]
 
     words = titleProper.split()
     if IsRomanNumeral(words[-1]):
         titleProper = " ".join(words[:-1])
-
-    titleProper = titleProper.strip()
 
     return titleProper.strip()
 

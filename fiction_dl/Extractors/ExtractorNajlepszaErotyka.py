@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Concepts.Story import Story
+from fiction_dl.Utilities.Text import GetTitleProper
 
 # Standard packages.
 
@@ -42,7 +43,13 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Text import GetLevenshteinDistance, PrettifyTitle, SeparateSubtitle, Stringify
+from dreamy_utilities.Text import (
+    GetLevenshteinDistance,
+    GetLongestLeadingSubstring,
+    PrettifyTitle,
+    SeparateSubtitle,
+    Stringify
+)
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 #
@@ -131,19 +138,23 @@ class ExtractorNajlepszaErotyka(Extractor):
             return False
 
         title = self._CleanStoryTitle(titleElement.get_text().strip())
-        titleProper = PrettifyTitle(title, removeContext = True)
+        titleProper = GetTitleProper(title)
 
         # Find all other chapters of this story.
 
         self._chapterURLs = []
+        chapterTitles = []
 
         for story in self._FindAllStoriesByAuthor(authorNameMatch.group(1)):
 
-            distance = GetLevenshteinDistance(PrettifyTitle(story[0], removeContext = True), titleProper)
+            currentTitleProper = GetTitleProper(story[0])
+
+            distance = GetLevenshteinDistance(currentTitleProper, titleProper)
             if distance > 5:
                 continue
 
             self._chapterURLs.append([story[1], story[2]])
+            chapterTitles.append(currentTitleProper)
 
         datePublished = dateElement.get_text().strip()
         dateUpdated = dateElement.get_text().strip()
@@ -161,7 +172,7 @@ class ExtractorNajlepszaErotyka(Extractor):
 
         # Set the metadata.
 
-        self.Story.Metadata.Title = title
+        self.Story.Metadata.Title = GetLongestLeadingSubstring(chapterTitles).strip()
         self.Story.Metadata.Author = authorElement.get_text().strip()
 
         self.Story.Metadata.DatePublished = datePublished

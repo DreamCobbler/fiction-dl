@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory
+from fiction_dl.Utilities.Text import GetTitleProper
 import fiction_dl.Configuration as Configuration
 
 # Standard packages.
@@ -45,7 +46,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
-from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance, PrettifyTitle
+from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance, GetLongestLeadingSubstring, PrettifyTitle
 from markdown import markdown
 from praw import Reddit
 from praw.exceptions import InvalidURL
@@ -230,7 +231,7 @@ class ExtractorReddit(Extractor):
                 submission = Submission(self._redditInstance, url = self.Story.Metadata.URL)
                 subredditName = submission.subreddit.display_name
 
-                storyTitleProper = PrettifyTitle(submission.title, removeContext = True)
+                storyTitleProper = GetTitleProper(submission.title)
                 if not storyTitleProper:
                     logging.error("Failed to read story title.")
                     return False
@@ -261,7 +262,7 @@ class ExtractorReddit(Extractor):
                         if subredditName != nextSubmissionSubredditName:
                             continue
 
-                        titleProper = PrettifyTitle(nextSubmission.title, removeContext = True)
+                        titleProper = GetTitleProper(nextSubmission.title)
                         if not titleProper:
                             continue
 

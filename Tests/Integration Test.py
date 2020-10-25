@@ -35,7 +35,6 @@ sys.path.insert(0, "../")
 # Application.
 
 from fiction_dl.Core.Application import Application
-from fiction_dl.Utilities.Filesystem import GetLibreOfficeExecutableFilePath
 from fiction_dl.Configuration import *
 
 # Standard packages.
@@ -43,6 +42,10 @@ from fiction_dl.Configuration import *
 from argparse import Namespace
 import logging
 from pathlib import Path
+
+# Non-standard packages.
+
+from dreamy_utilities.Filesystem import FindExecutable
 
 
 #
@@ -72,7 +75,7 @@ arguments = Namespace(
     PersistentCache = True,
     Username = "",
     Password = "",
-    LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
+    LibreOffice = FindExecutable("soffice", "LibreOffice", "program") or Path(),
     Output = OutputDirectoryPath,
     Input = "Integration Test Dataset 1.txt"
 )
@@ -93,7 +96,7 @@ arguments = Namespace(
     PersistentCache = True,
     Username = "",
     Password = "",
-    LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
+    LibreOffice = FindExecutable("soffice", "LibreOffice", "program") or Path(),
     Output = OutputDirectoryPath,
     Input = "Integration Test Dataset 3.txt"
 )
