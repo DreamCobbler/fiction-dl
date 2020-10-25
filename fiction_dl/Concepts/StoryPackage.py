@@ -38,7 +38,8 @@ from typing import Callable, List
 
 # Non-standard packages.
 
-from dreamy_utilities.Text import FillTemplate, PrettifyNumber
+from dreamy_utilities.Containers import RemoveDuplicates
+from dreamy_utilities.Text import FillTemplate, GetCurrentDate, PrettifyNumber
 
 #
 #
@@ -58,7 +59,6 @@ class StoryPackage:
 
     def __init__(
         self,
-        title: str,
         stories: List[Story]
     ) -> None:
 
@@ -66,7 +66,6 @@ class StoryPackage:
         #
         # The constructor.
         #
-        # @param title  The title of the whole package.
         # @param stories Stories included in the package.
         #
         ##
@@ -92,11 +91,13 @@ class StoryPackage:
 
             self.Images.extend(story.Images)
 
+        totalAuthors = RemoveDuplicates(totalAuthors)
+
         # Initialize the metadata.
 
         self.Metadata.URL = "n/a"
 
-        self.Metadata.Title = title
+        self.Metadata.Title = f"{Configuration.ApplicationName} Package ({GetCurrentDate()})"
         self.Metadata.Author = ", ".join(totalAuthors)
         self.Metadata.Summary = "n/a"
 
