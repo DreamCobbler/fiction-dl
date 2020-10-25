@@ -38,7 +38,6 @@ if __package__ is None:
 # Application.
 
 from fiction_dl.Core.Application import Application
-from fiction_dl.Utilities.Filesystem import GetLibreOfficeExecutableFilePath
 from fiction_dl.Configuration import *
 
 # Standard packages.
@@ -50,6 +49,10 @@ from pathlib import Path
 from requests.exceptions import ConnectionError
 from sys import exit
 from urllib3.exceptions import ProtocolError
+
+# Non-standard packages.
+
+from dreamy_utilities.Filesystem import FindExecutable
 
 #
 #
@@ -177,7 +180,7 @@ def ReadCommandLineArguments() -> Namespace:
         "-lo",
         dest = "LibreOffice",
         type = Path,
-        default = GetLibreOfficeExecutableFilePath() or Path(),
+        default = FindExecutable("soffice", "LibreOffice", "program") or Path(),
         help = "path to the LibreOffice executable (soffice.exe)"
     )
 

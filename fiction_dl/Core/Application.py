@@ -42,8 +42,7 @@ from fiction_dl.Formatters.FormatterPDF import FormatterPDF
 from fiction_dl.Processors.SanitizerProcessor import SanitizerProcessor
 from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
 from fiction_dl.Utilities.Extractors import CreateExtractor
-from fiction_dl.Utilities.Filesystem import FindEbookConvert
-from fiction_dl.Utilities.General import RenderPageToBytes
+from fiction_dl.Utilities.General import RenderPDFPageToBytes
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
 from fiction_dl.Utilities.Text import Transliterate
 import fiction_dl. Configuration as Configuration
@@ -63,7 +62,7 @@ from urllib3.exceptions import ProtocolError
 # Non-standard packages.
 
 from dreamy_utilities.Containers import RemoveDuplicates
-from dreamy_utilities.Filesystem import GetSanitizedFileName, WriteTextFile
+from dreamy_utilities.Filesystem import FindExecutable, GetSanitizedFileName, WriteTextFile
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetCurrentDate, Stringify, Truncate
 from dreamy_utilities.Web import GetSiteURL
@@ -498,7 +497,7 @@ class Application:
                 logging.error("Failed to format the story as PDF.")
 
         if filePaths["PDF"].is_file():
-            coverImageData = RenderPageToBytes(filePaths["PDF"], 0)
+            coverImageData = RenderPDFPageToBytes(filePaths["PDF"], 0)
 
         # Format and save the stories to EPUB.
 
@@ -511,7 +510,7 @@ class Application:
         # Format and save the story to MOBI.
 
         formatter = FormatterMOBI(self._arguments.Images)
-        if (not filePaths["MOBI"].is_file()) and FindEbookConvert():
+        if (not filePaths["MOBI"].is_file()) and FindExecutable("ebook-convert"):
 
             if not formatter.ConvertFromEPUB(filePaths["EPUB"], filePaths["MOBI"].parent):
                 logging.error("Failed to format the stories as MOBI.")
@@ -590,15 +589,15 @@ class Application:
 
         notices = []
 
-        if not FindEbookConvert():
+        if not FindExecutable("ebook-convert"):
             notices.append(
-                "Calibre doesn't seem to be installed on this machine. MOBI output files will not "
+                "\"Calibre\" doesn't seem to be installed on this machine. MOBI output files will not "
                 "be generated."
             )
 
         if not self._arguments.LibreOffice.is_file():
             notices.append(
-                "LibreOffice doesn't seem to be installed on this machine. PDF output files will "
+                "\"LibreOffice\" doesn't seem to be installed on this machine. PDF output files will "
                 "not be generated."
             )
 

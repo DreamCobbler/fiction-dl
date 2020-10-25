@@ -28,10 +28,7 @@
 
 # Standard packages.
 
-from os.path import expandvars, isfile
 from pathlib import Path
-from shutil import which
-from typing import Optional
 
 #
 #
@@ -40,45 +37,6 @@ from typing import Optional
 #
 #
 #
-
-def FindEbookConvert() -> bool:
-
-    if not which("ebook-convert"):
-        return False
-
-    return True
-
-def GetLibreOfficeExecutableFilePath() -> Optional[Path]:
-
-    ##
-    #
-    # Returns file path leading to the LibreOffice/OpenOffice executable.
-    #
-    # @return The file path to the LibreOffice executable.
-    #
-    ##
-
-    path = which("soffice")
-    if path:
-        return Path(path)
-
-    path = expandvars("%ProgramW6432%\LibreOffice\program\soffice.exe")
-    if isfile(path):
-        return Path(path)
-
-    path = expandvars("%ProgramFiles(x86)%\LibreOffice\program\soffice.exe")
-    if isfile(path):
-        return Path(path)
-
-    path = "/usr/bin/soffice"
-    if isfile(path):
-        return Path(path)
-
-    path = "/bin/soffice"
-    if isfile(path):
-        return Path(path)
-
-    return None
 
 def GetPackageDirectory() -> Path:
 

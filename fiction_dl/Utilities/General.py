@@ -42,7 +42,7 @@ import fitz
 #
 #
 
-def RenderPageToBytes(documentFilePath: Path, pageIndex: int) -> bytes:
+def RenderPDFPageToBytes(documentFilePath: Path, pageIndex: int) -> bytes:
 
     ##
     #
