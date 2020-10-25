@@ -70,6 +70,10 @@ The application can download images found in story content and embed them in out
 | Lorem ipsum????? Dolor.      | Lorem ipsum? Dolor.      |
 | Lorem ipsum - dolor.         | Lorem ipsum — dolor.     |
 
+### Packing stories
+
+If you're downloading a lot of short stories, you can *pack* them into a single file, using the "-pack" command line option. This way you're adding only a single item to your Kindle book list, instead of twenty.
+
 ## ✿ Installation
 
 You can install **fiction-dl** using *pip*:

@@ -1,5 +1,9 @@
 # 1.6.0
 
+**General:**
+
+- Added the functionality of packing multiple stories inside a single file. (The "-pack" command line option.)
+
 **Extractors:**
 
 - Added an extractor for HarryPotterFanFiction.com.
