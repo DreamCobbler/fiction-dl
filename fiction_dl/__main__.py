@@ -132,10 +132,10 @@ def ReadCommandLineArguments() -> Namespace:
     )
 
     argumentParser.add_argument(
-        "-combine",
-        dest = "Combine",
+        "-pack",
+        dest = "Pack",
         action = "store_true",
-        help = "store all downloaded stories inside one file"
+        help = "packs all downloaded stories inside one file (of each type)"
     )
 
     argumentParser.add_argument(

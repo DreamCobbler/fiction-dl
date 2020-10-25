@@ -30,20 +30,19 @@
 
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
+from fiction_dl.Concepts.StoryPackage import StoryPackage
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 from fiction_dl.Utilities.HTML import ReformatHTMLToXHTML
-import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
-from dreamy_utilities.Text import GetCurrentDate
 from ebooklib import epub
 
 #
@@ -80,156 +79,13 @@ class FormatterEPUB(Formatter):
 
         self.CoverImageData = coverImageData
 
-    def FormatAndSaveCombined(
-        self,
-        stories: List[Story],
-        title: str,
-        filePath: Path
-    ) -> bool:
+    def FormatAndSave(self, story: Union[Story, StoryPackage], filePath: Path) -> bool:
 
         ##
         #
-        # Formats multiple stories and saves them in the output file.
+        # Formats the story (or the story package) and saves it to the output file.
         #
-        # @param stories  The list of stories to be combined.
-        # @param title    The title of the created package of stories.
-        # @param filePath The path to the output file.
-        #
-        # @return **True** if the output file was generated and saved without problems, **False**
-        #         otherwise.
-        #
-        ##
-
-        # Create the e-book.
-
-        book = epub.EpubBook()
-
-        book.set_identifier(title)
-        book.set_title(title)
-        book.set_language("en")
-        book.add_metadata("DC", "description", "")
-        book.add_author(Configuration.ApplicationName)
-
-        # Set up the cover.
-
-        if self.CoverImageData:
-            book.set_cover(self._CoverImageName, self.CoverImageData)
-
-        # Prepare the spine.
-
-        book.spine = ["cover", "nav"]
-
-        # Add the metadata chapter.
-
-        metadataFilePath = GetPackageDirectory() / "Templates/FormatterEPUB/Metadata (Combined).html"
-        metadataTemplate = ReadTextFile(metadataFilePath)
-
-        firstStory = stories[0]
-        metadataChapter = epub.EpubHtml(
-            file_name = "Metadata.xhtml",
-            content = firstStory.FillTemplate(metadataTemplate, escapeHTMLEntities = True).replace("@@@StoryCount@@@", str(len(stories))),
-            title = "Metadata",
-            lang = "en"
-        )
-
-        book.add_item(metadataChapter)
-        book.spine.append(metadataChapter)
-
-        # Add the stylesheet.
-
-        stylesheetFilePath = GetPackageDirectory() / "Templates/FormatterEPUB/Stylesheet.css"
-
-        stylesheet = epub.EpubItem(
-            uid = "style_default",
-            file_name = "style/default.css",
-            media_type = "text/css",
-            content = ReadTextFile(stylesheetFilePath)
-        )
-
-        book.add_item(stylesheet)
-
-        # Add chapters and create book spine.
-
-        imageIndex = 0
-
-        for storyIndex, story in enumerate(stories, start = 1):
-
-            prettifiedTitle = story.Metadata.GetPrettified().Title
-
-            for index, chapter in enumerate(story.Chapters, start = 1):
-
-                def TitleTextGenerator(index: int, title: str, storyTitle: str) -> str:
-                    return f"{prettifiedTitle} — Chapter {index}" + (f": {title}" if title else "")
-
-                def Prefixer(index: int, title: str) -> str:
-                    return f"<h2>{TitleTextGenerator(index, title, prettifiedTitle)}</h2>"
-
-                # Create the chapter.
-
-                bookChapter = epub.EpubHtml(
-                    file_name = f"Story {storyIndex} - Chapter {index}.xhtml",
-                    title = TitleTextGenerator(index, chapter.Title, prettifiedTitle),
-                    lang = "en"
-                )
-
-                # Prepare chapter content.
-
-                content = Prefixer(index, chapter.Title) + chapter.Content
-                content = ReformatHTMLToXHTML(content)
-
-                if self.CoverImageData and (len(story.Chapters) == index):
-                    content += f'<img src = "{self._CoverImageName}"/>'
-
-                # Replace images.
-
-                # if self._embedImages:
-
-                    # soup = BeautifulSoup(content, features = "html.parser")
-
-                    # for tag in soup.find_all("img"):
-
-                        # tag["src"] = f"{index}.jpeg"
-                        # tag["alt"] = "There is an image here."
-
-                        # imageIndex += 1
-
-                    # content = str(soup)
-
-                # else:
-
-                    # content = content.replace("<img/>", "")
-
-                # Set the chapter.
-
-                bookChapter.set_content(content)
-
-                book.add_item(bookChapter)
-                book.spine.append(bookChapter)
-
-        # Create a ToC.
-
-        book.toc = book.spine[1:]
-
-        # Add NCX and Navigation tile.
-
-        book.add_item(epub.EpubNcx())
-        book.add_item(epub.EpubNav())
-
-        # Write the file.
-
-        epub.write_epub(filePath, book, {})
-
-        # Return.
-
-        return True
-
-    def FormatAndSave(self, story: Story, filePath: Path) -> bool:
-
-        ##
-        #
-        # Formats the story and saves it to the output file.
-        #
-        # @param story    The story to be formatted and saved.
+        # @param story    The story/story package to be formatted and saved.
         # @param filePath The path to the output file.
         #
         # @return **True** if the output file was generated and saved without problems, **False**
@@ -271,7 +127,12 @@ class FormatterEPUB(Formatter):
 
         # Add the metadata chapter.
 
-        metadataFilePath = GetPackageDirectory() / "Templates/FormatterEPUB/Metadata.html"
+        templateFileName =                          \
+            "Metadata (Package).html"               \
+            if isinstance(story, StoryPackage) else \
+            "Metadata.html"
+
+        metadataFilePath = GetPackageDirectory() / f"Templates/FormatterEPUB/{templateFileName}"
         metadataTemplate = ReadTextFile(metadataFilePath)
 
         metadataChapter = epub.EpubHtml(
@@ -300,56 +161,74 @@ class FormatterEPUB(Formatter):
         # Add chapters and create book spine.
 
         imageIndex = 0
+        stories = story.Stories if isinstance(story, StoryPackage) else [story]
 
-        for index, chapter in enumerate(story.Chapters, start = 1):
+        for storyIndex, specificStory in enumerate(stories, start = 1):
 
-            def TitleTextGenerator(index: int, title: str) -> str:
-                return f"Chapter {index}" + (f": {title}" if title else "")
+            prettifiedStoryTitle = specificStory.Metadata.GetPrettified().Title
 
-            def Prefixer(index: int, title: str) -> str:
-                return f"<h1>{TitleTextGenerator(index, title)}</h1>"
+            for index, chapter in enumerate(specificStory.Chapters, start = 1):
 
-            # Create the chapter.
+                def PackageChapterTitler(index: int, chapterTitle: str, storyTitle: str) -> str:
+                    return f"{storyTitle} — Chapter {index}" + (f": {chapterTitle}" if chapterTitle else "")
 
-            bookChapter = epub.EpubHtml(
-                file_name = f"Chapter {index}.xhtml",
-                title = TitleTextGenerator(index, chapter.Title),
-                lang = "en"
-            )
+                def StoryChapterTitler(index: int, chapterTitle: str, storyTitle: str) -> str:
+                    return f"Chapter {index}" + (f": {chapterTitle}" if chapterTitle else "")
 
-            # Prepare chapter content.
+                def PackagePrefixer(index: int, chapterTitle: str, storyTitle: str) -> str:
+                    return f"<h2>{PackageChapterTitler(index, chapterTitle, storyTitle)}</h2>"
 
-            content = Prefixer(index, chapter.Title) + chapter.Content
-            content = ReformatHTMLToXHTML(content)
+                def StoryPrefixer(index: int, chapterTitle: str, storyTitle: str) -> str:
+                    return f"<h2>{StoryChapterTitler(index, chapterTitle, storyTitle)}</h2>"
 
-            if self.CoverImageData and (len(story.Chapters) == index):
-                content += f'<img src = "{self._CoverImageName}"/>'
+                titler = PackageChapterTitler if isinstance(story, StoryPackage) else StoryChapterTitler
+                prefixer = PackagePrefixer if isinstance(story, StoryPackage) else StoryPrefixer
 
-            # Replace images.
+                # Create the chapter.
 
-            if self._embedImages:
+                bookChapter = epub.EpubHtml(
+                    file_name = f"Story {storyIndex} - Chapter {index}.xhtml",
+                    title = titler(index, chapter.Title, prettifiedStoryTitle),
+                    lang = "en"
+                )
 
-                soup = BeautifulSoup(content, features = "html.parser")
+                # Prepare chapter content.
 
-                for tag in soup.find_all("img"):
+                content = prefixer(index, chapter.Title, prettifiedStoryTitle) + chapter.Content
+                content = ReformatHTMLToXHTML(content)
 
-                    tag["src"] = f"{index}.jpeg"
-                    tag["alt"] = "There is an image here."
+                if self.CoverImageData and (len(specificStory.Chapters) == index):
+                    content += f'<img src = "{self._CoverImageName}"/>'
 
-                    imageIndex += 1
+                # Replace images.
 
-                content = str(soup)
+                if self._embedImages:
 
-            else:
+                    soup = BeautifulSoup(content, features = "html.parser")
 
-                content = content.replace("<img/>", "")
+                    for index, tag in enumerate(soup.find_all("img")):
 
-            # Set the chapter.
+                        if index >= len(specificStory.Images):
+                            continue
 
-            bookChapter.set_content(content)
+                        if (image := specificStory.Images[index]):
+                            tag["src"] = f"{index}.jpeg"
+                            tag["alt"] = "There is an image here."
+                        else:
+                            tag["alt"] = "There ought to be an image here."
 
-            book.add_item(bookChapter)
-            book.spine.append(bookChapter)
+                    content = str(soup)
+
+                else:
+
+                    content = content.replace("<img/>", "")
+
+                # Set the chapter.
+
+                bookChapter.set_content(content)
+
+                book.add_item(bookChapter)
+                book.spine.append(bookChapter)
 
         # Create a ToC.
 

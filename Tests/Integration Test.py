@@ -64,6 +64,7 @@ logging.basicConfig(level = logging.INFO)
 arguments = Namespace(
     Authenticate = True,
     ClearCache = True,
+    Pack = False,
     Verbose = True,
     Force = True,
     Debug = True,
@@ -74,6 +75,27 @@ arguments = Namespace(
     LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
     Output = OutputDirectoryPath,
     Input = "Integration Test Dataset 1.txt"
+)
+
+Application(
+    arguments = arguments,
+    cacheDirectoryPath = CacheDirectoryPath
+).Launch()
+
+arguments = Namespace(
+    Authenticate = True,
+    ClearCache = True,
+    Pack = True,
+    Verbose = True,
+    Force = True,
+    Debug = True,
+    Images = True,
+    PersistentCache = True,
+    Username = "",
+    Password = "",
+    LibreOffice = GetLibreOfficeExecutableFilePath() or Path(),
+    Output = OutputDirectoryPath,
+    Input = "Integration Test Dataset 3.txt"
 )
 
 Application(

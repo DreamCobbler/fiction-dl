@@ -30,6 +30,7 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
+from fiction_dl.Concepts.StoryPackage import StoryPackage
 from fiction_dl.Core.Cache import Cache
 from fiction_dl.Core.InputData import InputData
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
@@ -128,7 +129,7 @@ class Application:
         self._interface.Process("Processing input arguments...", section = True)
 
         inputData = InputData(self._arguments.Input)
-        if not self._arguments.Combine:
+        if not self._arguments.Pack:
             inputData.ExpandAndShuffle()
         else:
             inputData.Expand()
@@ -175,8 +176,8 @@ class Application:
             if not newlyDownloadedStory:
                 skippedURLs.append(URL)
 
-            if not self._arguments.Combine:
-                self._FormatAndSaveStory(story)
+            if not self._arguments.Pack:
+                self._FormatAndSaveStory(newlyDownloadedStory)
             else:
                 downloadedStories.append(newlyDownloadedStory)
 
@@ -201,7 +202,7 @@ class Application:
 
         # Save downloaded stories.
 
-        if self._arguments.Combine:
+        if self._arguments.Pack:
             self._FormatAndSaveMultipleStories(downloadedStories)
 
         # Clear the cache.
@@ -218,7 +219,7 @@ class Application:
 
         # Generate package name.
 
-        packageName = f"{Configuration.ApplicationName} {GetCurrentDate()}"
+        packageName = f"{Configuration.ApplicationName} Package ({GetCurrentDate()})"
         sanitizedPackageName = self._GetPrintableTitle(packageName)
 
         # Generate output file paths.
@@ -237,13 +238,16 @@ class Application:
 
         outputFilePaths["Directory"].mkdir(parents = True, exist_ok = True)
 
+        # Create story package.
+
+        storyPackage = StoryPackage(packageName, stories)
+
         # Format and save the stories to HTML.
 
         if not outputFilePaths["HTML"].is_file():
 
-            if not FormatterHTML(self._arguments.Images).FormatAndSaveCombined(
-                stories,
-                packageName,
+            if not FormatterHTML(self._arguments.Images).FormatAndSave(
+                storyPackage,
                 outputFilePaths["HTML"]
             ):
                 logging.error("Failed to format the stories as HTML.")
@@ -252,9 +256,8 @@ class Application:
 
         if not outputFilePaths["ODT"].is_file():
 
-            if not FormatterODT(self._arguments.Images, True).FormatAndSaveCombined(
-                stories,
-                packageName,
+            if not FormatterODT(self._arguments.Images, True).FormatAndSave(
+                storyPackage,
                 outputFilePaths["ODT"]
             ):
                 logging.error("Failed to format the stories as ODT.")
@@ -279,9 +282,8 @@ class Application:
 
         if not outputFilePaths["EPUB"].is_file():
 
-            if not FormatterEPUB(self._arguments.Images, coverImageData).FormatAndSaveCombined(
-                stories,
-                packageName,
+            if not FormatterEPUB(self._arguments.Images, coverImageData).FormatAndSave(
+                storyPackage,
                 outputFilePaths["EPUB"]
             ):
                 logging.error("Failed to format the stories as EPUB.")

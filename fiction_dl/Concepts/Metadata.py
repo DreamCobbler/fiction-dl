@@ -58,13 +58,17 @@ from dreamy_utilities.Text import PrettifyDate, PrettifyNumber, PrettifyTitle, T
 
 class Metadata:
 
-    def __init__(self) -> None:
+    def __init__(self, prettifyTitle: bool = True) -> None:
 
         ##
         #
         # The constructor.
         #
+        # @param prettifyTitle Should the title be prettified when returning prettified metadata?
+        #
         ##
+
+        # Initialize member variables.
 
         self.URL = None
 
@@ -79,6 +83,10 @@ class Metadata:
 
         self.ChapterCount = None
         self.WordCount = None
+
+        # Save the options.
+
+        self._prettifyTitle = prettifyTitle
 
     def AreValuesMissing(self) -> List[str]:
 
@@ -159,9 +167,11 @@ class Metadata:
         #
         ##
 
+        prettifiedTitle = PrettifyTitle(self.Title, removeContext = True) if self._prettifyTitle else self.Title
+
         typographyProcessor = TypographyProcessor()
 
-        self.Title = typographyProcessor.Process(PrettifyTitle(self.Title, removeContext = True)).strip()
+        self.Title = typographyProcessor.Process(prettifiedTitle).strip()
         self.Title = UnescapeHTMLEntities(self.Title)
 
         self.Summary = typographyProcessor.Process(self.Summary).strip()

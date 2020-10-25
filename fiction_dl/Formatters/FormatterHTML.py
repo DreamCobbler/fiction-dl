@@ -30,19 +30,19 @@
 
 from fiction_dl.Concepts.Formatter import Formatter
 from fiction_dl.Concepts.Story import Story
+from fiction_dl.Concepts.StoryPackage import StoryPackage
 from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 
 # Standard packages.
 
 from base64 import b64encode
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
-from dreamy_utilities.Text import PrettifyNumber
 
 #
 #
@@ -72,19 +72,13 @@ class FormatterHTML(Formatter):
 
         super().__init__(embedImages)
 
-    def FormatAndSaveCombined(
-        self,
-        stories: List[Story],
-        title: str,
-        filePath: Path
-    ) -> bool:
+    def FormatAndSave(self, story: Union[Story, StoryPackage], filePath: Path) -> bool:
 
         ##
         #
-        # Formats multiple stories and saves them in the output file.
+        # Formats the story (or the story package) and saves it to the output file.
         #
-        # @param stories  The list of stories to be combined.
-        # @param title    The title of the created package of stories.
+        # @param story    The story/story package to be formatted and saved.
         # @param filePath The path to the output file.
         #
         # @return **True** if the output file was generated and saved without problems, **False**
@@ -92,74 +86,32 @@ class FormatterHTML(Formatter):
         #
         ##
 
-        # Combine all the stories provided.
+        # Choose the appropriate template file.
 
-        combinedContent = ""
-
-        combinedChapterCount = 0
-        combinedWordCount = 0
-
-        for story in stories:
-
-            storyTitle = story.Metadata.GetPrettified().Title
-
-            def Prefixer(index: int, title: str) -> str:
-                return "<h3>" + f"{storyTitle} — Chapter {index}" + (f": {title}" if title else "") + "</h3>"
-
-            combinedContent += f"<h2>{storyTitle}</h2>" + story.Join(Prefixer)
-
-            combinedChapterCount += story.Metadata.ChapterCount
-            combinedWordCount += story.Metadata.WordCount
+        templateFileName =                          \
+            "FormatterHTML (Package).html"          \
+            if isinstance(story, StoryPackage) else \
+            "FormatterHTML.html"
 
         # Load the template and fill it with the story.
 
-        templateFilePath = GetPackageDirectory() / "Templates/FormatterHTML (Combined).html"
-
-        content = ReadTextFile(templateFilePath)
-        content = content.replace("@@@Title@@@", title)
-        content = content.replace("@@@ChapterCount@@@", PrettifyNumber(combinedChapterCount))
-        content = content.replace("@@@WordCount@@@", PrettifyNumber(combinedWordCount))
-        content = content.replace("@@@StoryCount@@@", PrettifyNumber(len(stories)))
-        content = content.replace("@@@Content@@@", combinedContent)
-
-        content = stories[0].FillTemplate(content, escapeHTMLEntities = True)
-
-        # Save the template to file.
-
-        try:
-
-            with open(filePath, "w", encoding = "utf-8") as outputFile:
-                outputFile.write(content)
-
-            return True
-
-        except OSError:
-
-            return False
-
-    def FormatAndSave(self, story: Story, filePath: Path) -> bool:
-
-        ##
-        #
-        # Formats the story and saves it to the output file.
-        #
-        # @param story    The story to be formatted and saved.
-        # @param filePath The path to the output file.
-        #
-        # @return **True** if the output file was generated and saved without problems, **False**
-        #         otherwise.
-        #
-        ##
-
-        # Load the template and fill it with the story.
-
-        templateFilePath = GetPackageDirectory() / "Templates/FormatterHTML.html"
+        templateFilePath = GetPackageDirectory() / f"Templates/{templateFileName}"
         content = story.FillTemplate(ReadTextFile(templateFilePath), escapeHTMLEntities = True)
 
-        def Prefixer(index: int, title: str) -> str:
-            return "<h2>" + f"Chapter {index}" + (f": {title}" if title else "") + "</h2>"
+        def ChapterTitler(index: int, chapterTitle: str) -> str:
+            return f"Chapter {index}" + (f": {chapterTitle}" if chapterTitle else "")
 
-        content = content.replace("@@@Content@@@", story.Join(Prefixer))
+        def PackagePrefixer(index: int, chapterTitle: str, storyTitle: str) -> str:
+            return f"<h2>{storyTitle} — {ChapterTitler(index, chapterTitle)}</h2>"
+
+        def StoryPrefixer(index: int, chapterTitle: str, storyTitle: str) -> str:
+            return f"<h2>{ChapterTitler(index, chapterTitle)}</h2>"
+
+        prefixer = PackagePrefixer if isinstance(story, StoryPackage) else StoryPrefixer
+        content = content.replace(
+            "@@@Content@@@",
+            story.Join(prefixer)
+        )
 
         # Replace images.
 
@@ -173,11 +125,9 @@ class FormatterHTML(Formatter):
                     continue
 
                 if (image := story.Images[index]):
-
                     tag["src"] = "data:image/jpeg;base64," + b64encode(image.Data).decode()
-
+                    tag["alt"] = "There is an image here."
                 else:
-
                     tag["alt"] = "There ought to be an image here."
 
             content = str(soup)

@@ -35,8 +35,11 @@ import fiction_dl.Configuration
 
 # Standard packages.
 
-from dreamy_utilities.Text import FillTemplate, GetCurrentDate
 from typing import Callable
+
+# Non-standard packages.
+
+from dreamy_utilities.Text import FillTemplate, GetCurrentDate
 
 #
 #
@@ -114,7 +117,7 @@ class Story:
 
     def Join(
         self,
-        prefixer: Callable[[int, str], str] = None,
+        prefixer: Callable[[int, str, str], str] = None,
         processor: Callable[[str], str] = None
     ) -> str:
 
@@ -123,7 +126,7 @@ class Story:
         # Returns the whole content of the story, with each chapter prefixed with the given prefix
         # and its content processed using given the given processor.
         #
-        # @param prefixer  A function accepting (index, title) and returning a string. Optional.
+        # @param prefixer  A function accepting (index, chapter title, story title) and returning a string. Optional.
         # @param processor A function used to process the content of each chapter. Takes a
         #                  string and returns a string.
         #
@@ -132,10 +135,11 @@ class Story:
         ##
 
         joinedContent = ""
+        prettifiedTitle = self.Metadata.GetPrettified().Title
 
         for index, chapter in enumerate(self.Chapters, start = 1):
 
-            prefix = prefixer(index, chapter.Title) if prefixer else ""
+            prefix = prefixer(index, chapter.Title, prettifiedTitle) if prefixer else ""
             content = processor(chapter.Content) if processor else chapter.Content
 
             joinedContent += (prefix  + content)
