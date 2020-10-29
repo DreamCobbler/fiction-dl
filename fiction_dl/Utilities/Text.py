@@ -61,9 +61,24 @@ def GetTitleProper(title: str) -> Optional[str]:
 
     titleProper = PrettifyTitle(title, removeContext = True)
 
-    semicolonOccurence = titleProper.find(":")
-    if -1 != semicolonOccurence:
-        titleProper = titleProper[:semicolonOccurence]
+    if titleProper.endswith("?") or titleProper.endswith(".") or titleProper.endswith("!"):
+        titleProper = titleProper[:-1]
+
+    separatorOccurence = titleProper.find(":")
+    if -1 != separatorOccurence:
+        titleProper = titleProper[:separatorOccurence]
+
+    separatorOccurence = titleProper.find(".")
+    if -1 != separatorOccurence:
+        titleProper = titleProper[:separatorOccurence]
+
+    separatorOccurence = titleProper.find("?")
+    if -1 != separatorOccurence:
+        titleProper = titleProper[:separatorOccurence]
+
+    separatorOccurence = titleProper.find("!")
+    if -1 != separatorOccurence:
+        titleProper = titleProper[:separatorOccurence]
 
     words = titleProper.split()
     if IsRomanNumeral(words[-1]):

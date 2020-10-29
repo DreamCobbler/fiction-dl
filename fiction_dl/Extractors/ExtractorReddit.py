@@ -257,9 +257,7 @@ class ExtractorReddit(Extractor):
 
                     for nextSubmission in submission.author.submissions.new():
 
-                        nextSubmissionSubredditName = submission.subreddit.display_name
-
-                        if subredditName != nextSubmissionSubredditName:
+                        if subredditName != nextSubmission.subreddit.display_name:
                             continue
 
                         titleProper = GetTitleProper(nextSubmission.title)
@@ -267,6 +265,8 @@ class ExtractorReddit(Extractor):
                             continue
 
                         distance = GetLevenshteinDistance(storyTitleProper, titleProper)
+                        print(f"{storyTitleProper} - {titleProper} - {distance}")
+
                         if distance > 5:
                             continue
 
