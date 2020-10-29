@@ -533,13 +533,18 @@ class Application:
 
         prettifiedMetadata = story.Metadata.GetPrettified()
 
+        wordCount =                                     \
+            prettifiedMetadata.WordCount                \
+            if "0" != prettifiedMetadata.WordCount else \
+            "?"
+
         self._interface.Table([
             ["Title:", self._GetPrintableStoryTitle(story)],
             ["Author:", prettifiedMetadata.Author],
             ["Date published:", prettifiedMetadata.DatePublished],
             ["Date updated:", prettifiedMetadata.DateUpdated],
             ["Chapter count:", prettifiedMetadata.ChapterCount],
-            ["Word count:", prettifiedMetadata.WordCount],
+            ["Word count:", wordCount],
         ])
 
     def _GetOutputPaths(self, outputPath: str, story: Union[Story, StoryPackage]) -> Dict:
