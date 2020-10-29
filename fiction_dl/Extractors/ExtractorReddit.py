@@ -265,8 +265,6 @@ class ExtractorReddit(Extractor):
                             continue
 
                         distance = GetLevenshteinDistance(storyTitleProper, titleProper)
-                        print(f"{storyTitleProper} - {titleProper} - {distance}")
-
                         if distance > 5:
                             continue
 
