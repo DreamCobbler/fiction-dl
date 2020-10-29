@@ -1,4 +1,4 @@
-# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.6.0 alpha*)
+# [fiction-dl](https://github.com/DreamCobbler/fiction-dl) (*1.6.0*)
 
 ![Screenshot (Windows 10)](/Stuff/Screenshot%20(Windows%2010).png?raw=true)
 ![Screenshot (Linux Mint 20)](/Stuff/Screenshot%20(Linux%20Mint%2020).png?raw=true)
