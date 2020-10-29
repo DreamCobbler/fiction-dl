@@ -104,9 +104,10 @@ In order to download multiple stories, create a text file and place the URLs in 
 
 | Option            | Result                                                               |
 |-------------------|----------------------------------------------------------------------|
-| -h                | shows the overview of command-line options                           |
+| -h (--help)       | shows the overview of command-line options                           |
 | -a                | authenticates the user to supported sites using interactive mode     |
 | -c                | clears the cache before launching the application                    |
+| -pack             | packs all downloaded stories inside one file (of each type)          |
 | -v                | enables the (more) verbose mode                                      |
 | -f                | overwrites output files (in case they already exist)                 |
 | -d                | enables debug mode (saves some data useful for debugging)            |
