@@ -67,7 +67,6 @@ setup(
         "html5lib",
         "lxml",
 
-        "titlecase",
         "pykakasi",
 
         "opencv-python",
@@ -79,7 +78,6 @@ setup(
         "praw",
 
         "pyopenssl",
-        "tldextract",
 
         "ebooklib",
 
