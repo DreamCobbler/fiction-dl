@@ -1,3 +1,9 @@
+# 1.6.1
+
+**General:**
+
+- A quick bugfix regarding a wrong import in *__main__.py*.
+
 # 1.6.0
 
 **General:**

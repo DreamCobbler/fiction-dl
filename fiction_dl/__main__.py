@@ -31,7 +31,9 @@
 
 if __package__ is None:
 
-    from Utilities.Filesystem import AddToPATH, GetPackageDirectory
+    from Utilities.Filesystem import GetPackageDirectory
+
+    from dreamy_utilities.Filesystem import AddToPATH
 
     AddToPATH(GetPackageDirectory().parent)
 
