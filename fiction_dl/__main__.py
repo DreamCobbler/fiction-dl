@@ -31,7 +31,13 @@
 
 if __package__ is None:
 
-    from Utilities.Filesystem import GetPackageDirectory
+    try:
+
+        from Utilities.Filesystem import GetPackageDirectory
+
+    except ImportError:
+
+        from fiction_dl.Utilities.Filesystem import GetPackageDirectory
 
     from dreamy_utilities.Filesystem import AddToPATH
 

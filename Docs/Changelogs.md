@@ -1,3 +1,9 @@
+# 1.6.2
+
+**General:**
+
+- Another quick bugfix, once more about imports.
+
 # 1.6.1
 
 **General:**
