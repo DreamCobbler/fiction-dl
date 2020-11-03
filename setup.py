@@ -81,6 +81,8 @@ setup(
 
         "ebooklib",
 
+        "dreamy-utilities"
+
     ],
 
     packages = find_packages(),

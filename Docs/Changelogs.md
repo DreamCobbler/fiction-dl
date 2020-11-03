@@ -1,10 +1,18 @@
-# 1.6.2
+# 1.6.X
+
+## 1.6.3
+
+**General:**
+
+- Added a missing dependency in the *setup.py* file (*dreamy-utilities*).
+
+## 1.6.2
 
 **General:**
 
 - Another quick bugfix, once more about imports.
 
-# 1.6.1
+## 1.6.1
 
 **General:**
 
