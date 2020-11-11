@@ -126,7 +126,7 @@ class SanitizerProcessor(Processor):
         ]
 
         for newline in Newlines:
-            content = content.replace(newline, "")
+            content = content.replace(newline, " ")
 
         # Return processed content.
 
