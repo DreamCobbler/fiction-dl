@@ -26,6 +26,10 @@
 #
 #
 
+# Application.
+
+from fiction_dl.Concepts.Story import Story
+
 # Standard packages.
 
 import re
@@ -33,6 +37,7 @@ from typing import Optional
 
 # Non-standard packages.
 
+from dreamy_utilities.Filesystem import GetSanitizedFileName
 from dreamy_utilities.Text import IsRomanNumeral, IsStringEmpty, PrettifyTitle
 import pykakasi
 
@@ -43,6 +48,16 @@ import pykakasi
 #
 #
 #
+
+def GetPrintableStoryTitle(story: Story) -> str:
+
+    prettifiedMetadata = story.Metadata.GetPrettified()
+
+    title = Transliterate(prettifiedMetadata.Title)
+    title = GetSanitizedFileName(title)
+    title = re.sub("\s+", " ", title)
+
+    return title
 
 def GetTitleProper(title: str) -> Optional[str]:
 

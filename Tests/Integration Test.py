@@ -78,6 +78,7 @@ arguments = Namespace(
     LibreOffice = FindExecutable("soffice", "LibreOffice", "program") or Path(),
     Output = OutputDirectoryPath,
     Input = "Integration Test Dataset 1.txt"
+    Audiobook = False,
 )
 
 Application(
@@ -99,6 +100,29 @@ arguments = Namespace(
     LibreOffice = FindExecutable("soffice", "LibreOffice", "program") or Path(),
     Output = OutputDirectoryPath,
     Input = "Integration Test Dataset 3.txt"
+    Audiobook = False,
+)
+
+Application(
+    arguments = arguments,
+    cacheDirectoryPath = CacheDirectoryPath
+).Launch()
+
+arguments = Namespace(
+    Authenticate = True,
+    ClearCache = True,
+    Pack = False,
+    Verbose = True,
+    Force = True,
+    Debug = True,
+    Images = True,
+    PersistentCache = True,
+    Username = "",
+    Password = "",
+    LibreOffice = FindExecutable("soffice", "LibreOffice", "program") or Path(),
+    Output = OutputDirectoryPath,
+    Audiobook = True,
+    Input = "Integration Test Text Sample.txt"
 )
 
 Application(

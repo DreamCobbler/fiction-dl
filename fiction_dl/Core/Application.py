@@ -34,6 +34,7 @@ from fiction_dl.Concepts.StoryPackage import StoryPackage
 from fiction_dl.Core.Cache import Cache
 from fiction_dl.Core.InputData import InputData
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
+from fiction_dl.Formatters.FormatterAudio import FormatterAudio
 from fiction_dl.Formatters.FormatterEPUB import FormatterEPUB
 from fiction_dl.Formatters.FormatterHTML import FormatterHTML
 from fiction_dl.Formatters.FormatterMOBI import FormatterMOBI
@@ -44,7 +45,7 @@ from fiction_dl.Processors.TypographyProcessor import TypographyProcessor
 from fiction_dl.Utilities.Extractors import CreateExtractor
 from fiction_dl.Utilities.General import RenderPDFPageToBytes
 from fiction_dl.Utilities.HTML import FindImagesInCode, MakeURLAbsolute
-from fiction_dl.Utilities.Text import Transliterate
+from fiction_dl.Utilities.Text import GetPrintableStoryTitle, Transliterate
 import fiction_dl. Configuration as Configuration
 
 # Standard packages.
@@ -298,8 +299,14 @@ class Application:
                 chapter = extractor.ExtractChapter(index)
 
                 if not chapter:
-                    logging.error("Failed to extract story content.")
-                    return None
+
+                    if (1 != index) and (extractor.Story.Metadata.ChapterCount != index):
+                        logging.error("Failed to extract story content.")
+                        return None
+
+                    else:
+                        self._interface.Error("Failed to extract the last chapter - it doesn't seem to exist.")
+                        continue
 
             extractor.Story.Chapters.append(chapter)
 
@@ -472,52 +479,127 @@ class Application:
 
         # Format and save the stories to HTML.
 
+        self._interface.Comment("Saving as HTML... ", end = "")
+
         formatter = FormatterHTML(self._arguments.Images)
         if not filePaths["HTML"].is_file():
 
             if not formatter.FormatAndSave(story, filePaths["HTML"]):
-                logging.error("Failed to format the stories as HTML.")
+                self._interface.Text("Failed!")
+
+            else:
+                self._interface.Text("Done!")
+
+        else:
+
+            self._interface.Text("Output file already exists.")
 
         # Format and save the stories to ODT.
+
+        self._interface.Comment("Saving as ODT... ", end = "")
 
         formatter = FormatterODT(self._arguments.Images, isinstance(story, StoryPackage))
         if not filePaths["ODT"].is_file():
 
             if not formatter.FormatAndSave(story, filePaths["ODT"]):
-                logging.error("Failed to format the stories as ODT.")
+                self._interface.Text("Failed!")
+
+            else:
+                self._interface.Text("Done!")
+
+        else:
+
+            self._interface.Text("Output file already exists.")
 
         # Format and save the stories to PDF.
+
+        self._interface.Comment("Saving as PDF... ", end = "")
 
         coverImageData = None
 
         formatter = FormatterPDF(self._arguments.Images)
-        if (not filePaths["PDF"].is_file()) and self._arguments.LibreOffice.is_file():
+
+        if not self._arguments.LibreOffice.is_file():
+
+            self._interface.Text("This output format is unavailable.")
+
+        elif not filePaths["PDF"].is_file():
 
             if not formatter.ConvertFromODT(filePaths["ODT"], filePaths["PDF"].parent, self._arguments.LibreOffice):
-                logging.error("Failed to format the story as PDF.")
+                self._interface.Text("Failed!")
+
+            else:
+                self._interface.Text("Done!")
+
+        else:
+
+            self._interface.Text("Output file already exists.")
 
         if filePaths["PDF"].is_file():
             coverImageData = RenderPDFPageToBytes(filePaths["PDF"], 0)
 
         # Format and save the stories to EPUB.
 
+        self._interface.Comment("Saving as EPUB... ", end = "")
+
         formatter = FormatterEPUB(self._arguments.Images, coverImageData)
         if not filePaths["EPUB"].is_file():
 
             if not formatter.FormatAndSave(story, filePaths["EPUB"]):
-                logging.error("Failed to format the stories as EPUB.")
+                self._interface.Text("Failed!")
+
+            else:
+                self._interface.Text("Done!")
+
+        else:
+
+            self._interface.Text("Output file already exists.")
 
         # Format and save the story to MOBI.
 
+        self._interface.Comment("Saving as MOBI... ", end = "")
+
         formatter = FormatterMOBI(self._arguments.Images)
-        if (not filePaths["MOBI"].is_file()) and FindExecutable("ebook-convert"):
+
+        if not FindExecutable("ebook-convert"):
+
+            self._interface.Text("This output format is unavailable.")
+
+        elif not filePaths["MOBI"].is_file():
 
             if not formatter.ConvertFromEPUB(filePaths["EPUB"], filePaths["MOBI"].parent):
-                logging.error("Failed to format the stories as MOBI.")
+                self._interface.Text("Failed!")
 
-        # Notify the user and return.
+            else:
+                self._interface.Text("Done!")
 
-        self._interface.Comment("Stories saved successfully!")
+        else:
+
+            self._interface.Text("Output file already exists.")
+
+        # Format and save the audiobook.
+
+        self._interface.Comment("Saving as an audiobook... ", end = "")
+
+        formatter = FormatterAudio()
+
+        if not self._arguments.Audiobook:
+
+            self._interface.Text("This format hasn't been selected. Use the \"-audio\" option to enable it.")
+
+        elif not filePaths["Audio"].is_file():
+
+            if not formatter.FormatAndSaveToDirectory(story, filePaths["Audio"]):
+                self._interface.Text("Failed!")
+
+            else:
+                self._interface.Text("Done!")
+
+        else:
+
+            self._interface.Text("Output file already exists.")
+
+        # Return.
 
         return True
 
@@ -539,7 +621,7 @@ class Application:
             "?"
 
         self._interface.Table([
-            ["Title:", self._GetPrintableStoryTitle(story)],
+            ["Title:", GetPrintableStoryTitle(story)],
             ["Author:", prettifiedMetadata.Author],
             ["Date published:", prettifiedMetadata.DatePublished],
             ["Date updated:", prettifiedMetadata.DateUpdated],
@@ -562,7 +644,7 @@ class Application:
 
         prettifiedMetadata = story.Metadata.GetPrettified()
 
-        sanitizedTitle = self._GetPrintableStoryTitle(story)
+        sanitizedTitle = GetPrintableStoryTitle(story)
         sanitizedAuthor = GetSanitizedFileName(prettifiedMetadata.Author)
 
         outputDirectoryPath = Path(expandvars(outputPath))
@@ -573,22 +655,13 @@ class Application:
 
         return {
             "Directory": outputDirectoryPath,
-            "HTML": outputDirectoryPath / (sanitizedTitle + ".html"),
-            "ODT" : outputDirectoryPath / (sanitizedTitle + ".odt" ),
-            "PDF" : outputDirectoryPath / (sanitizedTitle + ".pdf" ),
-            "EPUB": outputDirectoryPath / (sanitizedTitle + ".epub"),
-            "MOBI": outputDirectoryPath / (sanitizedTitle + ".mobi"),
+            "HTML" : outputDirectoryPath / (sanitizedTitle + ".html"),
+            "ODT"  : outputDirectoryPath / (sanitizedTitle + ".odt" ),
+            "PDF"  : outputDirectoryPath / (sanitizedTitle + ".pdf" ),
+            "EPUB" : outputDirectoryPath / (sanitizedTitle + ".epub"),
+            "MOBI" : outputDirectoryPath / (sanitizedTitle + ".mobi"),
+            "Audio": outputDirectoryPath / "Audiobook",
         }
-
-    def _GetPrintableStoryTitle(self, story: Story) -> str:
-
-        prettifiedMetadata = story.Metadata.GetPrettified()
-
-        title = Transliterate(prettifiedMetadata.Title)
-        title = GetSanitizedFileName(title)
-        title = re.sub("\s+", " ", title)
-
-        return title
 
     def _GenerateNotices(self) -> List[str]:
 

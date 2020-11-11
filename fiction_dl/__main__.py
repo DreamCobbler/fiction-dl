@@ -178,6 +178,13 @@ def ReadCommandLineArguments() -> Namespace:
     )
 
     argumentParser.add_argument(
+        "-audio",
+        dest = "Audiobook",
+        action = "store_false",
+        help = "generate an audiobook"
+    )
+
+    argumentParser.add_argument(
         "-persistent-cache",
         dest = "PersistentCache",
         action = "store_true",

@@ -81,7 +81,10 @@ setup(
 
         "ebooklib",
 
-        "dreamy-utilities"
+        "dreamy-utilities",
+
+        "pyttsx3",
+        "pypiwin32",
 
     ],
 
