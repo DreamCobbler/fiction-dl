@@ -150,30 +150,38 @@ class Application:
 
             newlyDownloadedStory = None
 
-            try:
+            if not self._arguments.Debug:
+
+                try:
+
+                    sleep(Configuration.PostChapterSleepTime)
+
+                    newlyDownloadedStory = self._ProcessURL(URL)
+
+                except KeyboardInterrupt:
+
+                    self._interface.ClearLine()
+                    self._interface.Notice("Quitting...")
+
+                    exit()
+
+                except ConnectionError as caughtException:
+
+                    self._interface.Error(f"The website has refused connection: {caughtException}")
+
+                except BaseException as caughtException:
+
+                    self._interface.Error(f"An exception has been thrown: {caughtException}")
+
+                except:
+
+                    self._interface.Error("An exception has been thrown.")
+
+            else:
 
                 sleep(Configuration.PostChapterSleepTime)
 
                 newlyDownloadedStory = self._ProcessURL(URL)
-
-            except KeyboardInterrupt:
-
-                self._interface.ClearLine()
-                self._interface.Notice("Quitting...")
-
-                exit()
-
-            except ConnectionError as caughtException:
-
-                self._interface.Error(f"The website has refused connection: {caughtException}")
-
-            except BaseException as caughtException:
-
-                self._interface.Error(f"An exception has been thrown: {caughtException}")
-
-            except:
-
-                self._interface.Error("An exception has been thrown.")
 
             if not newlyDownloadedStory:
                 skippedURLs.append(URL)
