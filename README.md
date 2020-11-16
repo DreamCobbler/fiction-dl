@@ -21,24 +21,24 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 
 **fiction-dl** can download stories from a multitude of sites - in some cases, it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*).
 
-| Category         | Site                                                                | Authentication support | Channel support                |
-|------------------|---------------------------------------------------------------------|------------------------|--------------------------------|
-| fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                  | ✗ no                   | ✓ **yes <sup>[1]</sup>**       |
-| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                       | ✗ no                   | ✓ **yes <sup>[2]</sup>**       |
-| fanfiction       | [FicWad.com](https://ficwad.com/)                                   | ✗ no                   | ✓ **yes**                      |
-| fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)                | ✓ **yes**              | ✗ no                           |
-| fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)    | ✓ **yes**              | ✗ no                           |
-| fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)     | ✓ **yes**              | ✗ no                           |
-| fanfiction       | [QuestionableQuesting.com](https://forum.questionablequesting.com/) | ✗ no                   | ✗ no                           |
-| fanfiction       | [HarryPotterFanFiction.com](https://harrypotterfanfiction.com/)     | ✗ no                   | ✗ no                           |
-| original fiction | [Fiction Press](https://www.fictionpress.com/)                      | ✗ no                   | ✓ **yes**                      |
-| original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no                           |
-| original fiction | [Quotev](https://www.quotev.com/)                                   | ✗ no                   | ✗ no                           |
-| erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✗ no                           |
-| erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**                      |
-| erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
-| erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no                           |
-| erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
+| \#     | Category         | Site                                                                | Authentication support | Channel support                |
+|--------|------------------|---------------------------------------------------------------------|------------------------|--------------------------------|
+| *\#1*  | fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                  | ✗ no                   | ✓ **yes <sup>[1]</sup>**       |
+| *\#2*  | fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                       | ✗ no                   | ✓ **yes <sup>[2]</sup>**       |
+| *\#3*  | fanfiction       | [FicWad.com](https://ficwad.com/)                                   | ✗ no                   | ✓ **yes**                      |
+| *\#4*  | fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)                | ✓ **yes**              | ✗ no                           |
+| *\#5*  | fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)    | ✓ **yes**              | ✗ no                           |
+| *\#6*  | fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)     | ✓ **yes**              | ✗ no                           |
+| *\#7*  | fanfiction       | [QuestionableQuesting.com](https://forum.questionablequesting.com/) | ✗ no                   | ✗ no                           |
+| *\#8*  | fanfiction       | [HarryPotterFanFiction.com](https://harrypotterfanfiction.com/)     | ✗ no                   | ✗ no                           |
+| *\#9*  | original fiction | [Fiction Press](https://www.fictionpress.com/)                      | ✗ no                   | ✓ **yes**                      |
+| *\#10* | original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no                           |
+| *\#11* | original fiction | [Quotev](https://www.quotev.com/)                                   | ✗ no                   | ✗ no                           |
+| *\#12* | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✗ no                           |
+| *\#13* | erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**                      |
+| *\#14* | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
+| *\#15* | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no                           |
+| *\#16* | erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
 
 <sup>**[1]** **fiction-dl** is also capable of downloading whole collections and series.</sup>
 
