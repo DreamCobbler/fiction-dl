@@ -45,6 +45,7 @@ from fiction_dl.Extractors.ExtractorReddit import ExtractorReddit
 from fiction_dl.Extractors.ExtractorSpaceBattles import ExtractorSpaceBattles
 from fiction_dl.Extractors.ExtractorSufficientVelocity import ExtractorSufficientVelocity
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
+from fiction_dl.Extractors.ExtractorWuxiaWorld import ExtractorWuxiaWorld
 
 # Standard packages.
 
@@ -71,6 +72,7 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
     ##
 
     availableExtractors = [
+
         ExtractorAdultFanfiction(),
         ExtractorAH(),
         ExtractorAO3(),
@@ -86,7 +88,10 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
         ExtractorReddit(),
         ExtractorSpaceBattles(),
         ExtractorSufficientVelocity(),
+        ExtractorWuxiaWorld(),
+
         ExtractorTextFile(),
+
     ]
 
     for extractor in availableExtractors:

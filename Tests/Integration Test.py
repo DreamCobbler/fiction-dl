@@ -58,7 +58,7 @@ from dreamy_utilities.Filesystem import FindExecutable
 
 # Set up the logger.
 
-logging.basicConfig(level = logging.INFO)
+# logging.basicConfig(level = logging.INFO)
 
 #
 # Run the integration test.
@@ -77,8 +77,8 @@ arguments = Namespace(
     Password = "",
     LibreOffice = FindExecutable("soffice", "LibreOffice", "program") or Path(),
     Output = OutputDirectoryPath,
-    Input = "Integration Test Dataset 1.txt"
-    Audiobook = False,
+    Input = "Integration Test Dataset 1.txt",
+    Audiobook = False
 )
 
 Application(
@@ -99,8 +99,8 @@ arguments = Namespace(
     Password = "",
     LibreOffice = FindExecutable("soffice", "LibreOffice", "program") or Path(),
     Output = OutputDirectoryPath,
-    Input = "Integration Test Dataset 3.txt"
-    Audiobook = False,
+    Input = "Integration Test Dataset 3.txt",
+    Audiobook = False
 )
 
 Application(
