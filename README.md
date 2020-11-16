@@ -41,6 +41,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
 
 <sup>**[1]** **fiction-dl** is also capable of downloading whole collections and series.</sup>
+
 <sup>**[2]** The application supports also downloading entire collections.</sup>
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to some more civilized format.
