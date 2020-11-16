@@ -410,9 +410,12 @@ class Application:
                         if (index > 1) and (not previousImageFailedToDownload):
                             print()
 
-                        self._interface.Error(
-                            f'Failed to download image {index}/{imageCount}: "{image.URL}".'
-                        )
+                        errorMessage =                                                       \
+                            f'Failed to download image {index}/{imageCount}: "{image.URL}".' \
+                            if not imageData else                                            \
+                            f'Failed to process/re-encode image {index}/{imageCount}: "{image.URL}".'
+
+                        self._interface.Error(errorMessage)
 
                         previousImageFailedToDownload = True
 
