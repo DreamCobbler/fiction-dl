@@ -29,6 +29,11 @@
 # Standard packages.
 
 from pathlib import Path
+from typing import Optional
+
+# Non-standard packages.
+
+from dreamy_utilities.Filesystem import FindExecutable
 
 #
 #
@@ -37,6 +42,62 @@ from pathlib import Path
 #
 #
 #
+
+def GetLibreOfficeExecutablePath() -> Optional[Path]:
+
+    ##
+    #
+    # Returns the path to the LibreOffice executable (soffice[.exe]).
+    #
+    # @return The path to the executable.
+    #
+    ##
+
+    if (path := FindExecutable("soffice", "LibreOffice", "program")):
+        return path
+
+    try:
+
+        import winreg
+
+        registry = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+        if not registry:
+            return None
+
+        for majorVersion in range(5, 7 + 1):
+
+            for minorVersion in range(0, 9 + 1):
+
+                version = f"{majorVersion}.{minorVersion}"
+
+                try:
+
+                    key = winreg.OpenKey(
+                        registry,
+                        f"SOFTWARE\\The Document Foundation\\LibreOffice\\{version}\\Capabilities"
+                    )
+
+                    value, _ = winreg.QueryValueEx(key, "ApplicationIcon")
+                    if not value.endswith(".bin,0"):
+                        return None
+
+                    value = value[:-6] + ".exe"
+
+                    path = Path(value)
+                    if path.is_file():
+                        return path
+                    else:
+                        return None
+
+                except FileNotFoundError:
+
+                    continue
+
+    except ImportError:
+
+        return None
+
+    return None
 
 def GetPackageDirectory() -> Path:
 
