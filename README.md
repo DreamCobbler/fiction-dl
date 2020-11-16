@@ -33,6 +33,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | fanfiction       | [HarryPotterFanFiction.com](https://harrypotterfanfiction.com/)     | ✗ no                   | ✗ no                           |
 | original fiction | [Fiction Press](https://www.fictionpress.com/)                      | ✗ no                   | ✓ **yes**                      |
 | original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no                           |
+| original fiction | [Quotev](https://www.quotev.com/)                                   | ✗ no                   | ✗ no                           |
 | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✗ no                           |
 | erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**                      |
 | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
