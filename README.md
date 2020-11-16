@@ -30,7 +30,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | *5*  | fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)    | ✓ **yes**              | ✗ no                           |
 | *6*  | fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)     | ✓ **yes**              | ✗ no                           |
 | *7*  | fanfiction       | [QuestionableQuesting.com](https://forum.questionablequesting.com/) | ✗ no                   | ✗ no                           |
-| *8*  | fanfiction       | [HarryPotterFanFiction.com](https://harrypotterfanfiction.com/)     | ✗ no                   | ✗ no                           |
+| *8*  | fanfiction       | [HarryPotterFanFiction.com](https://harrypotterfanfiction.com/)     | ✗ no                   | ✓ **yes**                      |
 | *9*  | original fiction | [Fiction Press](https://www.fictionpress.com/)                      | ✗ no                   | ✓ **yes**                      |
 | *10* | original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no                           |
 | *11* | original fiction | [Quotev](https://www.quotev.com/)                                   | ✗ no                   | ✗ no                           |

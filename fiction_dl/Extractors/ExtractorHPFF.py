@@ -34,6 +34,7 @@ from fiction_dl.Concepts.Extractor import Extractor
 # Standard packages.
 
 import logging
+import re
 from typing import List, Optional
 
 # Non-standard packages.
@@ -41,7 +42,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from dreamy_utilities.HTML import ReadElementText
 from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetSiteURL
+from dreamy_utilities.Web import DownloadSoup, GetHostname, GetSiteURL
 
 #
 #
@@ -72,6 +73,42 @@ class ExtractorHPFF(Extractor):
         return [
             "harrypotterfanfiction.com",
         ]
+
+    def ScanChannel(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
+            return None
+
+        userIDMatch = re.search("uid=(\d+)", URL)
+        if not userIDMatch:
+            return None
+
+        userID = userIDMatch.group(1)
+
+        normalizedURL = f"{self.BASE_URL}/viewuser.php?uid={userID}"
+        soup = DownloadSoup(normalizedURL)
+        if not soup:
+            logging.error(f"Couldn't download page: \"{normalizedURL}\".")
+            return None
+
+        storyURLs = []
+
+        for element in soup.select("div#all-stories article.story-summary h3 a"):
+
+            if not element.has_attr("href"):
+                continue
+
+            storyURLs.append(self.BASE_URL + element["href"])
+
+        return storyURLs
 
     def _InternallyScanStory(
         self,
@@ -247,3 +284,5 @@ class ExtractorHPFF(Extractor):
         ##
 
         return f"{URL}&showRestricted"
+
+    BASE_URL = "https://harrypotterfanfiction.com"
