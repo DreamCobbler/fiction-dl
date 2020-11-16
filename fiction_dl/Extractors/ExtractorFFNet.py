@@ -96,6 +96,9 @@ class ExtractorFFNet(Extractor):
         if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
             return None
 
+        elif "/community/" in URL:
+            return self._ScanCollection(URL)
+
         userIDMatch = re.search("/u/(\d+)", URL)
         if not userIDMatch:
             return None
@@ -126,6 +129,92 @@ class ExtractorFFNet(Extractor):
 
             storyID = storyIDMatch.group(1)
             storyIDs.append(storyID)
+
+        storyURLs = [f"{siteURL}/s/{ID}/" for ID in storyIDs]
+        return storyURLs
+
+    def _ScanCollection(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        # Retrieve collection name and generate a normalized URL.
+
+        collectionNameAndIDMatch = re.search(
+            "/community/([a-zA-Z0-9-]+)/(\d+)",
+            URL
+        )
+        if not collectionNameAndIDMatch:
+            logging.error("Failed to retrieve collection name/ID.")
+            return None
+
+        collectionName = collectionNameAndIDMatch.group(1)
+        collectionID = collectionNameAndIDMatch.group(2)
+
+        siteURL = GetSiteURL(URL)
+        collectionURL = f"{siteURL}/community/{collectionName}/{collectionID}"
+        normalizedURL = f"{collectionURL}/99/0/1/0/0/0/0/"
+
+        # Download the first page.
+
+        soup = DownloadSoup(normalizedURL)
+        if not soup:
+            logging.error(f"Failed to download page: \"{normalizedURL}\".")
+            return None
+
+        # Retrieve the number of pages.
+
+        lastPageIndex = 1
+        lastPageRelativeURL = None
+
+        for elementCandidate in soup.select("center > a"):
+
+            text = elementCandidate.get_text().strip()
+
+            if "Last" == text:
+                lastPageRelativeURL = elementCandidate["href"]
+                break
+
+        if lastPageRelativeURL:
+
+            lastPageURLParts = lastPageRelativeURL.split("/")
+
+            if len(lastPageURLParts) > 8:
+                lastPageIndex = int(lastPageURLParts[-6])
+
+        # Process each page of the collection.
+
+        storyIDs = []
+
+        for pageIndex in range(1, lastPageIndex + 1):
+
+            pageURL = f"{collectionURL}/99/0/{pageIndex}/0/0/0/0/"
+            soup = DownloadSoup(pageURL)
+            if not soup:
+                logging.error(f"Failed to download page: \"{pageURL}\".")
+                return None
+
+            for element in soup.select("div.z-list"):
+
+                anchorElement = element.select_one("a.stitle")
+                if (not anchorElement) or (not anchorElement.has_attr("href")):
+                    logging.error("Failed to retrieve story URL.")
+                    continue
+
+                storyIDMatch = re.search("/s/(\d+)", anchorElement["href"])
+                if not storyIDMatch:
+                    logging.error("Failed to retrieve story ID from its URL.")
+                    continue
+
+                storyID = storyIDMatch.group(1)
+                storyIDs.append(storyID)
+
+        # Return.
 
         storyURLs = [f"{siteURL}/s/{ID}/" for ID in storyIDs]
         return storyURLs

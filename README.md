@@ -24,7 +24,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | Category         | Site                                                                | Authentication support | Channel support                |
 |------------------|---------------------------------------------------------------------|------------------------|--------------------------------|
 | fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                  | ✗ no                   | ✓ **yes <sup>[1]</sup>**       |
-| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                       | ✗ no                   | ✓ **yes**                      |
+| fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                       | ✗ no                   | ✓ **yes <sup>[2]</sup>**       |
 | fanfiction       | [FicWad.com](https://ficwad.com/)                                   | ✗ no                   | ✓ **yes**                      |
 | fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)                | ✓ **yes**              | ✗ no                           |
 | fanfiction       | [SufficientVelocity.com](https://forums.sufficientvelocity.com/)    | ✓ **yes**              | ✗ no                           |
@@ -41,6 +41,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
 
 <sup>**[1]** **fiction-dl** is also capable of downloading whole collections and series.</sup>
+<sup>**[2]** The application supports also downloading entire collections.</sup>
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to some more civilized format.
 
