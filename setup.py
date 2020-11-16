@@ -104,7 +104,8 @@ setup(
     entry_points = {
 
         "console_scripts": [
-            "fiction-dl = fiction_dl.__main__:Main"
+            "fiction-dl = fiction_dl.__main__:Main",
+            "f-dl = fiction_dl.__main__:Main",
         ]
 
     },
