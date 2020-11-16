@@ -177,7 +177,7 @@ def ReadCommandLineArguments() -> Namespace:
     argumentParser.add_argument(
         "-audio",
         dest = "Audiobook",
-        action = "store_false",
+        action = "store_true",
         help = "generate an audiobook"
     )
 
