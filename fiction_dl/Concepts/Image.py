@@ -29,6 +29,7 @@
 # Standard packages.
 
 from io import BytesIO
+import logging
 from typing import Optional
 
 # Non-standard packages.
@@ -88,12 +89,20 @@ class Image:
         if not data:
             return False
 
-        processedImage =                                        \
-            CreateImageFromDataUsingOpenCV(data, side, quality) \
-            or                                                  \
-            CreateImageFromDataUsingPIL(data, side, quality)
+        try:
 
-        if processedImage is None:
+            processedImage =                                        \
+                CreateImageFromDataUsingOpenCV(data, side, quality) \
+                or                                                  \
+                CreateImageFromDataUsingPIL(data, side, quality)
+
+            if processedImage is None:
+                logging.info(f"Failed to create image from data: \"{self.URL}\".")
+                return False
+
+        except:
+
+            logging.info(f"An exception has occurred while creating image from data: \"{self.URL}\".")
             return False
 
         self.Data = processedImage[0]
