@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="512mm"
+   height="512mm"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   sodipodi:docname="Logo.svg">
+  <title
+     id="title905">fiction-dl Logo</title>
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="519.79856"
+     inkscape:cy="779.86262"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>fiction-dl Logo</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Warstwa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#006d99;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       d="M 170.84523,37.797615 H 225.4628 L 381.0945,193.42931 H 304.64881 L 173.16034,61.940847 Z"
+       id="path903" />
+    <path
+       style="fill:#008cc5;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       d="M 32.505951,468.69048 V 176.1369 L 170.84523,37.797615 309.18451,176.1369 H 480.02975 V 468.69048 H 32.505951"
+       id="path893" />
+    <text
+       xml:space="preserve"
+       style="font-size:264.583px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:Roboto;stroke-width:0.264583;stroke:none;fill:#ffffff;fill-opacity:1;"
+       x="71.815468"
+       y="423.33331"
+       id="text865"><tspan
+         sodipodi:role="line"
+         id="tspan863"
+         x="71.815468"
+         y="423.33331"
+         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:264.583px;font-family:Roboto;-inkscape-font-specification:'Roboto Light';stroke-width:0.264583;stroke:none;fill:#ffffff;fill-opacity:1;">f</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:264.583px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:Roboto;stroke-width:0.265;fill:#ffffff;fill-opacity:1;stroke:none;stroke-miterlimit:4;stroke-dasharray:none"
+       x="226.78572"
+       y="423.33334"
+       id="text869"><tspan
+         sodipodi:role="line"
+         id="tspan867"
+         x="226.78572"
+         y="423.33334"
+         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-size:264.583px;font-family:Roboto;-inkscape-font-specification:'Roboto Heavy';stroke-width:0.265;fill:#ffffff;fill-opacity:1;stroke:none;stroke-miterlimit:4;stroke-dasharray:none">dl</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:3;stroke:none"
+       id="rect871"
+       width="43.089287"
+       height="13.607142"
+       x="170.08929"
+       y="312.96429" />
+    <path
+       sodipodi:type="star"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3"
+       id="path901"
+       sodipodi:sides="5"
+       sodipodi:cx="170.84523"
+       sodipodi:cy="134.55952"
+       sodipodi:r1="54.580601"
+       sodipodi:r2="27.290298"
+       sodipodi:arg1="0.637961"
+       sodipodi:arg2="1.2662795"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 214.69047,167.06548 -35.66273,-6.47123 -25.54858,25.70947 -4.86589,-35.91699 -32.3461,-16.35349 32.65544,-15.72669 5.5576,-35.816479 25.04806,26.197359 35.78088,-5.78231 -17.17489,31.91755 z"
+       inkscape:transform-center-x="5.0570723"
+       inkscape:transform-center-y="-0.16263196" />
+  </g>
+</svg>
