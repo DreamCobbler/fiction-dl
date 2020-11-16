@@ -70,6 +70,7 @@ setup(
         "pykakasi",
 
         "opencv-python",
+        "pillow",
         "numpy",
 
         "PyMuPDF",

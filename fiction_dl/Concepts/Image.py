@@ -28,12 +28,14 @@
 
 # Standard packages.
 
+from io import BytesIO
 from typing import Optional
 
 # Non-standard packages.
 
 import cv2
 import numpy
+import PIL.Image
 
 #
 #
@@ -71,8 +73,8 @@ class Image:
 
         ##
         #
-        # Creates an image from binary data (decoding it using OpenCV). The image is then optionally
-        # scaled down to fit the maximum side length provided as an argument.
+        # Creates an image from binary data. The image is then optionally scaled down to fit the maximum side length
+        # provided as an argument.
         #
         # @param data    Encoded image data.
         # @param side    The maximum length of the longer side of the image. The image
@@ -86,37 +88,17 @@ class Image:
         if not data:
             return False
 
-        # Decode the image.
+        processedImage =                                        \
+            CreateImageFromDataUsingOpenCV(data, side, quality) \
+            or                                                  \
+            CreateImageFromDataUsingPIL(data, side, quality)
 
-        image = cv2.imdecode(numpy.frombuffer(data, dtype = numpy.uint8), flags = -1)
-        if (image is None) or (0 == image.size):
+        if processedImage is None:
             return False
 
-        height = image.shape[0]
-        width = image.shape[1]
-        if (not height) or (not width):
-            return False
-
-        # Scale down the image (if necessary).
-
-        if side and (scale := side / max(width, height)) < 1:
-            image = cv2.resize(
-                image,
-                (int(scale * width), int(scale * height)),
-                interpolation = cv2.INTER_LANCZOS4
-            )
-
-        # Encode image data and store it.
-
-        _, encodedImage = cv2.imencode(".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
-        convertedData = numpy.array(encodedImage).tobytes()
-
-        if not convertedData:
-            return False
-
-        self.Data = convertedData
-        self.W = width
-        self.H = height
+        self.Data = processedImage[0]
+        self.W = processedImage[1]
+        self.H = processedImage[2]
 
         return True
 
@@ -132,3 +114,119 @@ class Image:
         ##
 
         return bool(self.Data)
+
+#
+#
+#
+# Functions.
+#
+#
+#
+
+def CreateImageFromDataUsingOpenCV(data: bytes, side: Optional[int] = None, quality: int = 75) -> bool:
+
+    ##
+    #
+    # Creates an image from binary data. The image is then optionally scaled down to fit the maximum side length
+    # provided as an argument.
+    #
+    # @param data    Encoded image data.
+    # @param side    The maximum length of the longer side of the image. The image will be scaled down proportionally
+    #                to fit.
+    # @param quality The quality of the output image (1 - 100).
+    #
+    # @return A tuple consisting of encoded image data, image width and image height; **None** if something fails.
+    #
+    ##
+
+    if not data:
+        return None
+
+    # Decode the image.
+
+    image = cv2.imdecode(numpy.frombuffer(data, dtype = numpy.uint8), flags = -1)
+    if (image is None) or (0 == image.size):
+        return None
+
+    height = image.shape[0]
+    width = image.shape[1]
+    if (not height) or (not width):
+        return None
+
+    # Scale down the image (if necessary).
+
+    if side and (scale := side / max(width, height)) < 1:
+        image = cv2.resize(
+            image,
+            (int(scale * width), int(scale * height)),
+            interpolation = cv2.INTER_LANCZOS4
+        )
+
+    # Encode image data and store it.
+
+    _, encodedImage = cv2.imencode(".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
+    convertedData = numpy.array(encodedImage).tobytes()
+
+    if not convertedData:
+        return None
+
+    return (
+        convertedData,
+        image.shape[0],
+        image.shape[1]
+    )
+
+def CreateImageFromDataUsingPIL(data: bytes, side: Optional[int] = None, quality: int = 75) -> bool:
+
+    ##
+    #
+    # Creates an image from binary data. The image is then optionally scaled down to fit the maximum side length
+    # provided as an argument.
+    #
+    # @param data    Encoded image data.
+    # @param side    The maximum length of the longer side of the image. The image will be scaled down proportionally
+    #                to fit.
+    # @param quality The quality of the output image (1 - 100).
+    #
+    # @return A tuple consisting of encoded image data, image width and image height; **None** if something fails.
+    #
+    ##
+
+    if not data:
+        return None
+
+    # Decode the image.
+
+    image = PIL.Image.open(BytesIO(data)).convert("RGB")
+    if not image:
+        return None
+
+    width = image.size[0]
+    height = image.size[1]
+
+    # Scale down the image (if necessary).
+
+    if side and (scale := side / max(width, height)) < 1:
+        image = image.resize(
+            (int(scale * width), int(scale * height)),
+            Image.ANTIALIAS
+        )
+
+    # Encode image data and store it.
+
+    convertedData = BytesIO()
+    image.save(
+        convertedData,
+        format = "JPEG",
+        quality = quality,
+        optimize = True
+    )
+
+    if not convertedData:
+        return None
+
+    return (
+        convertedData.getvalue(),
+        image.size[0],
+        image.size[1]
+    )
