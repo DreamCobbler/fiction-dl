@@ -65,7 +65,7 @@ The application can download images found in story content and embed them in out
 
 ### Typographic corrections
 
-**fiction-dl** automatically applies basic typographic corrections to the content of downloaded stories.
+**fiction-dl** automatically applies basic typographic corrections to the content of downloaded stories. For example:
 
 | Source Text                  | Corrected Text           |
 |------------------------------|--------------------------|
@@ -98,11 +98,11 @@ If you're running a Debian-derived Linux distribution, you might also need to in
 
 To download a story from a URL, simply type:
 
-    fiction-dl URL
+    f-dl URL
 
 In order to download multiple stories, create a text file and place the URLs in it, each one in a separate line. Then type:
 
-    fiction-dl YourFilesName
+    f-dl YourFilesName
 
 ### Options
 
@@ -133,7 +133,7 @@ Create a text file meant to contain the story. In its first lines type:
 
 Follow it by the story's content, wrapped in HTML tags. Then call:
 
-    fiction-dl FilePath.txt
+    f-dl FilePath.txt
 
 You can insert chapter-breaks in the story by typing "CHAPTER BREAK LINE" in an empty line.
 
