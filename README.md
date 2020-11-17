@@ -31,19 +31,20 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | *6*  | fanfiction       | [AlternateHistory.com](https://www.alternatehistory.com/forum/)     | ✓ **yes**              | ✗ no                           |
 | *7*  | fanfiction       | [QuestionableQuesting.com](https://forum.questionablequesting.com/) | ✗ no                   | ✗ no                           |
 | *8*  | fanfiction       | [HarryPotterFanFiction.com](https://harrypotterfanfiction.com/)     | ✗ no                   | ✓ **yes**                      |
-| *9*  | original fiction | [Fiction Press](https://www.fictionpress.com/)                      | ✗ no                   | ✓ **yes**                      |
-| *10* | original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no                           |
-| *11* | original fiction | [Quotev](https://www.quotev.com/)                                   | ✗ no                   | ✗ no                           |
-| *12* | original fiction | [Wuxiaworld](https://www.wuxiaworld.com/)                           | ✗ no                   | ✗ no                           |
-| *13* | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✓ **yes**                      |
-| *14* | erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**                      |
-| *15* | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
-| *16* | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no                           |
-| *17* | erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
+| *9*  | fanfiction       | [WhoFic.com](https://www.whofic.com/)                               | ✗ no                   | ✓ **yes <sup>[3]</sup>**       |
+| *10*  | original fiction | [Fiction Press](https://www.fictionpress.com/)                      | ✗ no                   | ✓ **yes**                      |
+| *11* | original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no                           |
+| *12* | original fiction | [Quotev](https://www.quotev.com/)                                   | ✗ no                   | ✗ no                           |
+| *13* | original fiction | [Wuxiaworld](https://www.wuxiaworld.com/)                           | ✗ no                   | ✗ no                           |
+| *14* | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✓ **yes**                      |
+| *15* | erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**                      |
+| *16* | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
+| *17* | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no                           |
+| *18* | erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
 
-<sup>**[1]** **fiction-dl** is also capable of downloading whole collections and series.</sup>
-
-<sup>**[2]** The application supports also downloading entire collections.</sup>
+- <sup>**[1]** **fiction-dl** is also capable of downloading whole collections and series.</sup>
+- <sup>**[2]** The application supports also downloading entire collections.</sup>
+- <sup>**[3]** The application supports downloading whole series as well.</sup>
 
 It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to some more civilized format.
 
