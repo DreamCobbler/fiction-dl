@@ -57,7 +57,7 @@ def GetPrintableStoryTitle(story: Story) -> str:
     title = GetSanitizedFileName(title)
     title = re.sub("\s+", " ", title)
 
-    return title
+    return title.strip()
 
 def GetTitleProper(title: str) -> Optional[str]:
 
