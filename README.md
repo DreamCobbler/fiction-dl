@@ -35,7 +35,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | *10* | original fiction | [Reddit](https://www.reddit.com/)                                   | ✓ **yes**              | ✗ no                           |
 | *11* | original fiction | [Quotev](https://www.quotev.com/)                                   | ✗ no                   | ✗ no                           |
 | *12* | original fiction | [Wuxiaworld](https://www.wuxiaworld.com/)                           | ✗ no                   | ✗ no                           |
-| *13* | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✗ no                           |
+| *13* | erotica          | [AdultFanFiction](http://www.adult-fanfiction.org/html-index.php)   | ✗ no                   | ✓ **yes**                      |
 | *14* | erotica          | [Literotica](https://www.literotica.com/)                           | ✗ no                   | ✓ **yes**                      |
 | *15* | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
 | *16* | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no                           |

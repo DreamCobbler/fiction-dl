@@ -44,7 +44,7 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetSiteURL
+from dreamy_utilities.Web import DownloadSoup, GetHostname, GetSiteURL
 
 #
 #
@@ -86,6 +86,44 @@ class ExtractorAdultFanfiction(Extractor):
             "adult-fanfiction.org"
         ]
 
+    def ScanChannel(self, URL: str) -> Optional[List[str]]:
+
+        ##
+        #
+        # Scans the channel: generates the list of story URLs.
+        #
+        # @return **None** when the scan fails, a list of story URLs when it doesn't fail.
+        #
+        ##
+
+        if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
+            return None
+
+        userIDMatch = re.search("profile\.php\?no=(\d+)", URL)
+        if not userIDMatch:
+            return None
+
+        userID = userIDMatch.group(1)
+
+        normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story"
+        soup = DownloadSoup(normalizedURL)
+        if not soup:
+            logging.error(f"Couldn't download page: \"{normalizedURL}\".")
+            return None
+
+        storyElements = self._FindAllStoriesByUserElements(userID)
+        storyURLs = []
+
+        for element in storyElements:
+
+            anchorElement = element.select_one("a")
+            if not anchorElement.has_attr("href"):
+                continue
+
+            storyURLs.append(anchorElement["href"])
+
+        return storyURLs
+
     def _InternallyScanStory(
         self,
         URL: str,
@@ -106,23 +144,23 @@ class ExtractorAdultFanfiction(Extractor):
 
         # Extract chapter URLs.
 
-        normalizedURL = self._GetNormalizedStoryURL(self.Story.Metadata.URL)
-        siteURL = GetSiteURL(normalizedURL)
+        for element in soup.select("div.dropdown-content > a"):
+            self._chapterURLs.append(
+                MakeURLAbsolute(element["href"],
+                GetSiteURL(self._GetNormalizedStoryURL(self.Story.Metadata.URL)))
+            )
 
-        for linkElement in soup.select("div.dropdown-content > a"):
-            self._chapterURLs.append(MakeURLAbsolute(linkElement["href"], siteURL))
+        # Find the author's profile.
 
-        # Find the story entry in the author's profile.
-
-        authorProfileLinkElement = soup.select_one("#contentdata tr > td > b > i > a")
-        if not authorProfileLinkElement:
+        userProfileAnchorElement = soup.select_one("#contentdata tr > td > b > i > a")
+        if not userProfileAnchorElement:
             logging.error("Author profile link element not found.")
             return False
 
-        authorProfileBaseURL = authorProfileLinkElement["href"]
+        userProfileBaseURL = userProfileAnchorElement["href"]
         zoneName = urlparse(self.Story.Metadata.URL).hostname.split(".")[0]
 
-        authorProfileURL = f"{authorProfileBaseURL}&view=story&zone={zoneName}"
+        authorProfileURL = f"{userProfileBaseURL}&view=story&zone={zoneName}"
         authorProfileSoup = DownloadSoup(authorProfileURL)
         if not soup:
             logging.error(f'Failed to download page: "{authorProfileURL}".')
@@ -133,34 +171,26 @@ class ExtractorAdultFanfiction(Extractor):
             logging.error("Author element not found.")
             return False
 
-        authorProfilePaginationElements = authorProfileSoup.select("div.pagination > ul > li")
-        if not authorProfilePaginationElements:
-            logging.error("Pagination element on author profile page not found.")
-            return False
-
-        pageCount = len(authorProfilePaginationElements)
-
-        authorProfilePageURLs = [authorProfileURL]
-        for pageIndex in range(2, pageCount + 1):
-            authorProfilePageURLs.append(f"{authorProfileURL}\&page\={pageIndex}")
+        # Find the story's entry in the author's profile.
 
         matchingStoryLinkElement = None
 
-        for URL in authorProfilePageURLs:
+        userProfileURL = userProfileAnchorElement["href"]
+        userIDMatch = re.search("profile\.php\?no=(\d+)", userProfileURL)
+        if not userIDMatch:
+            return None
 
-            authorProfileSoup = DownloadSoup(URL)
-            if not soup:
-                logging.error(f'Failed to download page: "{URL}".')
-                return False
+        userID = userIDMatch.group(1)
+        storyID = self._GetIDFromURL(URL)
 
-            for linkElement in authorProfileSoup.select("div.alist > ul > li > a"):
+        allStoryElements = self._FindAllStoriesByUserElements(userID)
+        for element in allStoryElements:
 
-                if linkElement["href"].strip() == self.Story.Metadata.URL.strip():
+            anchorElement = element.select_one("a")
 
-                    matchingStoryLinkElement = linkElement.parent
-                    break
+            if self._GetIDFromURL(anchorElement["href"]) == storyID:
 
-            if matchingStoryLinkElement:
+                matchingStoryLinkElement = anchorElement.parent
                 break
 
         if not matchingStoryLinkElement:
@@ -243,3 +273,86 @@ class ExtractorAdultFanfiction(Extractor):
         ##
 
         return re.sub("\&chapter\=(\d)+", "", URL)
+
+    def _FindAllStoriesByUserElements(self, userID):
+
+        normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story"
+        soup = DownloadSoup(normalizedURL)
+        if not soup:
+            logging.error(f"Couldn't download page: \"{normalizedURL}\".")
+            return None
+
+        zoneNames = []
+
+        for element in soup.select("div#contentdata > div.alistnav a"):
+
+            if not element.has_attr("href"):
+                continue
+
+            zoneNameMatch = re.search(
+                "zone=([a-zA-Z0-9]+)",
+                element["href"]
+            )
+
+            if not zoneNameMatch:
+                continue
+
+            zoneNames.append(zoneNameMatch.group(1))
+
+        storyElements = []
+
+        for zoneName in zoneNames:
+
+            normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story&zone={zoneName}"
+            soup = DownloadSoup(normalizedURL)
+            if not soup:
+                logging.error(f"Couldn't download page: \"{normalizedURL}\".")
+                return None
+
+            lastPageIndex = 1
+
+            if (paginationElements := soup.select("div#contentdata > div.pagination > ul > li > a")):
+
+                paginationElement = paginationElements[-1]
+
+                lastPageIndexMatch = re.search("page=(\d+)", paginationElement["href"])
+                lastPageIndex = int(lastPageIndexMatch.group(1))
+
+            for pageIndex in range(1, lastPageIndex + 1):
+
+                normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story&zone={zoneName}&page={pageIndex}"
+                soup = DownloadSoup(normalizedURL)
+                if not soup:
+                    logging.error(f"Couldn't download page: \"{normalizedURL}\".")
+                    return None
+
+                for element in soup.select("div#contentdata > div.alist > ul > li > a"):
+
+                    storyElements.append(element.parent)
+
+        return storyElements
+
+    @staticmethod
+    def _GetIDFromURL(URL: str) -> Optional[str]:
+
+        ##
+        #
+        # Reads the story/user ID from a URL.
+        #
+        # @param URL The URL.
+        #
+        # @return The ID; optionally **None**.
+        #
+        ##
+
+        if not URL:
+            return None
+
+        match = re.search(
+            "no=(\d+)",
+            URL
+        )
+        if not match:
+            return None
+
+        return match.group(1)
