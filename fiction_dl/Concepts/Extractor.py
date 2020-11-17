@@ -170,7 +170,7 @@ class Extractor:
         #
         ##
 
-        if not self.Story:
+        if self.Story is None:
             logging.error("The extractor isn't initialized.")
             return False
 
