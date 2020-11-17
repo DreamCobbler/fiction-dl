@@ -158,3 +158,15 @@ class Story:
 
         for chapter in self.Chapters:
             chapter.Process()
+
+    def __bool__(self) -> bool:
+
+        ##
+        #
+        # The bool operator.
+        #
+        # @return **True** if the story has any content.
+        #
+        ##
+
+        return bool(self.Metadata) and bool(self.Chapters)

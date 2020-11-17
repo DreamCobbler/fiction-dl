@@ -179,3 +179,15 @@ class Metadata:
 
         if summaryLength:
             self.Summary = Truncate(self.Summary, summaryLength)
+
+    def __bool__(self) -> bool:
+
+        ##
+        #
+        # The bool operator.
+        #
+        # @return **True** if the metadata exists.
+        #
+        ##
+
+        return bool(self.Title)

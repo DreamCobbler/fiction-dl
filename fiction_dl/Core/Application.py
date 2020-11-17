@@ -186,10 +186,11 @@ class Application:
             if not newlyDownloadedStory:
                 skippedURLs.append(URL)
 
-            if not self._arguments.Pack:
-                self._FormatAndSaveStoryOrPackage(newlyDownloadedStory)
-            else:
-                downloadedStories.append(newlyDownloadedStory)
+            if newlyDownloadedStory:
+                if not self._arguments.Pack:
+                    self._FormatAndSaveStoryOrPackage(newlyDownloadedStory)
+                else:
+                    downloadedStories.append(newlyDownloadedStory)
 
         self._interface.LineBreak()
 
@@ -212,7 +213,7 @@ class Application:
 
         # Save downloaded stories.
 
-        if self._arguments.Pack:
+        if self._arguments.Pack and downloadedStories:
             self._FormatAndSaveStoryOrPackage(StoryPackage(downloadedStories))
 
         # Clear the cache.
