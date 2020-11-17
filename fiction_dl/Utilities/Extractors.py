@@ -42,6 +42,7 @@ from fiction_dl.Extractors.ExtractorNifty import ExtractorNifty
 from fiction_dl.Extractors.ExtractorQuestionableQuesting import ExtractorQuestionableQuesting
 from fiction_dl.Extractors.ExtractorQuotev import ExtractorQuotev
 from fiction_dl.Extractors.ExtractorReddit import ExtractorReddit
+from fiction_dl.Extractors.ExtractorSamAndJack import ExtractorSamAndJack
 from fiction_dl.Extractors.ExtractorSpaceBattles import ExtractorSpaceBattles
 from fiction_dl.Extractors.ExtractorSufficientVelocity import ExtractorSufficientVelocity
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
@@ -87,6 +88,7 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
         ExtractorQuestionableQuesting(),
         ExtractorQuotev(),
         ExtractorReddit(),
+        ExtractorSamAndJack(),
         ExtractorSpaceBattles(),
         ExtractorSufficientVelocity(),
         ExtractorWhoFic(),
