@@ -37,14 +37,13 @@ from fiction_dl.Utilities.HTML import StripHTML
 
 import logging
 import re
-import requests
 from typing import List, Optional
 
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Text import FindFirstMatch, Stringify
+from dreamy_utilities.Web import DownloadSoup
 
 #
 #
@@ -108,18 +107,12 @@ class ExtractorWuxiaWorld(Extractor):
 
         # Generate normalized URL.
 
-        storyIdentifierMatch = re.search(
-            "/novel/([a-zA-Z0-9-]+)/",
-            URL
-        )
-
-        if not storyIdentifierMatch:
+        storyIdentifier = FindFirstMatch(URL, "/novel/([a-zA-Z0-9-]+)/")
+        if not storyIdentifier:
             logging.error("Failed to retrieve the story identifier.")
             return False
 
-        storyIdentifier = storyIdentifierMatch.group(1)
-
-        normalizedURL = f"https://www.wuxiaworld.com/novel/{storyIdentifier}"
+        normalizedURL = self._BASE_NOVEL_URL + storyIdentifier
         soup = DownloadSoup(normalizedURL)
         if not soup:
             logging.error(f"Failed to download page: \"{normalizedURL}\".")
@@ -229,3 +222,4 @@ class ExtractorWuxiaWorld(Extractor):
         return authorName.strip()
 
     _BASE_URL = "https://www.wuxiaworld.com"
+    _BASE_NOVEL_URL = "https://www.wuxiaworld.com/novel/"
