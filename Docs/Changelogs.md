@@ -1,3 +1,33 @@
+# 1.7.0
+
+**General:**
+
+- Create a logo for the application.
+- Added the "f-dl" alias for the application executable.
+
+**Extractors:**
+
+- Added an extractor for Quotev.
+- Added an extractor for WuxiaWorld.
+- Added an extractor for WhoFic.com.
+- Added an extractor for SamAndJack.net.
+
+- Added collection support to the FF.net extractor.
+- Added channel support to the HPFF extractor.
+- Added channel support to the AdultFanfiction extractor.
+
+**Formatters:**
+
+- Improved the HTML output template.
+
+**Bugfixes:**
+
+- Resolved Issue #2.
+- Resolved Issue #7.
+
+- Improved the way in which the LibreOffice executable is located.
+- Improved exception handling during image downloading process.
+
 # 1.6.X
 
 ## 1.6.3
