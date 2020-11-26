@@ -31,20 +31,17 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Concepts.Story import Story
-from fiction_dl.Utilities.HTML import StripHTML
 
 # Standard packages.
 
 import logging
 import re
-import requests
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # Non-standard packages.
 
-from bs4 import BeautifulSoup
-from dreamy_utilities.Containers import RemoveDuplicates
-from dreamy_utilities.Text import Stringify
+from bs4 import BeautifulSoup, Comment, NavigableString
+from dreamy_utilities.Text import FindFirstMatch, Stringify
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 #
@@ -105,38 +102,10 @@ class ExtractorWhoFic(Extractor):
 
         soup = DownloadSoup(URL)
         if not soup:
-            logging.error(f"Couldn't download page: \"{URL}\".")
+            logging.error(f"Failed to download page: \"{URL}\".")
             return None
 
-        storyURLs = self._GetStoryLinksOnPage(soup)
-
-        for element in soup.select("div.box > div.seriesBlock > p > strong > a"):
-
-            if not element.has_attr("href"):
-                continue
-
-            seriesIDMatch = re.search(
-                "seriesid=(\d+)",
-                element["href"]
-            )
-
-            if not seriesIDMatch:
-                continue
-
-            seriesID = seriesIDMatch.group(1)
-            seriesURL = f"{self._BASE_URL}series.php?seriesid={seriesID}"
-
-            soup = DownloadSoup(seriesURL)
-            if not soup:
-                logging.error(f"Couldn't download page: \"{seriesURL}\".")
-                continue
-
-            newURLs = self._GetStoryLinksOnPage(soup)
-            storyURLs.extend(newURLs)
-
-        storyURLs = RemoveDuplicates(storyURLs)
-
-        return storyURLs
+        return self._GetStoryURLsOnPage(soup)
 
     def _InternallyScanStory(
         self,
@@ -180,18 +149,25 @@ class ExtractorWhoFic(Extractor):
         if not self._chapterURLs:
             self._chapterURLs.append(URL)
 
+        # Find additional metadata.
+
+        datePublished, dateUpdated, summary = self._FindAdditionalMetadata(
+            ExtractorWhoFic._BASE_URL + authorElement["href"],
+            self._GetStoryID(URL)
+        )
+
         # Set the metadata.
 
         self.Story.Metadata.Title = titleElement.get_text().strip()
         self.Story.Metadata.Author = authorElement.get_text().strip()
 
-        self.Story.Metadata.DatePublished = "?"
-        self.Story.Metadata.DateUpdated = "?"
+        self.Story.Metadata.DatePublished = datePublished
+        self.Story.Metadata.DateUpdated = dateUpdated
 
         self.Story.Metadata.ChapterCount = len(self._chapterURLs)
         self.Story.Metadata.WordCount = 0
 
-        self.Story.Metadata.Summary = "No summary."
+        self.Story.Metadata.Summary = summary
 
         # Return.
 
@@ -237,7 +213,117 @@ class ExtractorWhoFic(Extractor):
         )
 
     @staticmethod
-    def _GetStoryLinksOnPage(soup: BeautifulSoup) -> List[str]:
+    def _GetStoryID(URL: str) -> Optional[str]:
+
+        ##
+        #
+        # Retrieves story ID from story URL.
+        #
+        # @param URL The URL of the story.
+        #
+        # @return The ID of the story. Optionally **None**.
+        #
+        ##
+
+        if not URL:
+            return None
+
+        return FindFirstMatch(URL, "sid=(\d+)")
+
+    @staticmethod
+    def _FindAdditionalMetadata(authorPageURL: str, storyID: str) -> Tuple[str, str, str]:
+
+        ##
+        #
+        # Reads story's publication and update dates from the author's page, as well as its summary.
+        #
+        # @param authorPageURL The URL of the author's profile page.
+        # @param storyID       The ID of the story.
+        #
+        # @return A tuple consisting of date published, date updated and summary.
+        #
+        ##
+
+        if (not authorPageURL) or (not storyID):
+            return None
+
+        # Prepare the default output.
+
+        datePublished = "?"
+        dateUpdated = "?"
+        summary = "No summary."
+
+        # Download the author's page soup.
+
+        soup = DownloadSoup(authorPageURL)
+        if not soup:
+            return [datePublished, dateUpdated, summary]
+
+        # Find this specific story's description.
+
+        storyElement = None
+
+        for storyBlockElement in soup.select("div.storyBlock"):
+
+            anchorElement = storyBlockElement.select_one("p > strong > a")
+            if (not anchorElement) or (not anchorElement.has_attr("href")):
+                continue
+
+            ID = ExtractorWhoFic._GetStoryID(anchorElement["href"])
+            if not ID:
+                continue
+
+            if ID == storyID:
+                storyElement = storyBlockElement
+                break
+
+        if not storyElement:
+            return [datePublished, dateUpdated, summary]
+
+        # Process the dates.
+
+        for listItemElement in storyElement.select("ul.list-inline > li"):
+
+            titleElement = listItemElement.select_one("b")
+            if not titleElement:
+                continue
+
+            titleElementText = titleElement.get_text().strip()
+            titleElement.decompose()
+
+            if "Published:" == titleElementText:
+                datePublished = listItemElement.get_text().strip()
+            elif "Updated:" == titleElementText:
+                dateUpdated = listItemElement.get_text().strip()
+
+        # Process the summary.
+
+        potentialSummaryStrings = []
+
+        if (summaryParentElement := storyElement.select_one("p")):
+
+            for child in summaryParentElement.children:
+
+                if isinstance(child, NavigableString) and not isinstance(child, Comment):
+                    potentialSummaryStrings.append(str(child).strip())
+
+        if potentialSummaryStrings:
+            summary = potentialSummaryStrings[-1]
+
+        # Post-process found metadata.
+
+        if "?" != datePublished:
+            datePublished = ExtractorWhoFic._ReformatDate(datePublished)
+
+        if "?" != dateUpdated:
+            dateUpdated = ExtractorWhoFic._ReformatDate(dateUpdated)
+
+        # Return.
+
+        return [datePublished, dateUpdated, summary]
+
+    @staticmethod
+    def _GetStoryURLsOnPage(soup: BeautifulSoup) -> List[str]:
 
         ##
         #
@@ -270,5 +356,23 @@ class ExtractorWhoFic(Extractor):
             URLs.append(storyURL)
 
         return URLs
+
+    @staticmethod
+    def _ReformatDate(date: str) -> Optional[str]:
+
+        ##
+        #
+        # Reformats date from YYYY.MM.DD to YYYY-MM-DD.
+        #
+        # @param date The input date.
+        #
+        # @return The input date, reformatted.
+        #
+        ##
+
+        if not date:
+            return None
+
+        return date.replace(".", "-")
 
     _BASE_URL = "https://www.whofic.com/"
