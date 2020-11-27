@@ -18,6 +18,7 @@
 
 **Formatters:**
 
+- Added the application logo to all output file templates.
 - Improved the HTML output template.
 
 **Bugfixes:**
