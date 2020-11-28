@@ -43,6 +43,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 | *18* | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
 | *19* | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no                           |
 | *20* | erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
+| *21* | erotica          | [www.asstr.org/~Kristen](https://www.asstr.org/~Kristen/)           | ✗ no                   | ✗ no                           |
 
 - <sup>**[1]** **fiction-dl** is also capable of downloading whole collections and series.</sup>
 - <sup>**[2]** The application supports also downloading entire collections.</sup>

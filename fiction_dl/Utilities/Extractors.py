@@ -32,6 +32,7 @@ from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Extractors.ExtractorAdultFanfiction import ExtractorAdultFanfiction
 from fiction_dl.Extractors.ExtractorAH import ExtractorAH
 from fiction_dl.Extractors.ExtractorAO3 import ExtractorAO3
+from fiction_dl.Extractors.ExtractorAsstrKristen import ExtractorAsstrKristen
 from fiction_dl.Extractors.ExtractorFFNet import ExtractorFFNet
 from fiction_dl.Extractors.ExtractorFicWad import ExtractorFicWad
 from fiction_dl.Extractors.ExtractorHentaiFoundry import ExtractorHentaiFoundry
@@ -79,6 +80,7 @@ def CreateExtractor(URL: str) -> Optional[Extractor]:
         ExtractorAdultFanfiction(),
         ExtractorAH(),
         ExtractorAO3(),
+        ExtractorAsstrKristen(),
         ExtractorFFNet(),
         ExtractorFicWad(),
         ExtractorHentaiFoundry(),
