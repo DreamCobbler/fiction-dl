@@ -56,6 +56,7 @@ from os.path import expandvars, isfile
 from pathlib import Path
 import re
 from requests.exceptions import ConnectionError
+from ssl import SSLError
 from time import sleep
 from typing import Dict, List, Optional, Union
 from urllib3.exceptions import ProtocolError
@@ -168,6 +169,10 @@ class Application:
                 except ConnectionError as caughtException:
 
                     self._interface.Error(f"The website has refused connection: {caughtException}")
+
+                except SSLError as caughtException:
+
+                    self._interface.Error(f"An SSL error has occurred: {caughtException}")
 
                 except BaseException as caughtException:
 
