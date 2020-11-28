@@ -3,9 +3,9 @@
 ![Screenshot (Windows 10)](/Stuff/Screenshot%20(Windows%2010).png?raw=true)
 ![Screenshot (Linux Mint 20)](/Stuff/Screenshot%20(Linux%20Mint%2020).png?raw=true)
 
-**fiction-dl** is a command-line utility made for downloading works of fiction from the web, capable of auto-formatting and saving them in a few common file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
+**fiction-dl** is a command-line utility designed to download works of (fan)fiction from the web and save them in a few portable file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
 
-The application supports more than a dozen websites, generates HTML, EPUB, MOBI, ODT and PDF output files, applies typographic corrections to the extracted content and is able to embed downloaded images within it.
+The application currently supports almost two dozen websites and six output file formats; the latter being (single-file) HTML, ODT, PDF, EPUB and MOBI. It's able to download images found in story content, as well as capable of applying basic typographic corrections to the content itself.
 
 ## ✿ Table of Contents
 
@@ -19,7 +19,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 
 ### Downloading stories
 
-**fiction-dl** can download stories from a multitude of sites - in some cases, it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*).
+**fiction-dl** can download stories from a multitude of sites - in some cases, it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*). In a select few sites, it allows you to log-in to the site using the command-line; this functionality allows the user to access subforums closed to guest viewers, like the *Fandom* category on [AlternateHistory.com](https://www.alternatehistory.com/forum/) or quarantined subreddits on [Reddit](https://www.reddit.com/).
 
 | \#   | Category         | Site                                                                | Authentication support | Channel support                |
 |------|------------------|---------------------------------------------------------------------|------------------------|--------------------------------|
@@ -49,7 +49,7 @@ The application supports more than a dozen websites, generates HTML, EPUB, MOBI,
 - <sup>**[2]** The application supports also downloading entire collections.</sup>
 - <sup>**[3]** The application supports downloading whole series as well.</sup>
 
-It is also capable of reading stories saved in text files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to some more civilized format.
+It is also possible to process stories stored in local files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to a more civilized format.
 
 ### Formatting stories
 
