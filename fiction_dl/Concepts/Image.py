@@ -181,8 +181,8 @@ def CreateImageFromDataUsingOpenCV(data: bytes, side: Optional[int] = None, qual
 
     return (
         convertedData,
-        image.shape[0],
-        image.shape[1]
+        image.shape[1],
+        image.shape[0]
     )
 
 def CreateImageFromDataUsingPIL(data: bytes, side: Optional[int] = None, quality: int = 75) -> bool:
