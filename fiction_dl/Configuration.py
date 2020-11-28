@@ -42,8 +42,8 @@ import tempfile
 ApplicationName = "fiction-dl"
 ApplicationVersion = "1.7.0a1"
 ApplicationShortDescription = (
-    "A fiction downloader, capable of retrieving works of fiction from the net and saving them in a"
-    "few common file formats."
+    "A content downloader, capable of retrieving works of literature from the web and saving them in a few common file"
+    " formats."
 )
 ApplicationURL = "https://github.com/DreamCobbler/fiction-dl"
 
