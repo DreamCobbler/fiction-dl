@@ -33,6 +33,7 @@ from fiction_dl.Concepts.Extractor import Extractor
 
 # Standard packages.
 
+from datetime import datetime
 import logging
 import re
 from typing import List, Optional
@@ -40,10 +41,9 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Filesystem import WriteTextFile
 from dreamy_utilities.HTML import ReadElementText
-from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname, GetSiteURL
+from dreamy_utilities.Text import FindFirstMatch, Stringify
+from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 #
 #
@@ -175,8 +175,6 @@ class ExtractorSamAndJack(Extractor):
 
         # Extract the metadata.
 
-        # WriteTextFile("test.html", str(soup))
-
         titleAuthorElements = soup.select("div#pagetitle a")
         if len(titleAuthorElements) < 2:
             logging.error("Title/author elements not found.")
@@ -185,21 +183,30 @@ class ExtractorSamAndJack(Extractor):
         titleElement = titleAuthorElements[0]
         authorElement = titleAuthorElements[1]
 
-        # Retrieve chapter URLs.
+        # Read additional metadata and retrieve chapter URLs.
 
         tableOfContentsURL = f"{URL}&index=1"
-
         soup = DownloadSoup(tableOfContentsURL)
         if not soup:
             logging.error(f"Failed to download page: \"{tableOfContentsURL}\".")
             return False
+
+        contentElement = soup.select_one("div.listbox > div.content")
+        if not contentElement:
+            logging.error("Content element not found in the ToC page.")
+            return False
+
+        contentText = contentElement.get_text().strip()
+        summary = FindFirstMatch(contentText, "Summary: ([^\n]+)\n")
+        datePublished = FindFirstMatch(contentText, "Published:\s*([a-zA-Z]+ \d+, \d+)")
+        dateUpdated = FindFirstMatch(contentText, "Updated:\s*([a-zA-Z]+ \d+, \d+)")
 
         for element in soup.select("div#output > p > b > a"):
 
             if not element.has_attr("href"):
                 continue
 
-            chapterURL = self._BASE_URL + element["href"]
+            chapterURL = self._GetAdultViewURL(self._BASE_URL + element["href"])
 
             self._chapterURLs.append(chapterURL)
             self._chapterTitles[chapterURL] = element.get_text().strip()
@@ -213,13 +220,13 @@ class ExtractorSamAndJack(Extractor):
         self.Story.Metadata.Title = titleElement.get_text().strip()
         self.Story.Metadata.Author = authorElement.get_text().strip()
 
-        self.Story.Metadata.DatePublished = "?"
-        self.Story.Metadata.DateUpdated = "?"
+        self.Story.Metadata.DatePublished = self._ReformatDate(datePublished) or "?"
+        self.Story.Metadata.DateUpdated = self._ReformatDate(dateUpdated) or "?"
 
         self.Story.Metadata.ChapterCount = len(self._chapterURLs)
         self.Story.Metadata.WordCount = 0
 
-        self.Story.Metadata.Summary = "No summary."
+        self.Story.Metadata.Summary = summary
 
         # Return.
 
@@ -268,7 +275,49 @@ class ExtractorSamAndJack(Extractor):
         #
         ##
 
-        return URL + "&ageconsent=ok&warning=5"
+        return ExtractorSamAndJack._GetAdultViewURL(URL)
+
+    @staticmethod
+    def _GetAdultViewURL(URL: str) -> Optional[str]:
+
+        ##
+        #
+        # Returns a URL leading to the page, this time with adult-mode enabled.
+        #
+        # @param URL Page URL.
+        #
+        # @return The adult-proofed URL.
+        #
+        ##
+
+        if not URL:
+            return None
+
+        return URL + "&ageconsent=ok&warning=4"
+
+    @staticmethod
+    def _ReformatDate(date: str) -> Optional[str]:
+
+        ##
+        #
+        # Reformats long date format to standard format.
+        #
+        # @param date The input date, as read on the webpage.
+        #
+        # @return ISO-formatted date. Optionally **None**.
+        #
+        ##
+
+        if not date:
+            return None
+
+        try:
+
+            return datetime.strptime(date, "%b %d, %Y").strftime("%Y-%m-%d")
+
+        except ValueError:
+
+            return None
 
     _BASE_URL = "http://samandjack.net/fanfics/"
     _STORIES_PER_PAGE = 25
