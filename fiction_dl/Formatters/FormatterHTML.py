@@ -121,10 +121,10 @@ class FormatterHTML(Formatter):
 
             for index, tag in enumerate(soup.find_all("img")):
 
-                if index >= len(story.Images):
+                if (0 == index) or (index > len(story.Images)):
                     continue
 
-                if (image := story.Images[index]):
+                if (image := story.Images[index - 1]):
                     tag["src"] = "data:image/jpeg;base64," + b64encode(image.Data).decode()
                     tag["alt"] = "There is an image here."
                 else:
