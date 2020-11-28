@@ -293,7 +293,18 @@ class ExtractorSamAndJack(Extractor):
         if not URL:
             return None
 
-        return URL + "&ageconsent=ok&warning=4"
+        MINIMUM_WARNING = 1
+        MAXIMUM_WARNING = 5
+
+        for warningIndex in reversed(range(MINIMUM_WARNING, MAXIMUM_WARNING + 1)):
+
+            currentURL = URL + f"&ageconsent=ok&warning={warningIndex}"
+            soup = DownloadSoup(currentURL)
+
+            if not soup.select_one("div.errortext"):
+                return currentURL
+
+        return URL + "&ageconsent=ok"
 
     @staticmethod
     def _ReformatDate(date: str) -> Optional[str]:
