@@ -11,6 +11,7 @@
 - Added an extractor for WuxiaWorld.
 - Added an extractor for WhoFic.com.
 - Added an extractor for SamAndJack.net.
+- Added an extractor for asstr.org/~Kristen/.
 
 - Added collection support to the FF.net extractor.
 - Added channel support to the HPFF extractor.
@@ -21,6 +22,10 @@
 - Added the application logo to all output file templates.
 - Improved the HTML output template.
 
+**Processing:**
+
+- Improved line-break processing.
+
 **Bugfixes:**
 
 - Resolved Issue #2.
@@ -28,6 +33,10 @@
 
 - Improved the way in which the LibreOffice executable is located.
 - Improved exception handling during image downloading process.
+
+**Stuff:**
+
+- Improved the look of the HTML template for a message page (the one displayed after user logs-in to Reddit).
 
 # 1.6.X
 
