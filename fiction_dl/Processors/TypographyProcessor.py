@@ -251,20 +251,7 @@ class TypographyProcessor(Processor):
 
         soup = BeautifulSoup(content, features = "html.parser")
 
-        PseudolinePatterns = [
-
-            re.compile("^\\s*(o\-){3,}\\s*$"),
-            re.compile("^\\s*\…+\\s*$"),
-            re.compile("^\\s*\*+\\s*$"),
-            re.compile("^\\s*\-+\\s*$"),
-            re.compile("^\\s*\—+\\s*$"),
-            re.compile("^\\s*\.+\\s*$"),
-            re.compile("^\\s*\++\\s*$"),
-            re.compile("^\\s*\_+\\s*$"),
-            re.compile("^\\s*\~+\\s*$"),
-
-        ]
-
+        MAXIMUM_PSEUDOLINE_LENGTH = 30
         for tag in soup.find_all(recursive = True):
 
             if "p" != tag.name:
@@ -272,25 +259,11 @@ class TypographyProcessor(Processor):
 
             tagText = tag.get_text()
 
-            if len([x for x in PseudolinePatterns if x.match(tagText)]):
+            if len(tagText) > MAXIMUM_PSEUDOLINE_LENGTH:
+                continue
+
+            elif not any(x.isalnum() for x in tagText):
                 tag.replace_with(soup.new_tag("hr"))
-
-            elif len(tagText) < 30:
-
-                hyphenCount = max(tagText.count("-"), tagText.count("—"))
-                if hyphenCount and (hyphenCount / len(tagText) > 0.4):
-                    tag.replace_with(soup.new_tag("hr"))
-                    continue
-
-                starCount = tagText.count("*")
-                if starCount and (starCount / len(tagText) > 0.4):
-                    tag.replace_with(soup.new_tag("hr"))
-                    continue
-
-                tildeCount = tagText.count("~")
-                if tildeCount and (tildeCount / len(tagText) > 0.4):
-                    tag.replace_with(soup.new_tag("hr"))
-                    continue
 
         content = str(soup)
 
