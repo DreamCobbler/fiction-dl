@@ -19,7 +19,9 @@ The application currently supports almost two dozen websites and six output file
 
 ### Downloading stories
 
-**fiction-dl** can download stories from a multitude of sites - in some cases, it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*). In a select few sites, it allows you to log-in to the site using the command-line; this functionality allows the user to access subforums closed to guest viewers, like the *Fandom* category on [AlternateHistory.com](https://www.alternatehistory.com/forum/) or quarantined subreddits on [Reddit](https://www.reddit.com/).
+**fiction-dl** can download stories from a multitude of sites - in some cases, it also supports downloading all stories published by any specific user (which is called downloading stories from a *channel*).
+
+In a select few sites, it allows you to log-in to the site using the command-line; this functionality allows the user to access subforums closed to guest viewers, like the *Fandom* category on [AlternateHistory.com](https://www.alternatehistory.com/forum/), or quarantined subreddits on [Reddit](https://www.reddit.com/).
 
 | \#   | Category         | Site                                                                | Authentication support | Channel support                |
 |------|------------------|---------------------------------------------------------------------|------------------------|--------------------------------|
@@ -43,13 +45,13 @@ The application currently supports almost two dozen websites and six output file
 | *18* | erotica          | [Hentai Foundry](https://www.hentai-foundry.com/)                   | ✗ no                   | ✓ **yes**                      |
 | *19* | erotica          | [NajlepszaErotyka.com.pl](https://najlepszaerotyka.com.pl/)         | ✗ no                   | ✗ no                           |
 | *20* | erotica          | [Nifty.org](https://www.nifty.org/nifty/)                           | ✗ no                   | ✗ no                           |
-| *21* | erotica          | [www.asstr.org/~Kristen](https://www.asstr.org/~Kristen/)           | ✗ no                   | ✗ no                           |
+| *21* | erotica          | [asstr.org/~Kristen](https://www.asstr.org/~Kristen/)               | ✗ no                   | ✗ no                           |
 
 - <sup>**[1]** **fiction-dl** is also capable of downloading whole collections and series.</sup>
 - <sup>**[2]** The application supports also downloading entire collections.</sup>
 - <sup>**[3]** The application supports downloading whole series as well.</sup>
 
-It is also possible to process stories stored in local files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to translate it to a more civilized format.
+It is also possible to process stories stored in local files. You can put the HTML-formatted story in a raw text file and use **fiction-dl** to reformat it in all of its output file formats.
 
 ### Formatting stories
 
