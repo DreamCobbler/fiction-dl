@@ -169,18 +169,22 @@ class Application:
                 except ConnectionError as caughtException:
 
                     self._interface.Error(f"The website has refused connection: {caughtException}")
+                    self._interface.GrabUserAttention()
 
                 except SSLError as caughtException:
 
                     self._interface.Error(f"An SSL error has occurred: {caughtException}")
+                    self._interface.GrabUserAttention()
 
                 except BaseException as caughtException:
 
                     self._interface.Error(f"An exception has been thrown: {caughtException}")
+                    self._interface.GrabUserAttention()
 
                 except:
 
                     self._interface.Error("An exception has been thrown.")
+                    self._interface.GrabUserAttention()
 
             else:
 
@@ -202,11 +206,13 @@ class Application:
                     except FileNotFoundError as caughtException:
 
                         self._interface.Error(f"A filesystem exception has occurred: {caughtException}")
+                        self._interface.GrabUserAttention()
                         skippedURLs.append(URL)
 
                     except:
 
                         self._interface.Error("An exception has been thrown.")
+                        self._interface.GrabUserAttention()
                         skippedURLs.append(URL)
 
                 else:
