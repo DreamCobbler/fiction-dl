@@ -192,9 +192,23 @@ class Application:
                 skippedURLs.append(URL)
 
             if newlyDownloadedStory:
+
                 if not self._arguments.Pack:
-                    self._FormatAndSaveStoryOrPackage(newlyDownloadedStory)
+
+                    try:
+
+                        self._FormatAndSaveStoryOrPackage(newlyDownloadedStory)
+
+                    except FileNotFoundError as caughtException:
+
+                        self._interface.Error(f"A filesystem exception has occurred: {caughtException}")
+
+                    except:
+
+                        self._interface.Error("An exception has been thrown.")
+
                 else:
+
                     downloadedStories.append(newlyDownloadedStory)
 
         self._interface.LineBreak()
