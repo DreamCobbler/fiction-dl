@@ -107,7 +107,7 @@ class ExtractorAsstrKristen(Extractor):
 
         # Download the story.
 
-        self._storyText = requests.get(URL).content.decode("ansi")
+        self._storyText = requests.get(URL).content.decode(encoding = "ascii", errors = "ignore")
         if not self._storyText:
             logging.error("Failed to download story page when scanning.")
             return False

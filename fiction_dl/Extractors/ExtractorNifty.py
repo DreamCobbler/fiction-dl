@@ -108,7 +108,7 @@ class ExtractorNifty(Extractor):
 
         # Is it a single chapter story?
 
-        pageCode = requests.get(URL).content.decode("ansi")
+        pageCode = requests.get(URL).content.decode(encoding = "ascii", errors = "ignore")
         if not pageCode:
             logging.error("Failed to download story page when scanning.")
             return False
@@ -153,7 +153,7 @@ class ExtractorNifty(Extractor):
 
             # Read the first chapter.
 
-            firstChapterText = str(requests.get(self._chapterURLs[0]).content.decode("ansi"))
+            firstChapterText = str(requests.get(self._chapterURLs[0]).content.decode(encoding = "ascii", errors = "ignore"))
             if not soup:
                 logging.error("Failed to download the first chapter.")
                 return False
@@ -165,7 +165,7 @@ class ExtractorNifty(Extractor):
 
             # Read the last chapter.
 
-            lastChapterText = str(requests.get(self._chapterURLs[-1]).content.decode("ansi"))
+            lastChapterText = str(requests.get(self._chapterURLs[-1]).content.decode(encoding = "ascii", errors = "ignore"))
             if not soup:
                 logging.error("Failed to download the last chapter.")
                 return False
@@ -246,7 +246,7 @@ class ExtractorNifty(Extractor):
 
         # Read the chapter.
 
-        chapterText = str(requests.get(URL).content.decode("ansi"))
+        chapterText = str(requests.get(URL).content.decode(encoding = "ascii", errors = "ignore"))
         if not chapterText:
             logging.error("Failed to download a chapter.")
             return False
