@@ -30,17 +30,17 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
 import logging
-import requests
 from typing import List, Optional
 
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Web import GetHostname
+from dreamy_utilities.Web import DownloadPage, GetHostname
 
 #
 #
@@ -107,7 +107,7 @@ class ExtractorAsstrKristen(Extractor):
 
         # Download the story.
 
-        self._storyText = requests.get(URL).content.decode(encoding = "ascii", errors = "ignore")
+        self._storyText = DownloadPage(URL, userAgent = Configuration.UserAgent, textEncoding = "ascii")
         if not self._storyText:
             logging.error("Failed to download story page when scanning.")
             return False
