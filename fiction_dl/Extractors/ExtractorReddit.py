@@ -188,7 +188,7 @@ class ExtractorReddit(Extractor):
                 return False
 
             else:
-                SendMessage(client, responseTemplate.replace("@@@Content@@@", "Everything went well. ;)"))
+                SendMessage(client, responseTemplate.replace("@@@Content@@@", "Everything went well. 😉"))
 
             # Authorize.
 
