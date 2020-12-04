@@ -116,9 +116,9 @@ https://www.literotica.com/stories/memberpage.php?uid=1022977&page=bio
 
 http://hp.adult-fanfiction.org/story.php?no=600100119
 
-# Multi-chapter work.
+# A channel.
 
-http://hp.adult-fanfiction.org/story.php?no=600099266
+http://members.adult-fanfiction.org/profile.php?no=1296837418
 
 ##
 #
@@ -194,7 +194,7 @@ https://www.quotev.com/story/13241547/Rain-on-fire
 
 # A multi-chapter story.
 
-https://www.quotev.com/story/8440366/Gamble/1
+https://www.quotev.com/story/13160599/Bloodlines
 
 ##
 #
@@ -205,3 +205,60 @@ https://www.quotev.com/story/8440366/Gamble/1
 # A multi-chapter story.
 
 https://www.wuxiaworld.com/novel/tomb-raider-king/trk-chapter-1
+
+##
+#
+# WhoFic
+#
+##
+
+# A user.
+
+https://www.whofic.com/viewuser.php?uid=12269
+
+# A single-chapter story.
+
+https://www.whofic.com/viewstory.php?sid=41280
+
+# A multi-chapter story.
+
+https://www.whofic.com/viewstory.php?sid=36286
+
+# A series.
+
+https://www.whofic.com/series.php?seriesid=2163
+
+##
+#
+# SamAndJack.net
+#
+##
+
+# A multi-chapter story.
+
+http://www.samandjack.net/fanfics/viewstory.php?sid=4035
+
+# A user, containing single-chapter stories.
+
+http://www.samandjack.net/fanfics/viewuser.php?uid=545
+
+##
+#
+# Ralst.com
+#
+##
+
+http://ralst.com/MorningAfterHMD.HTM
+http://ralst.com/DarknessDeepestHeart.HTM
+http://ralst.com/HardlyBegun.HTM
+
+##
+#
+# Asstr.org/~Kristen/
+#
+##
+
+https://www.asstr.org/~Kristen/22/charity.txt
+https://www.asstr.org/~Kristen/53/asurprise.txt
+https://www.asstr.org/~Kristen/53/avacation.txt
+https://www.asstr.org/~Kristen/53/britspearsvac.txt

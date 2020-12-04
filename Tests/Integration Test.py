@@ -53,10 +53,6 @@ from pathlib import Path
 #
 #
 
-# Set up the logger.
-
-# logging.basicConfig(level = logging.INFO)
-
 #
 # Run the integration test.
 #
@@ -70,8 +66,6 @@ arguments = Namespace(
     Debug = True,
     Images = True,
     PersistentCache = True,
-    Username = "",
-    Password = "",
     LibreOffice = GetLibreOfficeExecutablePath() or Path(),
     Output = OutputDirectoryPath,
     Input = "Integration Test Dataset 1.txt",
@@ -92,8 +86,6 @@ arguments = Namespace(
     Debug = True,
     Images = True,
     PersistentCache = True,
-    Username = "",
-    Password = "",
     LibreOffice = GetLibreOfficeExecutablePath() or Path(),
     Output = OutputDirectoryPath,
     Input = "Integration Test Dataset 3.txt",
@@ -114,8 +106,6 @@ arguments = Namespace(
     Debug = True,
     Images = True,
     PersistentCache = True,
-    Username = "",
-    Password = "",
     LibreOffice = GetLibreOfficeExecutablePath() or Path(),
     Output = OutputDirectoryPath,
     Audiobook = True,
