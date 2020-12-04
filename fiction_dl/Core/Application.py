@@ -202,10 +202,12 @@ class Application:
                     except FileNotFoundError as caughtException:
 
                         self._interface.Error(f"A filesystem exception has occurred: {caughtException}")
+                        skippedURLs.append(URL)
 
                     except:
 
                         self._interface.Error("An exception has been thrown.")
+                        skippedURLs.append(URL)
 
                 else:
 
