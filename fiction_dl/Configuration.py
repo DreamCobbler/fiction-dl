@@ -45,7 +45,7 @@ ApplicationShortDescription = (
     "A content downloader, capable of retrieving works of (fan)fiction from the web and saving them in a few common file"
     " formats."
 )
-ApplicationURL = "https://github.com/DreamCobbler/fiction-dl"
+ApplicationURL = "github.com/DreamCobbler/fiction-dl"
 
 CreatorName = "Benedykt Synakiewicz"
 CreatorContact = "dreamcobbler@outlook.com"
@@ -67,7 +67,7 @@ LineBreak = 79 * "-"
 ProgressBarLength = 45
 
 # The welcoming message, printed when the application starts.
-WelcomingMessage = f"{ApplicationName} {ApplicationVersion}, by {CreatorName} <{CreatorContact}>"
+WelcomingMessage = f"{ApplicationName} {ApplicationVersion}, by {CreatorName} ({ApplicationURL})"
 
 # Maximum length of the longer side of an embedded image.
 MaximumImageSideLength = 800
