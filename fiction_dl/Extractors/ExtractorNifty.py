@@ -30,13 +30,13 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
 from datetime import datetime
 import logging
 import re
-import requests
 from typing import List, Optional, Tuple
 
 # Non-standard packages.
@@ -108,7 +108,7 @@ class ExtractorNifty(Extractor):
 
         # Is it a single chapter story?
 
-        pageCode = requests.get(URL).content.decode(encoding = "ascii", errors = "ignore")
+        pageCode = DownloadPage(URL, userAgent = Configuration.UserAgent, textEncoding = "ascii")
         if not pageCode:
             logging.error("Failed to download story page when scanning.")
             return False
@@ -153,7 +153,7 @@ class ExtractorNifty(Extractor):
 
             # Read the first chapter.
 
-            firstChapterText = str(requests.get(self._chapterURLs[0]).content.decode(encoding = "ascii", errors = "ignore"))
+            firstChapterText = DownloadPage(self._chapterURLs[0], userAgent = Configuration.UserAgent, textEncoding = "ascii")
             if not soup:
                 logging.error("Failed to download the first chapter.")
                 return False
@@ -165,7 +165,7 @@ class ExtractorNifty(Extractor):
 
             # Read the last chapter.
 
-            lastChapterText = str(requests.get(self._chapterURLs[-1]).content.decode(encoding = "ascii", errors = "ignore"))
+            lastChapterText = DownloadPage(self._chapterURLs[-1], userAgent = Configuration.UserAgent, textEncoding = "ascii")
             if not soup:
                 logging.error("Failed to download the last chapter.")
                 return False
@@ -246,7 +246,7 @@ class ExtractorNifty(Extractor):
 
         # Read the chapter.
 
-        chapterText = str(requests.get(URL).content.decode(encoding = "ascii", errors = "ignore"))
+        chapterText = DownloadPage(URL, userAgent = Configuration.UserAgent, textEncoding = "ascii")
         if not chapterText:
             logging.error("Failed to download a chapter.")
             return False
