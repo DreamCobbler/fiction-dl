@@ -198,21 +198,27 @@ class Application:
 
                 if not self._arguments.Pack:
 
-                    try:
+                    if not self._arguments.Debug:
+
+                        try:
+
+                            self._FormatAndSaveStoryOrPackage(newlyDownloadedStory)
+
+                        except FileNotFoundError as caughtException:
+
+                            self._interface.Error(f"A filesystem exception has occurred: {caughtException}")
+                            self._interface.GrabUserAttention()
+                            skippedURLs.append(URL)
+
+                        except:
+
+                            self._interface.Error("An exception has been thrown.")
+                            self._interface.GrabUserAttention()
+                            skippedURLs.append(URL)
+
+                    else:
 
                         self._FormatAndSaveStoryOrPackage(newlyDownloadedStory)
-
-                    except FileNotFoundError as caughtException:
-
-                        self._interface.Error(f"A filesystem exception has occurred: {caughtException}")
-                        self._interface.GrabUserAttention()
-                        skippedURLs.append(URL)
-
-                    except:
-
-                        self._interface.Error("An exception has been thrown.")
-                        self._interface.GrabUserAttention()
-                        skippedURLs.append(URL)
 
                 else:
 
