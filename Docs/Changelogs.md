@@ -16,6 +16,7 @@
 - Added collection support to the FF.net extractor.
 - Added channel support to the HPFF extractor.
 - Added channel support to the AdultFanfiction extractor.
+- Added series support to the Literotica extractor.
 
 **Formatters:**
 
@@ -30,13 +31,14 @@
 
 - Resolved Issue #2.
 - Resolved Issue #7.
+- Resolved Issue #9.
 
 - Improved the way in which the LibreOffice executable is located.
 - Improved exception handling during image downloading process.
 
 **Stuff:**
 
-- Improved the look of the HTML template for a message page (the one displayed after user logs-in to Reddit).
+- Improved the look of the HTML template for a message page (the one displayed after the user logs-in to Reddit).
 
 # 1.6.X
 
