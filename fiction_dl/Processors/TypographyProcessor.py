@@ -196,6 +196,12 @@ class TypographyProcessor(Processor):
         # Example: "A … B" -> "A… B"
         content = re.sub("(\\s)…(\\s)", r"…\2", content)
 
+        # Example: " ?" -> "?"
+        content = re.sub("(\\s)\\?", "?", content)
+
+        # Example: " !" -> "!"
+        content = re.sub("(\\s)\\!", "!", content)
+
         # Example: "???" -> "?"
         content = re.sub("\?+", "?", content)
 
