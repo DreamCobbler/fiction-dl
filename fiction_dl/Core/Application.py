@@ -34,7 +34,6 @@ from fiction_dl.Concepts.StoryPackage import StoryPackage
 from fiction_dl.Core.Cache import Cache
 from fiction_dl.Core.InputData import InputData
 from fiction_dl.Extractors.ExtractorTextFile import ExtractorTextFile
-from fiction_dl.Formatters.FormatterAudio import FormatterAudio
 from fiction_dl.Formatters.FormatterEPUB import FormatterEPUB
 from fiction_dl.Formatters.FormatterHTML import FormatterHTML
 from fiction_dl.Formatters.FormatterMOBI import FormatterMOBI
@@ -616,28 +615,6 @@ class Application:
 
             self._interface.Text("Output file already exists.")
 
-        # Format and save the audiobook.
-
-        self._interface.Comment("Saving as an audiobook... ", end = "")
-
-        formatter = FormatterAudio()
-
-        if not self._arguments.Audiobook:
-
-            self._interface.Text("This format hasn't been selected. Use the \"-audio\" option to enable it.")
-
-        elif not filePaths["Audio"].is_file():
-
-            if not formatter.FormatAndSaveToDirectory(story, filePaths["Audio"]):
-                self._interface.Text("Failed!")
-
-            else:
-                self._interface.Text("Done!")
-
-        else:
-
-            self._interface.Text("Output file already exists.")
-
         # Return.
 
         return True
@@ -699,7 +676,6 @@ class Application:
             "PDF"  : outputDirectoryPath / (sanitizedTitle + ".pdf" ),
             "EPUB" : outputDirectoryPath / (sanitizedTitle + ".epub"),
             "MOBI" : outputDirectoryPath / (sanitizedTitle + ".mobi"),
-            "Audio": outputDirectoryPath / "Audiobook",
         }
 
     def _GenerateNotices(self) -> List[str]:

@@ -4,9 +4,12 @@
 #
 ##
 
+#https://www.literotica.com/s/male-sub-ch-01
+https://www.literotica.com/stories/memberpage.php?uid=1022977&page=bio
+
 # A lot of animated GIF images. (Most of them NSFW.)
 
-https://archiveofourown.org/works/27446578
+#https://archiveofourown.org/works/27446578
 
 ##
 #
@@ -14,7 +17,7 @@ https://archiveofourown.org/works/27446578
 #
 ##
 
-Integration Test Text Sample.txt
+#Integration Test Text Sample.txt
 
 ##
 #
@@ -22,4 +25,4 @@ Integration Test Text Sample.txt
 #
 ##
 
-Integration Test Dataset 2.txt
+#Integration Test Dataset 2.txt

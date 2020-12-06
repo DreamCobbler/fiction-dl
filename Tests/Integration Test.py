@@ -68,8 +68,7 @@ arguments = Namespace(
     PersistentCache = True,
     LibreOffice = GetLibreOfficeExecutablePath() or Path(),
     Output = OutputDirectoryPath,
-    Input = "Integration Test Dataset 1.txt",
-    Audiobook = False
+    Input = "Integration Test Dataset 1.txt"
 )
 
 Application(
@@ -88,28 +87,7 @@ arguments = Namespace(
     PersistentCache = True,
     LibreOffice = GetLibreOfficeExecutablePath() or Path(),
     Output = OutputDirectoryPath,
-    Input = "Integration Test Dataset 3.txt",
-    Audiobook = False
-)
-
-Application(
-    arguments = arguments,
-    cacheDirectoryPath = CacheDirectoryPath
-).Launch()
-
-arguments = Namespace(
-    Authenticate = True,
-    ClearCache = True,
-    Pack = False,
-    Verbose = True,
-    Force = True,
-    Debug = True,
-    Images = True,
-    PersistentCache = True,
-    LibreOffice = GetLibreOfficeExecutablePath() or Path(),
-    Output = OutputDirectoryPath,
-    Audiobook = True,
-    Input = "Integration Test Text Sample.txt"
+    Input = "Integration Test Dataset 3.txt"
 )
 
 Application(
