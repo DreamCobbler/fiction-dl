@@ -84,9 +84,6 @@ setup(
 
         "dreamy-utilities",
 
-        "pyttsx3",
-        "pypiwin32",
-
     ],
 
     packages = find_packages(),
