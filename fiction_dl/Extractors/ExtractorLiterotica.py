@@ -38,13 +38,12 @@ from fiction_dl.Utilities.HTML import StripHTML
 from datetime import datetime
 import logging
 import re
-import requests
 from typing import List, Optional
 
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Text import IsStringEmpty, Stringify
+from dreamy_utilities.Text import Stringify
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 ###
@@ -94,31 +93,64 @@ class ExtractorLiterotica(Extractor):
         if (not URL) or (GetHostname(URL) not in self.GetSupportedHostnames()):
             return None
 
+        # Download author's profile page.
+
         userIDMatch = re.search("\?uid\=(\d+)", URL)
         if not userIDMatch:
             return None
 
         userID = userIDMatch.group(1)
-        normalizedURL = \
-            f"https://www.literotica.com/stories/memberpage.php?uid={userID}&page=submissions"
+        userPageURL = f"{self.MEMBER_PAGE_URL}uid={userID}&page=submissions"
 
-        pageSoup = DownloadSoup(normalizedURL)
-        if not pageSoup:
+        soup = DownloadSoup(userPageURL)
+        if not soup:
             return None
+
+        # Locate all the stories.
 
         storyURLs = []
 
-        storyElements = pageSoup.find_all("tr", {"class": "root-story"})
-        storyElements.extend(pageSoup.find_all("tr", {"class": "sl"}))
+        storyHeaderElement = soup.select_one("tr.st-top")
+        if not storyHeaderElement:
+            return None
 
-        for storyElement in storyElements:
+        storyRowElement = storyHeaderElement.next_sibling
+        while storyRowElement:
 
-            anchorElement = storyElement.find("a")
-            if (not anchorElement) or (not anchorElement.has_attr("href")):
-                logging.error("Failed to retrieve story URL from the Submissions webpage.")
-                continue
+            if not storyRowElement.has_attr("class"):
+                break
 
-            storyURLs.append(anchorElement["href"])
+            if "root-story" in storyRowElement["class"]:
+
+                anchorElement = storyRowElement.select_one("a")
+                if (not anchorElement) or (not anchorElement.has_attr("href")):
+                    continue
+
+                storyURLs.append(anchorElement["href"])
+                storyRowElement = storyRowElement.next_sibling
+
+            elif "ser-ttl" in storyRowElement["class"]:
+
+                storyRowElement = storyRowElement.next_sibling
+                if (not storyRowElement.has_attr("class")) or ("sl" not in storyRowElement["class"]):
+                    continue
+
+                anchorElement = storyRowElement.select_one("a")
+                if (not anchorElement) or (not anchorElement.has_attr("href")):
+                    continue
+
+                storyURLs.append(anchorElement["href"])
+                storyRowElement = storyRowElement.next_sibling
+
+            elif "sl" in storyRowElement["class"]:
+
+                storyRowElement = storyRowElement.next_sibling
+
+            else:
+
+                break
+
+        # Return.
 
         return storyURLs
 
@@ -185,22 +217,64 @@ class ExtractorLiterotica(Extractor):
         summaryElement = storyMetadataElements[1]
         publishedElement = storyMetadataElements[3]
 
+        # Prepare metadata.
+
+        title = titleElement.get_text().strip()
+        datePublished = self._ReformatDate(publishedElement.get_text().strip())
+        dateUpdated = self._ReformatDate(publishedElement.get_text().strip())
+
+        # Check if the story belongs to a series.
+
+        seriesRowElement = None
+
+        if storyRowElement.has_attr("class") and ("sl" in storyRowElement["class"]):
+
+            seriesRowElement = storyRowElement.find_previous_sibling(
+                "tr",
+                {"class": "ser-ttl"}
+            )
+
+        if seriesRowElement:
+
+            title = seriesRowElement.get_text().strip()
+            chapterDates = []
+
+            seriesChapterRowElement = seriesRowElement.next_sibling
+            while seriesChapterRowElement:
+
+                if (not seriesChapterRowElement.has_attr("class")) or ("sl" not in seriesChapterRowElement["class"]):
+                    break
+
+                seriesChapterAnchorElement = seriesChapterRowElement.select_one("a")
+                if (not seriesChapterAnchorElement) or (not seriesChapterAnchorElement.has_attr("href")):
+                    break
+
+                seriesChapterCellElements = seriesChapterRowElement.select("td")
+                if seriesChapterCellElements:
+                    chapterDates.append(seriesChapterCellElements[-1].get_text().strip())
+
+                self._chapterURLs.append(seriesChapterAnchorElement["href"])
+                seriesChapterRowElement = seriesChapterRowElement.next_sibling
+
+            datePublished = self._ReformatDate(chapterDates[0])
+            dateUpdated = self._ReformatDate(chapterDates[-1])
+
+        else:
+
+            self._chapterURLs = [self.Story.Metadata.URL]
+
         # Set the metadata.
 
-        self.Story.Metadata.Title = titleElement.get_text().strip()
+        self.Story.Metadata.Title = title
         self.Story.Metadata.Author = authorElement.get_text().strip()
 
-        self.Story.Metadata.DatePublished = self._ReformatDate(publishedElement.get_text().strip())
-        self.Story.Metadata.DateUpdated = self.Story.Metadata.DatePublished
+        self.Story.Metadata.DatePublished = datePublished
+        self.Story.Metadata.DateUpdated = dateUpdated
 
-        self.Story.Metadata.ChapterCount = 1
+        self.Story.Metadata.ChapterCount = len(self._chapterURLs)
         self.Story.Metadata.WordCount = 0
 
         self.Story.Metadata.Summary = StripHTML(summaryElement.get_text()).strip()
-
-        # "Extract" chapter URLs.
-
-        self._chapterURLs = [self.Story.Metadata.URL]
 
         # Return.
 
@@ -242,7 +316,7 @@ class ExtractorLiterotica(Extractor):
 
         for pageIndex in range(1, pageCount + 1):
 
-            pageURL = self.Story.Metadata.URL + f"?page={pageIndex}"
+            pageURL = URL + f"?page={pageIndex}"
 
             soup = DownloadSoup(pageURL)
             if not soup:
@@ -297,7 +371,9 @@ class ExtractorLiterotica(Extractor):
         #
         ##
 
-        if IsStringEmpty(date):
+        if not date:
             return None
 
         return datetime.strptime(date, "%m/%d/%y").strftime("%Y-%m-%d")
+
+    MEMBER_PAGE_URL = "https://www.literotica.com/stories/memberpage.php?"
