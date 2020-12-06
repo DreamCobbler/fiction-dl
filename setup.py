@@ -62,27 +62,20 @@ setup(
 
     install_requires = [
 
-        "bs4",
+        "PyMuPDF",
         "bleach",
+        "bs4",
+        "dreamy-utilities==1.1.0",
+        "ebooklib",
         "html5lib",
         "lxml",
-
-        "pykakasi",
-
+        "markdown",
+        "numpy",
         "opencv-python",
         "pillow",
-        "numpy",
-
-        "PyMuPDF",
-
-        "markdown",
         "praw",
-
+        "pykakasi",
         "pyopenssl",
-
-        "ebooklib",
-
-        "dreamy-utilities",
 
     ],
 
