@@ -5,7 +5,7 @@
 
 **fiction-dl** is a command-line utility designed to download works of (fan)fiction from the web and save them in a few portable file formats. It requires a [Python](https://www.python.org/) interpreter installed, version 3.8 or higher.
 
-The application currently supports almost two dozen websites and six output file formats; the latter being (single-file) HTML, ODT, PDF, EPUB and MOBI. It's able to download images found in story content, as well as capable of applying basic typographic corrections to the content itself.
+The application currently supports almost two dozen websites and six output file formats; the latter being: HTML, ODT, PDF, EPUB and MOBI. It's able to download images found in story content, as well as capable of applying basic typographic corrections to the content itself.
 
 ## ✿ Table of Contents
 
