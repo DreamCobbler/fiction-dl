@@ -45,7 +45,7 @@ ApplicationShortDescription = (
     "A content downloader, capable of retrieving works of (fan)fiction from the web and saving them in a few common file"
     " formats."
 )
-ApplicationURL = "github.com/DreamCobbler/fiction-dl"
+ApplicationURL = "http://github.com/DreamCobbler/fiction-dl"
 
 CreatorName = "Benedykt Synakiewicz"
 CreatorContact = "dreamcobbler@outlook.com"
