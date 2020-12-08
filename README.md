@@ -25,7 +25,7 @@ In a select few sites, it allows you to log-in to the site using the command-lin
 
 | \#   | Category         | Site                                                                | Authentication support | Channel support                |
 |------|------------------|---------------------------------------------------------------------|------------------------|--------------------------------|
-| *1*  | fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                  | ✗ no                   | ✓ **yes <sup>[1]</sup>**       |
+| *1*  | fanfiction       | [Archive of Our Own](https://archiveofourown.org/)                  | ✓ **yes**              | ✓ **yes <sup>[1]</sup>**       |
 | *2*  | fanfiction       | [FanFiction.net](https://www.fanfiction.net/)                       | ✗ no                   | ✓ **yes <sup>[2]</sup>**       |
 | *3*  | fanfiction       | [FicWad.com](https://ficwad.com/)                                   | ✗ no                   | ✓ **yes**                      |
 | *4*  | fanfiction       | [SpaceBattles.com](https://forums.spacebattles.com/)                | ✓ **yes**              | ✗ no                           |

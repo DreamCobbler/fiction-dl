@@ -30,9 +30,11 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
+from fiction_dl.Utilities.Terminal import ReadString
 
 # Standard packages.
 
+from getpass import getpass
 import logging
 import re
 from typing import List, Optional
@@ -65,6 +67,80 @@ class ExtractorAO3(Extractor):
         super().__init__()
 
         self._storySoup = None
+
+    def SupportsAuthentication(self) -> bool:
+
+        ##
+        #
+        # Checks whether the extractor supports user authentication.
+        #
+        # @return **True** if the site *does* support authentication, **False** otherwise.
+        #
+        ##
+
+        return True
+
+    def Authenticate(self) -> bool:
+
+        ##
+        #
+        # Logs the user in, interactively.
+        #
+        # @param username The username.
+        # @param password The password.
+        #
+        # @return **True** if the user has been authenticated correctly, **False** otherwise.
+        #
+        ##
+
+        # Download the log-in page.
+
+        soup = DownloadSoup(self._LOGIN_URL, self._session)
+        if not soup:
+            logging.error("Failed to download the log-in page.")
+            return False
+
+        formElement = soup.select_one("form#new_user_session_small")
+        if not formElement:
+            logging.error("Log-in form element not found.")
+            return False
+
+        authenticityTokenElement = formElement.find("input", {"name": "authenticity_token"})
+        if not authenticityTokenElement:
+            logging.error("\"authenticity_token\" input field not found.")
+            return False
+        elif not authenticityTokenElement.has_attr("value"):
+            logging.error("\"authenticity_token\" input field doesn't have a value.")
+            return False
+
+        authenticityToken = authenticityTokenElement["value"].strip()
+
+        # Log-in.
+
+        username = ReadString("Your username")
+        if not username:
+            return True
+
+        password = getpass(prompt = "Your password: ")
+
+        data = {
+            "user[login]": username,
+            "user[password]": password,
+            "user[remember_me]": "1",
+            "authenticity_token": authenticityToken,
+        }
+
+        response = self._session.post(
+            url = self._LOGIN_URL,
+            data = data
+        )
+
+        # Verify the response and return.
+
+        if (200 != response.status_code) or ("doesn't match our records" in response.text.lower()):
+            return False
+
+        return True
 
     def GetSupportedHostnames(self) -> List[str]:
 
@@ -237,7 +313,7 @@ class ExtractorAO3(Extractor):
 
         # Download page soup.
 
-        soup = DownloadSoup(URL)
+        soup = DownloadSoup(URL, self._session)
         if not soup:
             return None
 
@@ -267,7 +343,7 @@ class ExtractorAO3(Extractor):
 
         for pageURL in pageURLs:
 
-            soup = DownloadSoup(pageURL)
+            soup = DownloadSoup(pageURL, self._session)
             if not soup:
                 logging.error("Failed to download a page of the Works webpage.")
                 continue
@@ -369,6 +445,7 @@ class ExtractorAO3(Extractor):
 
         return storyIDMatch.group(1)
 
+    _LOGIN_URL = "https://archiveofourown.org/users/login"
     _BASE_WORK_URL = "https://archiveofourown.org/works"
     _BASE_USER_URL = "https://archiveofourown.org/users"
     _BASE_SERIES_URL = "https://archiveofourown.org/series"
