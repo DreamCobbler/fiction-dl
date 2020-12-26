@@ -115,16 +115,40 @@ class ExtractorAO3(Extractor):
 
         authenticityToken = authenticityTokenElement["value"].strip()
 
-        # Log-in.
+        # Read the username and the password.
 
-        username = ReadString("Your username")
-        if not username:
+        userName = ""
+        password = ""
+
+        if ExtractorAO3._userName is None:
+
+            userName = ReadString("Your username")
+
+            if userName:
+                password = getpass(prompt = "Your password: ")
+
+        else:
+
+            userName = ExtractorAO3._userName
+            password = ExtractorAO3._userPassword
+
+        if not userName:
+            userName = ""
+
+        # Remember the username and the password.
+
+        ExtractorAO3._userName = userName
+        ExtractorAO3._userPassword = password
+
+        # Decide whether to log-in.
+
+        if (not userName) or (not password):
             return True
 
-        password = getpass(prompt = "Your password: ")
+        # Attempt to log-in.
 
         data = {
-            "user[login]": username,
+            "user[login]": userName,
             "user[password]": password,
             "user[remember_me]": "1",
             "authenticity_token": authenticityToken,
@@ -447,6 +471,9 @@ class ExtractorAO3(Extractor):
             return None
 
         return storyIDMatch.group(1)
+
+    _userName = None
+    _userPassword = None
 
     _LOGIN_URL = "https://archiveofourown.org/users/login"
     _BASE_WORK_URL = "https://archiveofourown.org/works"
