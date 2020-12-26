@@ -40,6 +40,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Filesystem import WriteTextFile
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetDateFromTimestamp, Stringify
 from dreamy_utilities.Web import DownloadSoup, GetSiteURL
@@ -91,27 +92,84 @@ class ExtractorXenForo(Extractor):
         #
         ##
 
-        interface.GrabUserAttention()
+        # Format the log-in URL.
 
-        username = interface.ReadString("Your username")
-        if not username:
+        LOGIN_URL = self._forumURL + "login/login"
+
+        # Download the log-in page.
+
+        soup = DownloadSoup(LOGIN_URL, self._session)
+        if not soup:
+            logging.error("Failed to download the log-in page.")
+            return self.AuthenticationResult.FAILURE
+
+        formElement = soup.select_one("div.blocks > form.block")
+        if not formElement:
+            logging.error("Log-in form element not found.")
+            return self.AuthenticationResult.FAILURE
+
+        authenticityTokenElement = formElement.find("input", {"name": "_xfToken"})
+        if not authenticityTokenElement:
+            logging.error("\"_xfToken\" input field not found.")
+            return self.AuthenticationResult.FAILURE
+        elif not authenticityTokenElement.has_attr("value"):
+            logging.error("\"_xfToken\" input field doesn't have a value.")
+            return self.AuthenticationResult.FAILURE
+
+        authenticityToken = authenticityTokenElement["value"].strip()
+
+        # Read the username and the password.
+
+        userName = ""
+        password = ""
+
+        if ExtractorXenForo._userName is None:
+
+            interface.GrabUserAttention()
+
+            userName = interface.ReadString("Your username")
+            if userName:
+                password = interface.ReadPassword("Your password")
+
+        else:
+
+            userName = ExtractorXenForo._userName
+            password = ExtractorXenForo._userPassword
+
+        if not userName:
+            userName = ""
+
+        # Remember the username and the password.
+
+        ExtractorXenForo._userName = userName
+        ExtractorXenForo._userPassword = password
+
+        # Decide whether to log-in.
+
+        if (not userName) or (not password):
             return self.AuthenticationResult.ABANDONED
 
-        password = interface.ReadPassword("Your password")
+        # Attempt to log-in.
 
         data = {
-            "login": username,
+            "login": userName,
             "password": password,
             "register": 0,
             "remember": "1",
             "cookie_check": "1",
-            "_xfToken": "",
+            "_xfToken": authenticityToken,
         }
 
-        self._session.post(
-            url = self._forumURL + "login/login",
+        response = self._session.post(
+            url = LOGIN_URL,
             data = data
         )
+
+        # Verify the response and return.
+
+        if 200 != response.status_code:
+            WriteTextFile("response.html", response.text)
+            return self.AuthenticationResult.FAILURE
 
         return self.AuthenticationResult.SUCCESS
 
@@ -287,3 +345,6 @@ class ExtractorXenForo(Extractor):
         threadTitle = threadTitleMatch.group(1)
 
         return f"{self._forumURL}threads/{threadTitle}/threadmarks"
+
+    _userName = None
+    _userPassword = None
