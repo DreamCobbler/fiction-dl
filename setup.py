@@ -65,7 +65,7 @@ setup(
         "PyMuPDF",
         "bleach",
         "bs4",
-        "dreamy-utilities==1.1.0",
+        "dreamy-utilities>=1.2.0",
         "ebooklib",
         "html5lib",
         "lxml",
