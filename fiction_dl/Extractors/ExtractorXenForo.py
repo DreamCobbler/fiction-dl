@@ -95,7 +95,7 @@ class ExtractorXenForo(Extractor):
 
         username = ReadString("Your username")
         if not username:
-            return True
+            return self.AuthenticationResult.ABANDONED
 
         password = getpass(prompt = "Your password: ")
 
@@ -113,7 +113,7 @@ class ExtractorXenForo(Extractor):
             data = data
         )
 
-        return True
+        return self.AuthenticationResult.SUCCESS
 
     def ExtractChapter(self, index: int) -> Optional[Chapter]:
 

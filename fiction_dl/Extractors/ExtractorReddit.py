@@ -171,7 +171,7 @@ class ExtractorReddit(Extractor):
 
             if (" " not in data) or ("?" not in data) or ("&" not in data):
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", "Error: invalid response."))
-                return False
+                return self.AuthenticationResult.FAILURE
 
             parameterTokens = data.split(" ", 2)[1].split("?", 1)[1].split("&")
             parameters = {
@@ -181,11 +181,11 @@ class ExtractorReddit(Extractor):
 
             if parameters["state"] != state:
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", "Error: invalid state in response."))
-                return False
+                return self.AuthenticationResult.FAILURE
 
             elif "error" in parameters:
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", f'Error: {parameters["error"]}.'))
-                return False
+                return self.AuthenticationResult.FAILURE
 
             else:
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", "Everything went well. 😉"))
@@ -205,7 +205,7 @@ class ExtractorReddit(Extractor):
 
         print(f'# You are authenticated as "{self._redditInstance.user.me()}".')
 
-        return True
+        return self.AuthenticationResult.SUCCESS
 
     def ScanStory(self) -> bool:
 

@@ -29,6 +29,7 @@
 # Application.
 
 from fiction_dl.Concepts.Chapter import Chapter
+from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Concepts.StoryPackage import StoryPackage
 from fiction_dl.Core.Cache import Cache
@@ -281,11 +282,15 @@ class Application:
 
         if self._arguments.Authenticate and extractor.SupportsAuthentication():
 
+            self._interface.Process("Logging-in...", section = True)
             self._interface.GrabUserAttention()
 
-            if not extractor.Authenticate():
-                self._interface.Error("Failed to authenticate.")
+            authenticationResult = extractor.Authenticate()
 
+            if Extractor.AuthenticationResult.FAILURE == authenticationResult:
+                self._interface.Error("Failed to authenticate.")
+            elif Extractor.AuthenticationResult.ABANDONED == authenticationResult:
+                self._interface.Comment("Proceeding without logging-in...")
             else:
                 self._interface.Comment("Authenticated successfully.")
 

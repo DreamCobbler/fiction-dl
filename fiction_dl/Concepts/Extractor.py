@@ -33,6 +33,7 @@ from fiction_dl.Concepts.Story import Story
 
 # Standard packages.
 
+from enum import Enum
 import logging
 import requests
 from typing import List, Optional
@@ -58,6 +59,17 @@ from dreamy_utilities.Web import DownloadSoup, GetHostname
 ##
 
 class Extractor:
+
+    ##
+    #
+    # Represents authentication result.
+    #
+    ##
+
+    class AuthenticationResult(Enum):
+        SUCCESS   = 1
+        FAILURE   = 2
+        ABANDONED = 3
 
     def __init__(self) -> None:
 
@@ -113,7 +125,7 @@ class Extractor:
 
         return False
 
-    def Authenticate(self) -> bool:
+    def Authenticate(self) -> AuthenticationResult:
 
         ##
         #
@@ -122,11 +134,11 @@ class Extractor:
         # @param username The username.
         # @param password The password.
         #
-        # @return **True** if the user has been authenticated correctly, **False** otherwise.
+        # @return The result of the authentication attempt.
         #
         ##
 
-        return False
+        return AuthenticationResult.FAILURE
 
     def Initialize(self, URL: str) -> bool:
 

@@ -98,20 +98,20 @@ class ExtractorAO3(Extractor):
         soup = DownloadSoup(self._LOGIN_URL, self._session)
         if not soup:
             logging.error("Failed to download the log-in page.")
-            return False
+            return self.AuthenticationResult.FAILURE
 
         formElement = soup.select_one("form#new_user_session_small")
         if not formElement:
             logging.error("Log-in form element not found.")
-            return False
+            return self.AuthenticationResult.FAILURE
 
         authenticityTokenElement = formElement.find("input", {"name": "authenticity_token"})
         if not authenticityTokenElement:
             logging.error("\"authenticity_token\" input field not found.")
-            return False
+            return self.AuthenticationResult.FAILURE
         elif not authenticityTokenElement.has_attr("value"):
             logging.error("\"authenticity_token\" input field doesn't have a value.")
-            return False
+            return self.AuthenticationResult.FAILURE
 
         authenticityToken = authenticityTokenElement["value"].strip()
 
@@ -143,7 +143,7 @@ class ExtractorAO3(Extractor):
         # Decide whether to log-in.
 
         if (not userName) or (not password):
-            return True
+            return self.AuthenticationResult.ABANDONED
 
         # Attempt to log-in.
 
@@ -162,9 +162,9 @@ class ExtractorAO3(Extractor):
         # Verify the response and return.
 
         if (200 != response.status_code) or ("doesn't match our records" in response.text.lower()):
-            return False
+            return self.AuthenticationResult.FAILURE
 
-        return True
+        return self.AuthenticationResult.SUCCESS
 
     def GetSupportedHostnames(self) -> List[str]:
 
