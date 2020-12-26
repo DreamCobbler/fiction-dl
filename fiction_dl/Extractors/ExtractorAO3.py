@@ -259,7 +259,11 @@ class ExtractorAO3(Extractor):
         if 1 == self.Story.Metadata.ChapterCount:
 
             titleElement = None
-            contentElement = self._storySoup.select_one("div#chapters > div.userstuff")
+
+            contentElement = self._storySoup.select_one("div#chapters div.userstuff")
+            if not contentElement:
+                logging.error("Content element not found.")
+                return None
 
             if (landmarkElement := contentElement.select_one("h3#work")):
                 landmarkElement.decompose()
@@ -293,8 +297,7 @@ class ExtractorAO3(Extractor):
                 content = Stringify(contentElement.encode_contents())
             )
 
-    @staticmethod
-    def _ScanWorks(URL: str) -> Optional[List[str]]:
+    def _ScanWorks(self, URL: str) -> Optional[List[str]]:
 
         ##
         #
