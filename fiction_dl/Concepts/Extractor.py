@@ -41,6 +41,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 #
@@ -125,14 +126,13 @@ class Extractor:
 
         return False
 
-    def Authenticate(self) -> AuthenticationResult:
+    def Authenticate(self, interface: Interface) -> AuthenticationResult:
 
         ##
         #
         # Logs the user in, interactively.
         #
-        # @param username The username.
-        # @param password The password.
+        # @param interface The user interface to be used.
         #
         # @return The result of the authentication attempt.
         #

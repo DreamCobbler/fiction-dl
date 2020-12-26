@@ -30,11 +30,9 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
-from fiction_dl.Utilities.Terminal import ReadString
 
 # Standard packages.
 
-from getpass import getpass
 import logging
 import re
 from typing import List, Optional
@@ -42,6 +40,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetDateFromTimestamp, Stringify
 from dreamy_utilities.Web import DownloadSoup, GetSiteURL
 
@@ -80,24 +79,25 @@ class ExtractorXenForo(Extractor):
 
         return True
 
-    def Authenticate(self) -> bool:
+    def Authenticate(self, interface: Interface) -> bool:
 
         ##
         #
         # Logs the user in, interactively.
         #
-        # @param username The username.
-        # @param password The password.
+        # @param interface The user interface to be used.
         #
         # @return **True** if the user has been authenticated correctly, **False** otherwise.
         #
         ##
 
-        username = ReadString("Your username")
+        interface.GrabUserAttention()
+
+        username = interface.ReadString("Your username")
         if not username:
             return self.AuthenticationResult.ABANDONED
 
-        password = getpass(prompt = "Your password: ")
+        password = interface.ReadPassword("Your password")
 
         data = {
             "login": username,

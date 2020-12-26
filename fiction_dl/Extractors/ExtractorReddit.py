@@ -46,6 +46,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
+from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance, GetLongestLeadingSubstring, PrettifyTitle
 from markdown import markdown
 from praw import Reddit
@@ -119,14 +120,13 @@ class ExtractorReddit(Extractor):
 
         return True
 
-    def Authenticate(self) -> bool:
+    def Authenticate(self, interface: Interface) -> bool:
 
         ##
         #
         # Logs the user in, interactively.
         #
-        # @param username The username.
-        # @param password The password.
+        # @param interface The user interface to be used.
         #
         # @return **True** if the user has been authenticated correctly, **False** otherwise.
         #
@@ -143,14 +143,15 @@ class ExtractorReddit(Extractor):
             state = str(randint(0, 65000))
             authorizationURL = self._redditInstance.auth.url(scopes, state, "permanent")
 
-            print(
-                f'# You authorization URL is: "{authorizationURL}". {Configuration.ApplicationName}'
+            interface.Comment(
+                f'You authorization URL is: "{authorizationURL}". {Configuration.ApplicationName}'
                 " has just attempted to open it in your web browser - if it has failed, then please"
                 " open it manually and confirm granting access to"
                 f" {Configuration.ApplicationName}."
             )
 
             webbrowser.open(authorizationURL, new = 2)
+            interface.GrabUserAttention()
 
             # Receive the connection.
 

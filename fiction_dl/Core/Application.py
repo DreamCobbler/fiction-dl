@@ -283,9 +283,8 @@ class Application:
         if self._arguments.Authenticate and extractor.SupportsAuthentication():
 
             self._interface.Process("Logging-in...", section = True)
-            self._interface.GrabUserAttention()
 
-            authenticationResult = extractor.Authenticate()
+            authenticationResult = extractor.Authenticate(self._interface)
 
             if Extractor.AuthenticationResult.FAILURE == authenticationResult:
                 self._interface.Error("Failed to authenticate.")

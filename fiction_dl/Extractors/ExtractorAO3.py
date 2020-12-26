@@ -30,11 +30,9 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
-from fiction_dl.Utilities.Terminal import ReadString
 
 # Standard packages.
 
-from getpass import getpass
 import logging
 import re
 from typing import List, Optional
@@ -43,6 +41,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.HTML import ReadElementText
+from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import DeprettifyAmount, DeprettifyNumber, Stringify
 from dreamy_utilities.Web import DownloadSoup, GetHostname
 
@@ -80,14 +79,13 @@ class ExtractorAO3(Extractor):
 
         return True
 
-    def Authenticate(self) -> bool:
+    def Authenticate(self, interface: Interface) -> bool:
 
         ##
         #
         # Logs the user in, interactively.
         #
-        # @param username The username.
-        # @param password The password.
+        # @param interface The user interface to be used.
         #
         # @return **True** if the user has been authenticated correctly, **False** otherwise.
         #
@@ -122,10 +120,11 @@ class ExtractorAO3(Extractor):
 
         if ExtractorAO3._userName is None:
 
-            userName = ReadString("Your username")
+            interface.GrabUserAttention()
 
+            userName = interface.ReadString("Your username")
             if userName:
-                password = getpass(prompt = "Your password: ")
+                password = interface.ReadPassword("Your password")
 
         else:
 
