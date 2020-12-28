@@ -48,6 +48,7 @@ from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance, GetLongestLeadingSubstring, PrettifyTitle
+from fake_useragent import UserAgent
 from markdown import markdown
 from praw import Reddit
 from praw.exceptions import InvalidURL
@@ -83,7 +84,7 @@ class ExtractorReddit(Extractor):
                 client_id = Configuration.RedditClientID,
                 client_secret = None,
                 redirect_uri = Configuration.RedditRedirectURI,
-                user_agent = Configuration.UserAgent
+                user_agent = UserAgent().random
             )
 
         else:
@@ -91,7 +92,7 @@ class ExtractorReddit(Extractor):
                 client_id = Configuration.RedditClientID,
                 client_secret = None,
                 refresh_token = ExtractorReddit._RefreshToken,
-                user_agent = Configuration.UserAgent
+                user_agent = UserAgent().random
             )
 
     def GetSupportedHostnames(self) -> List[str]:

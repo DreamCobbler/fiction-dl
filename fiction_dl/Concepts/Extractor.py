@@ -45,6 +45,7 @@ from bs4 import BeautifulSoup
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Web import GetHostname
 from dreamy_utilities.WebSession import WebSession
+from fake_useragent import UserAgent
 
 #
 #
@@ -84,7 +85,7 @@ class Extractor:
 
         self.Story = None
 
-        self._webSession = WebSession(Configuration.UserAgent)
+        self._webSession = WebSession(UserAgent().random)
         self._chapterURLs = []
 
         self._downloadStorySoupWhenScanning = True

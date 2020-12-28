@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.HTML import StripHTML
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
@@ -44,6 +45,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import GetCurrentDate, Stringify
 from dreamy_utilities.Web import GetHostname, GetSiteURL
+from dreamy_utilities.WebSession import WebSession
 
 #
 #
@@ -66,6 +68,7 @@ class ExtractorFFNet(Extractor):
 
         super().__init__()
 
+        self._webSession.EnableCloudscraper(True)
         self._chapterParserName = "html5lib"
 
     def GetSupportedHostnames(self) -> List[str]:

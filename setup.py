@@ -61,12 +61,12 @@ setup(
     url = Configuration.ApplicationURL,
 
     install_requires = [
-
         "PyMuPDF",
         "bleach",
         "bs4",
         "dreamy-utilities>=1.2.0",
         "ebooklib",
+        "fake-useragent",
         "html5lib",
         "lxml",
         "markdown",
@@ -76,7 +76,6 @@ setup(
         "praw",
         "pykakasi",
         "pyopenssl",
-
     ],
 
     packages = find_packages(),

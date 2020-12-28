@@ -50,8 +50,6 @@ ApplicationURL = "http://github.com/DreamCobbler/fiction-dl"
 CreatorName = "Benedykt Synakiewicz"
 CreatorContact = "dreamcobbler@outlook.com"
 
-UserAgent = f"{ApplicationName} {ApplicationVersion}"
-
 RedditClientID = "ScszEQn1cI7GgQ"
 RedditRedirectURI = "http://localhost:8080"
 
