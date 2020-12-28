@@ -43,7 +43,7 @@ from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import WriteTextFile
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetDateFromTimestamp, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetSiteURL
+from dreamy_utilities.Web import GetSiteURL
 
 #
 #
@@ -98,7 +98,7 @@ class ExtractorXenForo(Extractor):
 
         # Download the log-in page.
 
-        soup = DownloadSoup(LOGIN_URL, self._session)
+        soup = self._webSession.GetSoup(LOGIN_URL)
         if not soup:
             logging.error("Failed to download the log-in page.")
             return self.AuthenticationResult.FAILURE
@@ -160,15 +160,14 @@ class ExtractorXenForo(Extractor):
             "_xfToken": authenticityToken,
         }
 
-        response = self._session.post(
-            url = LOGIN_URL,
-            data = data
+        response = self._webSession.Post(
+            LOGIN_URL,
+            data
         )
 
         # Verify the response and return.
 
-        if 200 != response.status_code:
-            WriteTextFile("response.html", response.text)
+        if not response:
             return self.AuthenticationResult.FAILURE
 
         return self.AuthenticationResult.SUCCESS
@@ -195,7 +194,7 @@ class ExtractorXenForo(Extractor):
 
         chapterURL = self._chapterURLs[index - 1]
 
-        soup = DownloadSoup(chapterURL, self._session)
+        soup = self._webSession.GetSoup(chapterURL)
         if not soup:
             logging.error(f'Failed to download page: "{chapterURL}".')
             return None
@@ -255,7 +254,7 @@ class ExtractorXenForo(Extractor):
 
         # Retrieve story metadata.
 
-        soup = DownloadSoup(threadmarksURL, self._session)
+        soup = self._webSession.GetSoup(threadmarksURL)
         if not soup:
             logging.error(f'Failed to download page: "{threadmarksURL}".')
             return False

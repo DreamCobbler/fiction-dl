@@ -44,7 +44,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -102,7 +102,7 @@ class ExtractorFicWad(Extractor):
         if "/a/" not in URL:
             return None
 
-        soup = DownloadSoup(URL)
+        soup = self._webSession.GetSoup(URL)
         if not soup:
             logging.error(f"Couldn't download page: \"{URL}\".")
             return None

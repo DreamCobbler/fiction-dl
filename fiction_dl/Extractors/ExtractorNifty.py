@@ -43,7 +43,7 @@ from typing import List, Optional, Tuple
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import PrettifyDate, Stringify
-from dreamy_utilities.Web import DownloadPage, DownloadSoup, GetSiteURL
+from dreamy_utilities.Web import GetSiteURL
 
 #
 #
@@ -108,7 +108,7 @@ class ExtractorNifty(Extractor):
 
         # Is it a single chapter story?
 
-        pageCode = DownloadPage(URL, userAgent = Configuration.UserAgent, textEncoding = "ascii")
+        pageCode = self._webSession.Get(URL, textEncoding = "ascii")
         if not pageCode:
             logging.error("Failed to download story page when scanning.")
             return False
@@ -121,7 +121,7 @@ class ExtractorNifty(Extractor):
 
             # Create tag soup.
 
-            soup = DownloadSoup(URL)
+            soup = self._webSession.GetSoup(URL)
 
             # Create a list of chapters.
 
@@ -153,7 +153,7 @@ class ExtractorNifty(Extractor):
 
             # Read the first chapter.
 
-            firstChapterText = DownloadPage(self._chapterURLs[0], userAgent = Configuration.UserAgent, textEncoding = "ascii")
+            firstChapterText = self._webSession.Get(self._chapterURLs[0], textEncoding = "ascii")
             if not soup:
                 logging.error("Failed to download the first chapter.")
                 return False
@@ -165,7 +165,7 @@ class ExtractorNifty(Extractor):
 
             # Read the last chapter.
 
-            lastChapterText = DownloadPage(self._chapterURLs[-1], userAgent = Configuration.UserAgent, textEncoding = "ascii")
+            lastChapterText = self._webSession.Get(self._chapterURLs[-1], textEncoding = "ascii")
             if not soup:
                 logging.error("Failed to download the last chapter.")
                 return False
@@ -246,7 +246,7 @@ class ExtractorNifty(Extractor):
 
         # Read the chapter.
 
-        chapterText = DownloadPage(URL, userAgent = Configuration.UserAgent, textEncoding = "ascii")
+        chapterText = self._webSession.Get(URL, textEncoding = "ascii")
         if not chapterText:
             logging.error("Failed to download a chapter.")
             return False

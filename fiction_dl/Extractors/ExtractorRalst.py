@@ -43,7 +43,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from dreamy_utilities.HTML import ReadElementText
 from dreamy_utilities.Text import FindFirstMatch, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #

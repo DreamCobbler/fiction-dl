@@ -43,7 +43,6 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import FindFirstMatch, Stringify
-from dreamy_utilities.Web import DownloadSoup
 
 #
 #
@@ -113,7 +112,7 @@ class ExtractorWuxiaWorld(Extractor):
             return False
 
         normalizedURL = self._BASE_NOVEL_URL + storyIdentifier
-        soup = DownloadSoup(normalizedURL)
+        soup = self._webSession.GetSoup(normalizedURL)
         if not soup:
             logging.error(f"Failed to download page: \"{normalizedURL}\".")
             return False

@@ -43,7 +43,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import GetCurrentDate, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname, GetSiteURL
+from dreamy_utilities.Web import GetHostname, GetSiteURL
 
 #
 #
@@ -108,7 +108,7 @@ class ExtractorFFNet(Extractor):
         siteURL = GetSiteURL(URL)
         normalizedURL = f"{siteURL}/u/{userID}/"
 
-        pageSoup = DownloadSoup(normalizedURL)
+        pageSoup = self._webSession.GetSoup(normalizedURL)
         if not pageSoup:
             return None
 
@@ -162,7 +162,7 @@ class ExtractorFFNet(Extractor):
 
         # Download the first page.
 
-        soup = DownloadSoup(normalizedURL)
+        soup = self._webSession.GetSoup(normalizedURL)
         if not soup:
             logging.error(f"Failed to download page: \"{normalizedURL}\".")
             return None
@@ -194,7 +194,7 @@ class ExtractorFFNet(Extractor):
         for pageIndex in range(1, lastPageIndex + 1):
 
             pageURL = f"{collectionURL}/99/0/{pageIndex}/0/0/0/0/"
-            soup = DownloadSoup(pageURL)
+            soup = self._webSession.GetSoup(pageURL)
             if not soup:
                 logging.error(f"Failed to download page: \"{pageURL}\".")
                 return None

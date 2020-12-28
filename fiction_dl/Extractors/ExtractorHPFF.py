@@ -42,7 +42,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from dreamy_utilities.HTML import ReadElementText
 from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname, GetSiteURL
+from dreamy_utilities.Web import GetHostname, GetSiteURL
 
 #
 #
@@ -94,7 +94,7 @@ class ExtractorHPFF(Extractor):
         userID = userIDMatch.group(1)
 
         normalizedURL = f"{self.BASE_URL}/viewuser.php?uid={userID}"
-        soup = DownloadSoup(normalizedURL)
+        soup = self._webSession.GetSoup(normalizedURL)
         if not soup:
             logging.error(f"Couldn't download page: \"{normalizedURL}\".")
             return None

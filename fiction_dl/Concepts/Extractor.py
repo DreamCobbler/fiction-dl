@@ -30,6 +30,7 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
@@ -42,7 +43,8 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Interface import Interface
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
+from dreamy_utilities.WebSession import WebSession
 
 #
 #
@@ -82,7 +84,7 @@ class Extractor:
 
         self.Story = None
 
-        self._session = requests.session()
+        self._webSession = WebSession(Configuration.UserAgent)
         self._chapterURLs = []
 
         self._downloadStorySoupWhenScanning = True
@@ -192,9 +194,10 @@ class Extractor:
 
         if self._downloadStorySoupWhenScanning:
 
-            soup = DownloadSoup(normalizedURL, self._session)
+            soup = self._webSession.GetSoup(normalizedURL)
+
             if not soup:
-                logging.error(f'Failed to download page: "{normalizedURL}".')
+                logging.error(f'Failed to download tag soup: "{normalizedURL}".')
                 return False
 
         return self._InternallyScanStory(normalizedURL, soup)
@@ -225,9 +228,9 @@ class Extractor:
 
         if self._downloadChapterSoupWhenExtracting:
 
-            soup = DownloadSoup(chapterURL, self._session, parser = self._chapterParserName)
+            soup = self._webSession.GetSoup(chapterURL, self._chapterParserName)
             if not soup:
-                logging.error(f'Failed to download page: "{chapterURL}".')
+                logging.error(f'Failed to download tag soup: "{chapterURL}".')
                 return None
 
         return self._InternallyExtractChapter(chapterURL, soup)
@@ -247,11 +250,7 @@ class Extractor:
         if not URL:
             return None
 
-        response = self._session.get(URL, stream = True)
-        if not response.content:
-            return None
-
-        return response.content
+        return self._webSession.Get(URL, text = False, stream = True)
 
     def _InternallyScanStory(
         self,

@@ -44,7 +44,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 ###
 #
@@ -102,7 +102,7 @@ class ExtractorLiterotica(Extractor):
         userID = userIDMatch.group(1)
         userPageURL = f"{self.MEMBER_PAGE_URL}uid={userID}&page=submissions"
 
-        soup = DownloadSoup(userPageURL)
+        soup = self._webSession.GetSoup(userPageURL)
         if not soup:
             return None
 
@@ -191,7 +191,7 @@ class ExtractorLiterotica(Extractor):
             return False
 
         authorsPageURL = authorElement["href"]
-        authorsPageSoup = DownloadSoup(authorsPageURL)
+        authorsPageSoup = self._webSession.GetSoup(authorsPageURL)
         if not authorsPageSoup:
             logging.error(f'Failed to download page: "{authorsPageURL}".')
             return False
@@ -318,7 +318,7 @@ class ExtractorLiterotica(Extractor):
 
             pageURL = URL + f"?page={pageIndex}"
 
-            soup = DownloadSoup(pageURL)
+            soup = self._webSession.GetSoup(pageURL)
             if not soup:
                 logging.error(f'Failed to download page: "{pageURL}".')
                 return None

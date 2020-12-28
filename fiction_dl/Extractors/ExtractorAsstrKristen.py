@@ -40,7 +40,7 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Web import DownloadPage, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -107,7 +107,7 @@ class ExtractorAsstrKristen(Extractor):
 
         # Download the story.
 
-        self._storyText = DownloadPage(URL, userAgent = Configuration.UserAgent, textEncoding = "ascii")
+        self._storyText = self._webSession.Get(URL, textEncoding = "ascii")
         if not self._storyText:
             logging.error("Failed to download story page when scanning.")
             return False

@@ -50,7 +50,7 @@ from dreamy_utilities.Text import (
     SeparateSubtitle,
     Stringify
 )
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -257,7 +257,7 @@ class ExtractorNajlepszaErotyka(Extractor):
 
         authorsPageURL = f"https://najlepszaerotyka.com.pl/author/{authorName}/"
 
-        soup = DownloadSoup(authorsPageURL)
+        soup = self._webSession.GetSoup(authorsPageURL)
         if not soup:
             logging.error("Failed to download page: \"{authorsPageURL\".")
             return None
@@ -278,7 +278,7 @@ class ExtractorNajlepszaErotyka(Extractor):
 
             pageURL = f"https://najlepszaerotyka.com.pl/author/{authorName}/page/{index}"
 
-            soup = DownloadSoup(pageURL)
+            soup = self._webSession.GetSoup(pageURL)
             if not soup:
                 logging.error("Failed to download page: \"{pageURL\".")
                 return None

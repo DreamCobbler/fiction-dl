@@ -44,7 +44,7 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #

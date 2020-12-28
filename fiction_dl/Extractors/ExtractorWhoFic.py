@@ -42,7 +42,7 @@ from typing import List, Optional, Tuple
 
 from bs4 import BeautifulSoup, Comment, NavigableString
 from dreamy_utilities.Text import FindFirstMatch, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -100,7 +100,7 @@ class ExtractorWhoFic(Extractor):
         if ("seriesid" not in URL) and ("viewuser.php" not in URL):
             return None
 
-        soup = DownloadSoup(URL)
+        soup = self._webSession.GetSoup(URL)
         if not soup:
             logging.error(f"Failed to download page: \"{URL}\".")
             return None
@@ -255,7 +255,7 @@ class ExtractorWhoFic(Extractor):
 
         # Download the author's page soup.
 
-        soup = DownloadSoup(authorPageURL)
+        soup = self._webSession.GetSoup(authorPageURL)
         if not soup:
             return [datePublished, dateUpdated, summary]
 

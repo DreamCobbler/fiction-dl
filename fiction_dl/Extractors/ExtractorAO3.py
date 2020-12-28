@@ -43,7 +43,7 @@ from bs4 import BeautifulSoup
 from dreamy_utilities.HTML import ReadElementText
 from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import DeprettifyAmount, DeprettifyNumber, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -93,7 +93,7 @@ class ExtractorAO3(Extractor):
 
         # Download the log-in page.
 
-        soup = DownloadSoup(self._LOGIN_URL, self._session)
+        soup = self._webSession.GetSoup(self._LOGIN_URL)
         if not soup:
             logging.error("Failed to download the log-in page.")
             return self.AuthenticationResult.FAILURE
@@ -339,7 +339,7 @@ class ExtractorAO3(Extractor):
 
         # Download page soup.
 
-        soup = DownloadSoup(URL, self._session)
+        soup = self._webSession.GetSoup(URL)
         if not soup:
             return None
 
@@ -369,7 +369,7 @@ class ExtractorAO3(Extractor):
 
         for pageURL in pageURLs:
 
-            soup = DownloadSoup(pageURL, self._session)
+            soup = self._webSession.GetSoup(pageURL)
             if not soup:
                 logging.error("Failed to download a page of the Works webpage.")
                 continue
