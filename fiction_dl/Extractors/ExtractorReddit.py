@@ -79,12 +79,14 @@ class ExtractorReddit(Extractor):
 
         self._downloadChapterSoupWhenExtracting = False
 
+        self._userAgent = UserAgent().random
+
         if not ExtractorReddit._RefreshToken:
             self._redditInstance = Reddit(
                 client_id = Configuration.RedditClientID,
                 client_secret = None,
                 redirect_uri = Configuration.RedditRedirectURI,
-                user_agent = UserAgent().random
+                user_agent = self._userAgent
             )
 
         else:
@@ -92,7 +94,7 @@ class ExtractorReddit(Extractor):
                 client_id = Configuration.RedditClientID,
                 client_secret = None,
                 refresh_token = ExtractorReddit._RefreshToken,
-                user_agent = UserAgent().random
+                user_agent = self._userAgent
             )
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -202,7 +204,7 @@ class ExtractorReddit(Extractor):
             client_id = Configuration.RedditClientID,
             client_secret = None,
             refresh_token = ExtractorReddit._RefreshToken,
-            user_agent = Configuration.UserAgent
+            user_agent = self._userAgent
         )
 
         print(f'# You are authenticated as "{self._redditInstance.user.me()}".')
