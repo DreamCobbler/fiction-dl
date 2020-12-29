@@ -63,6 +63,7 @@ from urllib3.exceptions import ProtocolError
 
 # Non-standard packages.
 
+from cloudscraper.exceptions import CloudflareChallengeError
 from dreamy_utilities.Containers import RemoveDuplicates
 from dreamy_utilities.Filesystem import FindExecutable, GetSanitizedFileName, WriteTextFile
 from dreamy_utilities.Interface import Interface
@@ -179,6 +180,11 @@ class Application:
                 except BaseException as caughtException:
 
                     self._interface.Error(f"An exception has been thrown: {caughtException}")
+                    self._interface.GrabUserAttention()
+
+                except CloudflareChallengeError as caughtException:
+
+                    self._interface.Error("A Cloudflare challenge error has occurred. Try again later.")
                     self._interface.GrabUserAttention()
 
                 except:
