@@ -231,7 +231,7 @@ class ExtractorNajlepszaErotyka(Extractor):
             content = Stringify(contentElement.encode_contents())
         )
 
-    def _FindAllStoriesByAuthor(authorName: str):
+    def _FindAllStoriesByAuthor(self, authorName: str):
 
         # Download author's page.
 
