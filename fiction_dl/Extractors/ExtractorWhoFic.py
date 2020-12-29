@@ -230,8 +230,7 @@ class ExtractorWhoFic(Extractor):
 
         return FindFirstMatch(URL, "sid=(\d+)")
 
-    @staticmethod
-    def _FindAdditionalMetadata(authorPageURL: str, storyID: str) -> Tuple[str, str, str]:
+    def _FindAdditionalMetadata(self, authorPageURL: str, storyID: str) -> Tuple[str, str, str]:
 
         ##
         #

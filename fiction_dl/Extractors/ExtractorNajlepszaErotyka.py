@@ -231,26 +231,6 @@ class ExtractorNajlepszaErotyka(Extractor):
             content = Stringify(contentElement.encode_contents())
         )
 
-    @staticmethod
-    def _CleanStoryTitle(title: str) -> str:
-
-        ##
-        #
-        # Cleans story title (removes recurring elements).
-        #
-        # @param title The input title.
-        #
-        # @return The cleaned title.
-        #
-        ##
-
-        titleMatch = re.search("(.+) \(.+\)", title)
-        if not titleMatch:
-            return title
-
-        return titleMatch.group(1)
-
-    @staticmethod
     def _FindAllStoriesByAuthor(authorName: str):
 
         # Download author's page.
@@ -303,3 +283,22 @@ class ExtractorNajlepszaErotyka(Extractor):
 
         stories.reverse()
         return stories
+
+    @staticmethod
+    def _CleanStoryTitle(title: str) -> str:
+
+        ##
+        #
+        # Cleans story title (removes recurring elements).
+        #
+        # @param title The input title.
+        #
+        # @return The cleaned title.
+        #
+        ##
+
+        titleMatch = re.search("(.+) \(.+\)", title)
+        if not titleMatch:
+            return title
+
+        return titleMatch.group(1)

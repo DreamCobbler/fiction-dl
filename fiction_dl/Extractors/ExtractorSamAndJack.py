@@ -275,10 +275,9 @@ class ExtractorSamAndJack(Extractor):
         #
         ##
 
-        return ExtractorSamAndJack._GetAdultViewURL(URL)
+        return self._GetAdultViewURL(URL)
 
-    @staticmethod
-    def _GetAdultViewURL(URL: str) -> Optional[str]:
+    def _GetAdultViewURL(self, URL: str) -> Optional[str]:
 
         ##
         #
