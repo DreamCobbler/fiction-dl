@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -177,14 +177,14 @@ class Application:
                     self._interface.Error(f"An SSL error has occurred: {caughtException}")
                     self._interface.GrabUserAttention()
 
-                except BaseException as caughtException:
-
-                    self._interface.Error(f"An exception has been thrown: {caughtException}")
-                    self._interface.GrabUserAttention()
-
                 except CloudflareChallengeError as caughtException:
 
                     self._interface.Error("A Cloudflare challenge error has occurred. Try again later.")
+                    self._interface.GrabUserAttention()
+
+                except BaseException as caughtException:
+
+                    self._interface.Error(f"An exception has been thrown: {caughtException}")
                     self._interface.GrabUserAttention()
 
                 except:
@@ -407,7 +407,7 @@ class Application:
                 imageCount = len(extractor.Story.Images)
                 downloadedImageCount = 0
 
-                previousImageFailedToDownlod = False
+                previousImageFailedToDownload = False
 
                 for index, image in enumerate(extractor.Story.Images, start = 1):
 
