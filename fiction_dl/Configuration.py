@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ import tempfile
 #
 
 ApplicationName = "fiction-dl"
-ApplicationVersion = "1.7.0"
+ApplicationVersion = "1.8.0"
 ApplicationShortDescription = (
     "A content downloader, capable of retrieving works of (fan)fiction from the web and saving them in a few common file"
     " formats."
@@ -49,8 +49,6 @@ ApplicationURL = "http://github.com/DreamCobbler/fiction-dl"
 
 CreatorName = "Benedykt Synakiewicz"
 CreatorContact = "dreamcobbler@outlook.com"
-
-UserAgent = f"{ApplicationName} {ApplicationVersion}"
 
 RedditClientID = "ScszEQn1cI7GgQ"
 RedditRedirectURI = "http://localhost:8080"

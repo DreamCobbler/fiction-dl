@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,8 +41,9 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.HTML import ReadElementText
+from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import DeprettifyAmount, DeprettifyNumber, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -65,6 +66,104 @@ class ExtractorAO3(Extractor):
         super().__init__()
 
         self._storySoup = None
+
+    def SupportsAuthentication(self) -> bool:
+
+        ##
+        #
+        # Checks whether the extractor supports user authentication.
+        #
+        # @return **True** if the site *does* support authentication, **False** otherwise.
+        #
+        ##
+
+        return True
+
+    def Authenticate(self, interface: Interface) -> bool:
+
+        ##
+        #
+        # Logs the user in, interactively.
+        #
+        # @param interface The user interface to be used.
+        #
+        # @return **True** if the user has been authenticated correctly, **False** otherwise.
+        #
+        ##
+
+        # Download the log-in page.
+
+        soup = self._webSession.GetSoup(self._LOGIN_URL)
+        if not soup:
+            logging.error("Failed to download the log-in page.")
+            return self.AuthenticationResult.FAILURE
+
+        formElement = soup.select_one("form#new_user_session_small")
+        if not formElement:
+            logging.error("Log-in form element not found.")
+            return self.AuthenticationResult.FAILURE
+
+        authenticityTokenElement = formElement.find("input", {"name": "authenticity_token"})
+        if not authenticityTokenElement:
+            logging.error("\"authenticity_token\" input field not found.")
+            return self.AuthenticationResult.FAILURE
+        elif not authenticityTokenElement.has_attr("value"):
+            logging.error("\"authenticity_token\" input field doesn't have a value.")
+            return self.AuthenticationResult.FAILURE
+
+        authenticityToken = authenticityTokenElement["value"].strip()
+
+        # Read the username and the password.
+
+        userName = ""
+        password = ""
+
+        if ExtractorAO3._userName is None:
+
+            interface.GrabUserAttention()
+
+            userName = interface.ReadString("Your username")
+            if userName:
+                password = interface.ReadPassword("Your password")
+
+        else:
+
+            userName = ExtractorAO3._userName
+            password = ExtractorAO3._userPassword
+
+        if not userName:
+            userName = ""
+
+        # Remember the username and the password.
+
+        ExtractorAO3._userName = userName
+        ExtractorAO3._userPassword = password
+
+        # Decide whether to log-in.
+
+        if (not userName) or (not password):
+            return self.AuthenticationResult.ABANDONED
+
+        # Attempt to log-in.
+
+        data = {
+            "user[login]": userName,
+            "user[password]": password,
+            "user[remember_me]": "1",
+            "authenticity_token": authenticityToken,
+        }
+
+        response = self._session.post(
+            url = self._LOGIN_URL,
+            data = data
+        )
+
+        # Verify the response and return.
+
+        if (200 != response.status_code) or ("doesn't match our records" in response.text.lower()):
+            return self.AuthenticationResult.FAILURE
+
+        return self.AuthenticationResult.SUCCESS
 
     def GetSupportedHostnames(self) -> List[str]:
 
@@ -183,7 +282,11 @@ class ExtractorAO3(Extractor):
         if 1 == self.Story.Metadata.ChapterCount:
 
             titleElement = None
-            contentElement = self._storySoup.select_one("div#chapters > div.userstuff")
+
+            contentElement = self._storySoup.select_one("div#chapters div.userstuff")
+            if not contentElement:
+                logging.error("Content element not found.")
+                return None
 
             if (landmarkElement := contentElement.select_one("h3#work")):
                 landmarkElement.decompose()
@@ -217,8 +320,7 @@ class ExtractorAO3(Extractor):
                 content = Stringify(contentElement.encode_contents())
             )
 
-    @staticmethod
-    def _ScanWorks(URL: str) -> Optional[List[str]]:
+    def _ScanWorks(self, URL: str) -> Optional[List[str]]:
 
         ##
         #
@@ -237,7 +339,7 @@ class ExtractorAO3(Extractor):
 
         # Download page soup.
 
-        soup = DownloadSoup(URL)
+        soup = self._webSession.GetSoup(URL)
         if not soup:
             return None
 
@@ -267,7 +369,7 @@ class ExtractorAO3(Extractor):
 
         for pageURL in pageURLs:
 
-            soup = DownloadSoup(pageURL)
+            soup = self._webSession.GetSoup(pageURL)
             if not soup:
                 logging.error("Failed to download a page of the Works webpage.")
                 continue
@@ -369,6 +471,10 @@ class ExtractorAO3(Extractor):
 
         return storyIDMatch.group(1)
 
+    _userName = None
+    _userPassword = None
+
+    _LOGIN_URL = "https://archiveofourown.org/users/login"
     _BASE_WORK_URL = "https://archiveofourown.org/works"
     _BASE_USER_URL = "https://archiveofourown.org/users"
     _BASE_SERIES_URL = "https://archiveofourown.org/series"

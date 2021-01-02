@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -218,7 +218,7 @@ def CreateImageFromDataUsingPIL(data: bytes, side: Optional[int] = None, quality
     if side and (scale := side / max(width, height)) < 1:
         image = image.resize(
             (int(scale * width), int(scale * height)),
-            Image.ANTIALIAS
+            PIL.Image.ANTIALIAS
         )
 
     # Encode image data and store it.

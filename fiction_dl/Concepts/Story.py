@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 from fiction_dl.Concepts.Image import Image
 from fiction_dl.Concepts.Metadata import Metadata
 from fiction_dl.Utilities.HTML import StripHTML
-import fiction_dl.Configuration
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
@@ -89,7 +89,7 @@ class Story:
         #
         ##
 
-        template = FillTemplate(fiction_dl.Configuration, template)
+        template = FillTemplate(Configuration, template)
         template = FillTemplate(self.Metadata.GetPrettified(escapeHTMLEntities), template)
 
         return template

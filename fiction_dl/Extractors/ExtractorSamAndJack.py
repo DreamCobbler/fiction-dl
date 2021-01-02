@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from dreamy_utilities.HTML import ReadElementText
 from dreamy_utilities.Text import FindFirstMatch, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -104,7 +104,7 @@ class ExtractorSamAndJack(Extractor):
         if "viewuser.php" not in URL:
             return None
 
-        soup = DownloadSoup(URL)
+        soup = self._webSession.GetSoup(URL)
         if not soup:
             logging.error(f"Couldn't download page: \"{URL}\".")
             return None
@@ -128,7 +128,7 @@ class ExtractorSamAndJack(Extractor):
             currentOffset = (pageIndex - 1) * self._STORIES_PER_PAGE
             currentURL = f"{URL}&offset={currentOffset}"
 
-            soup = DownloadSoup(currentURL)
+            soup = self._webSession.GetSoup(currentURL)
             if not soup:
                 continue
 
@@ -186,7 +186,7 @@ class ExtractorSamAndJack(Extractor):
         # Read additional metadata and retrieve chapter URLs.
 
         tableOfContentsURL = f"{URL}&index=1"
-        soup = DownloadSoup(tableOfContentsURL)
+        soup = self._webSession.GetSoup(tableOfContentsURL)
         if not soup:
             logging.error(f"Failed to download page: \"{tableOfContentsURL}\".")
             return False
@@ -275,10 +275,9 @@ class ExtractorSamAndJack(Extractor):
         #
         ##
 
-        return ExtractorSamAndJack._GetAdultViewURL(URL)
+        return self._GetAdultViewURL(URL)
 
-    @staticmethod
-    def _GetAdultViewURL(URL: str) -> Optional[str]:
+    def _GetAdultViewURL(self, URL: str) -> Optional[str]:
 
         ##
         #
@@ -299,7 +298,7 @@ class ExtractorSamAndJack(Extractor):
         for warningIndex in reversed(range(MINIMUM_WARNING, MAXIMUM_WARNING + 1)):
 
             currentURL = URL + f"&ageconsent=ok&warning={warningIndex}"
-            soup = DownloadSoup(currentURL)
+            soup = self._webSession.GetSoup(currentURL)
 
             if not soup.select_one("div.errortext"):
                 return currentURL

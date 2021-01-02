@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -61,12 +61,12 @@ setup(
     url = Configuration.ApplicationURL,
 
     install_requires = [
-
         "PyMuPDF",
         "bleach",
         "bs4",
-        "dreamy-utilities==1.1.0",
+        "dreamy-utilities>=1.2.0",
         "ebooklib",
+        "fake-useragent",
         "html5lib",
         "lxml",
         "markdown",
@@ -76,7 +76,6 @@ setup(
         "praw",
         "pykakasi",
         "pyopenssl",
-
     ],
 
     packages = find_packages(),

@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,11 +30,9 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
-from fiction_dl.Utilities.Terminal import ReadString
 
 # Standard packages.
 
-from getpass import getpass
 import logging
 import re
 from typing import List, Optional
@@ -42,8 +40,10 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
+from dreamy_utilities.Filesystem import WriteTextFile
+from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetDateFromTimestamp, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetSiteURL
+from dreamy_utilities.Web import GetSiteURL
 
 #
 #
@@ -80,40 +80,97 @@ class ExtractorXenForo(Extractor):
 
         return True
 
-    def Authenticate(self) -> bool:
+    def Authenticate(self, interface: Interface) -> bool:
 
         ##
         #
         # Logs the user in, interactively.
         #
-        # @param username The username.
-        # @param password The password.
+        # @param interface The user interface to be used.
         #
         # @return **True** if the user has been authenticated correctly, **False** otherwise.
         #
         ##
 
-        username = ReadString("Your username")
-        if not username:
-            return True
+        # Format the log-in URL.
 
-        password = getpass(prompt = "Your password: ")
+        LOGIN_URL = self._forumURL + "login/login"
+
+        # Download the log-in page.
+
+        soup = self._webSession.GetSoup(LOGIN_URL)
+        if not soup:
+            logging.error("Failed to download the log-in page.")
+            return self.AuthenticationResult.FAILURE
+
+        formElement = soup.select_one("div.blocks > form.block")
+        if not formElement:
+            logging.error("Log-in form element not found.")
+            return self.AuthenticationResult.FAILURE
+
+        authenticityTokenElement = formElement.find("input", {"name": "_xfToken"})
+        if not authenticityTokenElement:
+            logging.error("\"_xfToken\" input field not found.")
+            return self.AuthenticationResult.FAILURE
+        elif not authenticityTokenElement.has_attr("value"):
+            logging.error("\"_xfToken\" input field doesn't have a value.")
+            return self.AuthenticationResult.FAILURE
+
+        authenticityToken = authenticityTokenElement["value"].strip()
+
+        # Read the username and the password.
+
+        userName = ""
+        password = ""
+
+        if ExtractorXenForo._userName is None:
+
+            interface.GrabUserAttention()
+
+            userName = interface.ReadString("Your username")
+            if userName:
+                password = interface.ReadPassword("Your password")
+
+        else:
+
+            userName = ExtractorXenForo._userName
+            password = ExtractorXenForo._userPassword
+
+        if not userName:
+            userName = ""
+
+        # Remember the username and the password.
+
+        ExtractorXenForo._userName = userName
+        ExtractorXenForo._userPassword = password
+
+        # Decide whether to log-in.
+
+        if (not userName) or (not password):
+            return self.AuthenticationResult.ABANDONED
+
+        # Attempt to log-in.
 
         data = {
-            "login": username,
+            "login": userName,
             "password": password,
             "register": 0,
             "remember": "1",
             "cookie_check": "1",
-            "_xfToken": "",
+            "_xfToken": authenticityToken,
         }
 
-        self._session.post(
-            url = self._forumURL + "login/login",
-            data = data
+        response = self._webSession.Post(
+            LOGIN_URL,
+            data
         )
 
-        return True
+        # Verify the response and return.
+
+        if not response:
+            return self.AuthenticationResult.FAILURE
+
+        return self.AuthenticationResult.SUCCESS
 
     def ExtractChapter(self, index: int) -> Optional[Chapter]:
 
@@ -137,7 +194,7 @@ class ExtractorXenForo(Extractor):
 
         chapterURL = self._chapterURLs[index - 1]
 
-        soup = DownloadSoup(chapterURL, self._session)
+        soup = self._webSession.GetSoup(chapterURL)
         if not soup:
             logging.error(f'Failed to download page: "{chapterURL}".')
             return None
@@ -197,7 +254,7 @@ class ExtractorXenForo(Extractor):
 
         # Retrieve story metadata.
 
-        soup = DownloadSoup(threadmarksURL, self._session)
+        soup = self._webSession.GetSoup(threadmarksURL)
         if not soup:
             logging.error(f'Failed to download page: "{threadmarksURL}".')
             return False
@@ -287,3 +344,6 @@ class ExtractorXenForo(Extractor):
         threadTitle = threadTitleMatch.group(1)
 
         return f"{self._forumURL}threads/{threadTitle}/threadmarks"
+
+    _userName = None
+    _userPassword = None

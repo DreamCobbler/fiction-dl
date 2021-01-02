@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Utilities.HTML import StripHTML
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
@@ -43,7 +44,8 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import GetCurrentDate, Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname, GetSiteURL
+from dreamy_utilities.Web import GetHostname, GetSiteURL
+from dreamy_utilities.WebSession import WebSession
 
 #
 #
@@ -66,6 +68,7 @@ class ExtractorFFNet(Extractor):
 
         super().__init__()
 
+        self._webSession.EnableCloudscraper(True)
         self._chapterParserName = "html5lib"
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -108,7 +111,7 @@ class ExtractorFFNet(Extractor):
         siteURL = GetSiteURL(URL)
         normalizedURL = f"{siteURL}/u/{userID}/"
 
-        pageSoup = DownloadSoup(normalizedURL)
+        pageSoup = self._webSession.GetSoup(normalizedURL)
         if not pageSoup:
             return None
 
@@ -162,7 +165,7 @@ class ExtractorFFNet(Extractor):
 
         # Download the first page.
 
-        soup = DownloadSoup(normalizedURL)
+        soup = self._webSession.GetSoup(normalizedURL)
         if not soup:
             logging.error(f"Failed to download page: \"{normalizedURL}\".")
             return None
@@ -194,7 +197,7 @@ class ExtractorFFNet(Extractor):
         for pageIndex in range(1, lastPageIndex + 1):
 
             pageURL = f"{collectionURL}/99/0/{pageIndex}/0/0/0/0/"
-            soup = DownloadSoup(pageURL)
+            soup = self._webSession.GetSoup(pageURL)
             if not soup:
                 logging.error(f"Failed to download page: \"{pageURL}\".")
                 return None

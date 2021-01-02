@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,9 +30,11 @@
 
 from fiction_dl.Concepts.Chapter import Chapter
 from fiction_dl.Concepts.Story import Story
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
+from enum import Enum
 import logging
 import requests
 from typing import List, Optional
@@ -40,7 +42,10 @@ from typing import List, Optional
 # Non-standard packages.
 
 from bs4 import BeautifulSoup
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Interface import Interface
+from dreamy_utilities.Web import GetHostname
+from dreamy_utilities.WebSession import WebSession
+from fake_useragent import UserAgent
 
 #
 #
@@ -59,6 +64,17 @@ from dreamy_utilities.Web import DownloadSoup, GetHostname
 
 class Extractor:
 
+    ##
+    #
+    # Represents authentication result.
+    #
+    ##
+
+    class AuthenticationResult(Enum):
+        SUCCESS   = 1
+        FAILURE   = 2
+        ABANDONED = 3
+
     def __init__(self) -> None:
 
         ##
@@ -69,7 +85,7 @@ class Extractor:
 
         self.Story = None
 
-        self._session = requests.session()
+        self._webSession = WebSession(UserAgent().random)
         self._chapterURLs = []
 
         self._downloadStorySoupWhenScanning = True
@@ -113,20 +129,19 @@ class Extractor:
 
         return False
 
-    def Authenticate(self) -> bool:
+    def Authenticate(self, interface: Interface) -> AuthenticationResult:
 
         ##
         #
         # Logs the user in, interactively.
         #
-        # @param username The username.
-        # @param password The password.
+        # @param interface The user interface to be used.
         #
-        # @return **True** if the user has been authenticated correctly, **False** otherwise.
+        # @return The result of the authentication attempt.
         #
         ##
 
-        return False
+        return AuthenticationResult.FAILURE
 
     def Initialize(self, URL: str) -> bool:
 
@@ -180,9 +195,10 @@ class Extractor:
 
         if self._downloadStorySoupWhenScanning:
 
-            soup = DownloadSoup(normalizedURL, self._session)
+            soup = self._webSession.GetSoup(normalizedURL)
+
             if not soup:
-                logging.error(f'Failed to download page: "{normalizedURL}".')
+                logging.error(f'Failed to download tag soup: "{normalizedURL}".')
                 return False
 
         return self._InternallyScanStory(normalizedURL, soup)
@@ -213,9 +229,9 @@ class Extractor:
 
         if self._downloadChapterSoupWhenExtracting:
 
-            soup = DownloadSoup(chapterURL, self._session, parser = self._chapterParserName)
+            soup = self._webSession.GetSoup(chapterURL, self._chapterParserName)
             if not soup:
-                logging.error(f'Failed to download page: "{chapterURL}".')
+                logging.error(f'Failed to download tag soup: "{chapterURL}".')
                 return None
 
         return self._InternallyExtractChapter(chapterURL, soup)
@@ -235,11 +251,7 @@ class Extractor:
         if not URL:
             return None
 
-        response = self._session.get(URL, stream = True)
-        if not response.content:
-            return None
-
-        return response.content
+        return self._webSession.Get(URL, text = False, stream = True)
 
     def _InternallyScanStory(
         self,

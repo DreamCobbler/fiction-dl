@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ if __package__ is None:
 
 from fiction_dl.Core.Application import Application
 from fiction_dl.Utilities.Filesystem import GetLibreOfficeExecutablePath
-from fiction_dl.Configuration import *
+import fiction_dl.Configuration as Configuration
 
 # Standard packages.
 
@@ -89,7 +89,7 @@ def Main() -> None:
 
         Application(
             arguments = arguments,
-            cacheDirectoryPath = CacheDirectoryPath
+            cacheDirectoryPath = Configuration.CacheDirectoryPath
         ).Launch()
 
     except (ConnectionError, ProtocolError, RemoteDisconnected):
@@ -109,19 +109,19 @@ def ReadCommandLineArguments() -> Namespace:
     #
     ##
 
-    epilogMessage =                                                                                \
-        "You can use the application to auto-format a story saved in a text file.\r\n"             \
-        "\r\n"                                                                                     \
-        f"Put the text \"{TextSourceFileMagicText}\" in the very first line of the file, then\r\n" \
-        "the story's original URL in the next one, then the title in the third one,\r\n"           \
-        "then the author's name in the fourth, the one line summary in the fifth.\r\n"             \
-        "\r\n"                                                                                     \
-        "Then put the HTML-formatted story content in the line after that."                        \
-        "\r\n"                                                                                     \
-        f"You can put \"{TextSourceFileChapterBreak}\" in a line in order to force a chapter break."
+    epilogMessage =                                                                                              \
+        "You can use the application to auto-format a story saved in a text file.\r\n"                           \
+        "\r\n"                                                                                                   \
+        f"Put the text \"{Configuration.TextSourceFileMagicText}\" in the very first line of the file, then\r\n" \
+        "the story's original URL in the next one, then the title in the third one,\r\n"                         \
+        "then the author's name in the fourth, the one line summary in the fifth.\r\n"                           \
+        "\r\n"                                                                                                   \
+        "Then put the HTML-formatted story content in the line after that."                                      \
+        "\r\n"                                                                                                   \
+        f"You can put \"{Configuration.TextSourceFileChapterBreak}\" in a line in order to force a chapter break."
 
     argumentParser = ArgumentParser(
-        description = ApplicationShortDescription,
+        description = Configuration.ApplicationShortDescription,
         epilog = epilogMessage
     )
 
@@ -193,7 +193,7 @@ def ReadCommandLineArguments() -> Namespace:
         "-o",
         dest = "Output",
         type = str,
-        default = OutputDirectoryPath,
+        default = Configuration.OutputDirectoryPath,
         help = "output directory path"
     )
 

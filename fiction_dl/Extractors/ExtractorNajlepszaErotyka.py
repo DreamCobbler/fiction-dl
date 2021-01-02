@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ from dreamy_utilities.Text import (
     SeparateSubtitle,
     Stringify
 )
-from dreamy_utilities.Web import DownloadSoup, GetHostname
+from dreamy_utilities.Web import GetHostname
 
 #
 #
@@ -231,33 +231,13 @@ class ExtractorNajlepszaErotyka(Extractor):
             content = Stringify(contentElement.encode_contents())
         )
 
-    @staticmethod
-    def _CleanStoryTitle(title: str) -> str:
-
-        ##
-        #
-        # Cleans story title (removes recurring elements).
-        #
-        # @param title The input title.
-        #
-        # @return The cleaned title.
-        #
-        ##
-
-        titleMatch = re.search("(.+) \(.+\)", title)
-        if not titleMatch:
-            return title
-
-        return titleMatch.group(1)
-
-    @staticmethod
-    def _FindAllStoriesByAuthor(authorName: str):
+    def _FindAllStoriesByAuthor(self, authorName: str):
 
         # Download author's page.
 
         authorsPageURL = f"https://najlepszaerotyka.com.pl/author/{authorName}/"
 
-        soup = DownloadSoup(authorsPageURL)
+        soup = self._webSession.GetSoup(authorsPageURL)
         if not soup:
             logging.error("Failed to download page: \"{authorsPageURL\".")
             return None
@@ -278,7 +258,7 @@ class ExtractorNajlepszaErotyka(Extractor):
 
             pageURL = f"https://najlepszaerotyka.com.pl/author/{authorName}/page/{index}"
 
-            soup = DownloadSoup(pageURL)
+            soup = self._webSession.GetSoup(pageURL)
             if not soup:
                 logging.error("Failed to download page: \"{pageURL\".")
                 return None
@@ -303,3 +283,22 @@ class ExtractorNajlepszaErotyka(Extractor):
 
         stories.reverse()
         return stories
+
+    @staticmethod
+    def _CleanStoryTitle(title: str) -> str:
+
+        ##
+        #
+        # Cleans story title (removes recurring elements).
+        #
+        # @param title The input title.
+        #
+        # @return The cleaned title.
+        #
+        ##
+
+        titleMatch = re.search("(.+) \(.+\)", title)
+        if not titleMatch:
+            return title
+
+        return titleMatch.group(1)

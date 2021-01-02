@@ -1,3 +1,18 @@
+# 1.8.0
+
+**General:**
+
+- **(Issue #11)** FF.net extractor ought to be able to download pages once more. f-dl now uses [cloudscraper](https://pypi.org/project/cloudscraper/) to bypass bot protection provided by Cloudflare.
+
+**Extractors:**
+
+- Added authentication support to the AO3 extractor.
+- Reworked authentication using the XenForo extractor.
+
+**Stuff:**
+
+- Provided username and password are now remembered during the session by all the extractors using this method of authentication.
+
 # 1.7.0
 
 **General:**

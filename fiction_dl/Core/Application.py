@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 # Application.
 
 from fiction_dl.Concepts.Chapter import Chapter
+from fiction_dl.Concepts.Extractor import Extractor
 from fiction_dl.Concepts.Story import Story
 from fiction_dl.Concepts.StoryPackage import StoryPackage
 from fiction_dl.Core.Cache import Cache
@@ -62,6 +63,7 @@ from urllib3.exceptions import ProtocolError
 
 # Non-standard packages.
 
+from cloudscraper.exceptions import CloudflareChallengeError
 from dreamy_utilities.Containers import RemoveDuplicates
 from dreamy_utilities.Filesystem import FindExecutable, GetSanitizedFileName, WriteTextFile
 from dreamy_utilities.Interface import Interface
@@ -175,6 +177,11 @@ class Application:
                     self._interface.Error(f"An SSL error has occurred: {caughtException}")
                     self._interface.GrabUserAttention()
 
+                except CloudflareChallengeError as caughtException:
+
+                    self._interface.Error("A Cloudflare challenge error has occurred. Try again later.")
+                    self._interface.GrabUserAttention()
+
                 except BaseException as caughtException:
 
                     self._interface.Error(f"An exception has been thrown: {caughtException}")
@@ -281,11 +288,14 @@ class Application:
 
         if self._arguments.Authenticate and extractor.SupportsAuthentication():
 
-            self._interface.GrabUserAttention()
+            self._interface.Process("Logging-in...", section = True)
 
-            if not extractor.Authenticate():
+            authenticationResult = extractor.Authenticate(self._interface)
+
+            if Extractor.AuthenticationResult.FAILURE == authenticationResult:
                 self._interface.Error("Failed to authenticate.")
-
+            elif Extractor.AuthenticationResult.ABANDONED == authenticationResult:
+                self._interface.Comment("Proceeding without logging-in...")
             else:
                 self._interface.Comment("Authenticated successfully.")
 
@@ -397,7 +407,7 @@ class Application:
                 imageCount = len(extractor.Story.Images)
                 downloadedImageCount = 0
 
-                previousImageFailedToDownlod = False
+                previousImageFailedToDownload = False
 
                 for index, image in enumerate(extractor.Story.Images, start = 1):
 

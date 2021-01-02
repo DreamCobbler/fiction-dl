@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Text import Stringify
-from dreamy_utilities.Web import DownloadSoup, GetHostname, GetSiteURL
+from dreamy_utilities.Web import GetHostname, GetSiteURL
 
 #
 #
@@ -106,7 +106,7 @@ class ExtractorAdultFanfiction(Extractor):
         userID = userIDMatch.group(1)
 
         normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story"
-        soup = DownloadSoup(normalizedURL)
+        soup = self._webSession.GetSoup(normalizedURL)
         if not soup:
             logging.error(f"Couldn't download page: \"{normalizedURL}\".")
             return None
@@ -161,7 +161,7 @@ class ExtractorAdultFanfiction(Extractor):
         zoneName = urlparse(self.Story.Metadata.URL).hostname.split(".")[0]
 
         authorProfileURL = f"{userProfileBaseURL}&view=story&zone={zoneName}"
-        authorProfileSoup = DownloadSoup(authorProfileURL)
+        authorProfileSoup = self._webSession.GetSoup(authorProfileURL)
         if not soup:
             logging.error(f'Failed to download page: "{authorProfileURL}".')
             return False
@@ -277,7 +277,7 @@ class ExtractorAdultFanfiction(Extractor):
     def _FindAllStoriesByUserElements(self, userID):
 
         normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story"
-        soup = DownloadSoup(normalizedURL)
+        soup = self._webSession.GetSoup(normalizedURL)
         if not soup:
             logging.error(f"Couldn't download page: \"{normalizedURL}\".")
             return None
@@ -304,7 +304,7 @@ class ExtractorAdultFanfiction(Extractor):
         for zoneName in zoneNames:
 
             normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story&zone={zoneName}"
-            soup = DownloadSoup(normalizedURL)
+            soup = self._webSession.GetSoup(normalizedURL)
             if not soup:
                 logging.error(f"Couldn't download page: \"{normalizedURL}\".")
                 return None
@@ -321,7 +321,7 @@ class ExtractorAdultFanfiction(Extractor):
             for pageIndex in range(1, lastPageIndex + 1):
 
                 normalizedURL = f"http://members.adult-fanfiction.org/profile.php?no={userID}&view=story&zone={zoneName}&page={pageIndex}"
-                soup = DownloadSoup(normalizedURL)
+                soup = self._webSession.GetSoup(normalizedURL)
                 if not soup:
                     logging.error(f"Couldn't download page: \"{normalizedURL}\".")
                     return None

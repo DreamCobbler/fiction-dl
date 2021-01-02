@@ -1,7 +1,7 @@
 ####
 #
 # fiction-dl
-# Copyright (C) (2020) Benedykt Synakiewicz <dreamcobbler@outlook.com>
+# Copyright (C) (2020 - 2021) Benedykt Synakiewicz <dreamcobbler@outlook.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +46,9 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from dreamy_utilities.Filesystem import ReadTextFile
+from dreamy_utilities.Interface import Interface
 from dreamy_utilities.Text import GetDateFromTimestamp, GetLevenshteinDistance, GetLongestLeadingSubstring, PrettifyTitle
+from fake_useragent import UserAgent
 from markdown import markdown
 from praw import Reddit
 from praw.exceptions import InvalidURL
@@ -77,12 +79,14 @@ class ExtractorReddit(Extractor):
 
         self._downloadChapterSoupWhenExtracting = False
 
+        self._userAgent = UserAgent().random
+
         if not ExtractorReddit._RefreshToken:
             self._redditInstance = Reddit(
                 client_id = Configuration.RedditClientID,
                 client_secret = None,
                 redirect_uri = Configuration.RedditRedirectURI,
-                user_agent = Configuration.UserAgent
+                user_agent = self._userAgent
             )
 
         else:
@@ -90,7 +94,7 @@ class ExtractorReddit(Extractor):
                 client_id = Configuration.RedditClientID,
                 client_secret = None,
                 refresh_token = ExtractorReddit._RefreshToken,
-                user_agent = Configuration.UserAgent
+                user_agent = self._userAgent
             )
 
     def GetSupportedHostnames(self) -> List[str]:
@@ -119,14 +123,13 @@ class ExtractorReddit(Extractor):
 
         return True
 
-    def Authenticate(self) -> bool:
+    def Authenticate(self, interface: Interface) -> bool:
 
         ##
         #
         # Logs the user in, interactively.
         #
-        # @param username The username.
-        # @param password The password.
+        # @param interface The user interface to be used.
         #
         # @return **True** if the user has been authenticated correctly, **False** otherwise.
         #
@@ -143,14 +146,15 @@ class ExtractorReddit(Extractor):
             state = str(randint(0, 65000))
             authorizationURL = self._redditInstance.auth.url(scopes, state, "permanent")
 
-            print(
-                f'# You authorization URL is: "{authorizationURL}". {Configuration.ApplicationName}'
+            interface.Comment(
+                f'You authorization URL is: "{authorizationURL}". {Configuration.ApplicationName}'
                 " has just attempted to open it in your web browser - if it has failed, then please"
                 " open it manually and confirm granting access to"
                 f" {Configuration.ApplicationName}."
             )
 
             webbrowser.open(authorizationURL, new = 2)
+            interface.GrabUserAttention()
 
             # Receive the connection.
 
@@ -171,7 +175,7 @@ class ExtractorReddit(Extractor):
 
             if (" " not in data) or ("?" not in data) or ("&" not in data):
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", "Error: invalid response."))
-                return False
+                return self.AuthenticationResult.FAILURE
 
             parameterTokens = data.split(" ", 2)[1].split("?", 1)[1].split("&")
             parameters = {
@@ -181,11 +185,11 @@ class ExtractorReddit(Extractor):
 
             if parameters["state"] != state:
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", "Error: invalid state in response."))
-                return False
+                return self.AuthenticationResult.FAILURE
 
             elif "error" in parameters:
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", f'Error: {parameters["error"]}.'))
-                return False
+                return self.AuthenticationResult.FAILURE
 
             else:
                 SendMessage(client, responseTemplate.replace("@@@Content@@@", "Everything went well. 😉"))
@@ -200,12 +204,12 @@ class ExtractorReddit(Extractor):
             client_id = Configuration.RedditClientID,
             client_secret = None,
             refresh_token = ExtractorReddit._RefreshToken,
-            user_agent = Configuration.UserAgent
+            user_agent = self._userAgent
         )
 
         print(f'# You are authenticated as "{self._redditInstance.user.me()}".')
 
-        return True
+        return self.AuthenticationResult.SUCCESS
 
     def ScanStory(self) -> bool:
 
