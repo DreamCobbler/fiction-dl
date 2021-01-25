@@ -1,4 +1,12 @@
-# 1.8.0
+# 1.8.X
+
+## 1.8.1
+
+**Extractors:**
+
+- Updated the Quotev extractor.
+
+## 1.8.0
 
 **General:**
 
