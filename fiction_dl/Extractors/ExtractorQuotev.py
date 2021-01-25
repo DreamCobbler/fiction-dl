@@ -128,7 +128,7 @@ class ExtractorQuotev(Extractor):
             logging.error("Metadata element not found.")
             return False
 
-        timeElements = metadataElement.select("time.q_time")
+        timeElements = metadataElement.select("time")
         if not len(timeElements):
             logging.error("Date published/updated not found.")
             return False
