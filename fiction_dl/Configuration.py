@@ -71,7 +71,7 @@ WelcomingMessage = f"{ApplicationName} {ApplicationVersion}, by {CreatorName} ({
 MaximumImageSideLength = 800
 
 # The time application waits after downloading a chapter, in seconds.
-PostChapterSleepTime = 0.5
+PostChapterSleepTime = 1.0
 
 # About repeated connection attempts.
 MaximumConnectionAttemptCount = 10
