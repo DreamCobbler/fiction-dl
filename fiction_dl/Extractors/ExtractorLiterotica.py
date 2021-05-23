@@ -174,12 +174,12 @@ class ExtractorLiterotica(Extractor):
 
         # Extract basic metadata.
 
-        titleElement = soup.select_one("div.b-story-header > h1")
+        titleElement = soup.select_one("div.b-story-header > h1") or soup.select_one("h1.headline")
         if not titleElement:
             logging.error("Title element not found.")
             return False
 
-        authorElement = soup.select_one("div.b-story-header > span.b-story-user-y > a")
+        authorElement = soup.select_one("div.b-story-header > span.b-story-user-y > a") or soup.select_one("div.panel > div.y_eS > a.y_eU")
         if not authorElement:
             logging.error("Author element not found.")
             return False
@@ -310,6 +310,12 @@ class ExtractorLiterotica(Extractor):
                 logging.error("Failed to read the story's page count.")
                 return None
 
+        if (pageSelectElement := soup.select_one("div.panel.clearfix.l_bH")):
+
+            if (linkElements := pageSelectElement.find_all("a")):
+
+                pageCount = int(Stringify(linkElements[-1].encode_contents()))
+
         # Iterate over pages and read their content.
 
         content = ""
@@ -323,7 +329,7 @@ class ExtractorLiterotica(Extractor):
                 logging.error(f'Failed to download page: "{pageURL}".')
                 return None
 
-            contentElement = soup.select_one("div.b-story-body-x > div")
+            contentElement = soup.select_one("div.b-story-body-x > div") or soup.select_one("div.panel.article")
             if not contentElement:
                 logging.error("Story content element not found.")
                 return None
