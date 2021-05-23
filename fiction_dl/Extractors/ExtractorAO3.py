@@ -153,14 +153,14 @@ class ExtractorAO3(Extractor):
             "authenticity_token": authenticityToken,
         }
 
-        response = self._session.post(
-            url = self._LOGIN_URL,
-            data = data
+        response = self._webSession.Post(
+            URL = self._LOGIN_URL,
+            payload = data
         )
 
         # Verify the response and return.
 
-        if (200 != response.status_code) or ("doesn't match our records" in response.text.lower()):
+        if (not response) or ("doesn't match our records" in response.lower()):
             return self.AuthenticationResult.FAILURE
 
         return self.AuthenticationResult.SUCCESS
