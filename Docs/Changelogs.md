@@ -1,5 +1,15 @@
 # 1.8.X
 
+## 1.8.2
+
+**Extractors:**
+
+- Updated the Literotica extractor.
+
+**Bugfixes:**
+
+- AO3 authentication works once again.
+
 ## 1.8.1
 
 **Extractors:**
