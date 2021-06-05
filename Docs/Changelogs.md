@@ -1,5 +1,15 @@
 # 1.8.X
 
+## 1.8.3
+
+**Extractors:**
+
+- The Nifty.org extractor supports a wider range of stories. ("Fixed" the Issue #16.)
+
+**Bugfixes:**
+
+- Threadmarks are no longer skipped in XenForo stories with a higher number of chapters. (Issue #15.)
+
 ## 1.8.2
 
 **Extractors:**
