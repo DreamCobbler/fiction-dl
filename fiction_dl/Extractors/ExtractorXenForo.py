@@ -245,9 +245,26 @@ class ExtractorXenForo(Extractor):
         #
         ##
 
+        # Retrieve the title of the story.
+
+        storyURL = self._GetStoryURL(self.Story.Metadata.URL)
+        if not storyURL:
+            logging.error("Failed to generate raw story URL.")
+            return False
+
+        soup = self._webSession.GetSoup(storyURL)
+        if not soup:
+            logging.error(f'Failed to download page: "{storyURL}".')
+            return False
+
+        titleElement = soup.select_one("h1.p-title-value") or soup.select_one(".titleBar > h1")
+        if not titleElement:
+            logging.error("Title element not found.")
+            return False
+
         # Generate the threadmarks URL.
 
-        threadmarksURL = self._GetThreadmarksURL(self.Story.Metadata.URL)
+        threadmarksURL = self._GetThreadmarksURL(self.Story.Metadata.URL, False)
         if not threadmarksURL:
             logging.error("Failed to generate threadmarks URL.")
             return False
@@ -255,14 +272,18 @@ class ExtractorXenForo(Extractor):
         # Retrieve story metadata.
 
         soup = self._webSession.GetSoup(threadmarksURL)
-        if not soup:
-            logging.error(f'Failed to download page: "{threadmarksURL}".')
-            return False
 
-        titleElement = soup.select_one("h1.p-title-value") or soup.select_one(".titleBar > h1")
-        if not titleElement:
-            logging.error("Title element not found.")
-            return False
+        if not soup:
+
+            threadmarksURL = self._GetThreadmarksURL(self.Story.Metadata.URL, True)
+            if not threadmarksURL:
+                logging.error("Failed to generate threadmarks URL.")
+                return False
+
+            soup = self._webSession.GetSoup(threadmarksURL)
+            if not soup:
+                logging.error(f'Failed to download page: "{threadmarksURL}".')
+                return False
 
         titleSpanElements = titleElement.find_all("span")
         for element in titleSpanElements:
@@ -319,13 +340,37 @@ class ExtractorXenForo(Extractor):
 
         return True
 
-    def _GetThreadmarksURL(self, URL: str) -> Optional[str]:
+    def _GetStoryURL(self, URL: str) -> Optional[str]:
+
+        ##
+        #
+        # Retrieves a URL leading to the story page.
+        #
+        # @param URL The URL of the story.
+        #
+        # @return URL leading to the story page.
+        #
+        ##
+
+        if not URL:
+            return None
+
+        threadTitleMatch = re.search("/threads/(.*)/", URL)
+        if not threadTitleMatch:
+            return None
+
+        threadTitle = threadTitleMatch.group(1)
+
+        return f"{self._forumURL}threads/{threadTitle}/"
+
+    def _GetThreadmarksURL(self, URL: str, simpleThreadmarks: bool) -> Optional[str]:
 
         ##
         #
         # Retrieves a URL leading to the threadmarks page.
         #
-        # @param URL The URL of the story.
+        # @param URL               The URL of the story.
+        # @param simpleThreadmarks Attempt to download the simple threadmarks page?
         #
         # @return URL leading to the threadmarks page.
         #
@@ -334,16 +379,17 @@ class ExtractorXenForo(Extractor):
         if not URL:
             return None
 
-        elif URL.endswith("threadmarks"):
-            return URL
-
         threadTitleMatch = re.search("/threads/(.*)/", URL)
         if not threadTitleMatch:
             return None
 
         threadTitle = threadTitleMatch.group(1)
 
-        return f"{self._forumURL}threads/{threadTitle}/threadmarks"
+        return (
+            f"{self._forumURL}threads/{threadTitle}/threadmarks?category_id=1&min=-1&max=5000"
+            if simpleThreadmarks else
+            f"{self._forumURL}threads/{threadTitle}/threadmarks-load-range?category_id=1&min=-1&max=5000"
+        )
 
     _userName = None
     _userPassword = None
