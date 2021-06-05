@@ -113,7 +113,7 @@ class ExtractorNifty(Extractor):
             logging.error("Failed to download story page when scanning.")
             return False
 
-        isHTMLCode = (-1 != pageCode.find("<html>"))
+        isHTMLCode = (-1 != pageCode.find("<html>") or -1 != pageCode.find("<HTML>"))
 
         # Process a multi-chapter story.
 
@@ -125,7 +125,12 @@ class ExtractorNifty(Extractor):
 
             # Create a list of chapters.
 
-            chapterElements = soup.select("table.table.table-xtra-condensed > tr")
+            chapterElements = (
+                soup.select("table.table.table-xtra-condensed > tr")
+                or
+                soup.select("table > tr")
+            )
+
             if not chapterElements:
                 logging.error("List of chapters not found.")
                 return False
