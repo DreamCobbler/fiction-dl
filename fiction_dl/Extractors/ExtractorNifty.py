@@ -313,7 +313,7 @@ class ExtractorNifty(Extractor):
         if not dateMatch:
             return None
 
-        authorMatch = re.match("From: ([^<]+) <", authorString)
+        authorMatch = re.match("From: ([^<]+).*", authorString)
         if not authorMatch:
             return None
 
