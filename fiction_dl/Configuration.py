@@ -40,7 +40,7 @@ import tempfile
 #
 
 ApplicationName = "fiction-dl"
-ApplicationVersion = "1.8.3"
+ApplicationVersion = "1.8.4"
 ApplicationShortDescription = (
     "A content downloader, capable of retrieving works of (fan)fiction from the web and saving them in a few common file"
     " formats."
