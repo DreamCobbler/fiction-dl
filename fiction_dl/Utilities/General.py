@@ -56,6 +56,6 @@ def RenderPDFPageToBytes(documentFilePath: Path, pageIndex: int) -> bytes:
     ##
 
     document = fitz.open(documentFilePath)
-    page = document.loadPage(pageIndex)
+    page = document.load_page(pageIndex)
 
-    return page.getPixmap().getImageData(output = "jpeg")
+    return page.get_pixmap().tobytes(output = "jpeg")
